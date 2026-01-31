@@ -280,9 +280,26 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu - Full Screen Below Header */}
+      {/* Banner - Below main header */}
+      <div className="border-t border-[#e5e5e5]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-10">
+            <div className="flex-1 text-center">
+              <span className="text-xs font-bold text-[#212223]">[LOGO #1]</span>
+            </div>
+            <div className="flex-1 text-center">
+              <span className="text-xs font-bold text-[#212223]">[LOGO #2]</span>
+            </div>
+            <div className="flex-1 text-center">
+              <span className="text-xs font-bold text-[#212223]">[LOGO #3]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu - Full Screen Below Header + Banner */}
       {mobileMenuOpen && (
-        <div className="fixed inset-x-0 top-14 bottom-0 z-40 bg-white md:hidden overflow-y-auto border-t border-[#e5e5e5] pt-4">
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-white md:hidden overflow-y-auto border-t border-[#e5e5e5] pt-4" style={{ top: '6rem' }}>
           {/* Mobile Search */}
           <div className="px-4 pt-4 pb-8 flex justify-center">
             <form

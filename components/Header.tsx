@@ -155,7 +155,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-[#e5e5e5]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-14">
           {/* Logo area - left blank for future icon */}
           <div className="shrink-0 w-35">
@@ -302,9 +302,10 @@ export default function Header() {
       </div>
 
       {/* Banner - Below main header */}
-      <div className="border-t border-[#e5e5e5] overflow-hidden">
-        <div className="h-10 flex items-center">
-          <div className="animate-marquee flex shrink-0">
+      <div className="border-t border-[#e5e5e5]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+          <div className="h-10 flex items-center">
+            <div className="animate-marquee flex shrink-0">
             <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
             <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
             <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
@@ -318,6 +319,7 @@ export default function Header() {
             <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
             <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
             <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
+            </div>
           </div>
         </div>
       </div>

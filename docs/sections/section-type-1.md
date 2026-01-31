@@ -67,6 +67,7 @@ interface SectionType1Props extends SectionType1Data {
 - Renders the full section with category label, featured article, and secondary articles
 - Has `id={slug}` for anchor navigation from header
 - Uses `scroll-mt-24` to account for sticky header when scrolling
+- Section-level bottom border (`border-b border-gray-300`) for consistent separation
 
 ### Gallery (Internal Component)
 - Client component using `useState` for image index tracking
@@ -74,7 +75,7 @@ interface SectionType1Props extends SectionType1Data {
 - Navigation: Previous/Next arrow buttons with wrap-around behavior
 - Pagination tracker shows `[currentIndex/total]` format
 - Bottom bar layout: pagination left, arrows right
-- On SM/MD: Gallery bleeds to full viewport width (`-mx-4`), controls have `px-4` padding
+- On SM/MD: Gallery bleeds to full viewport width (`-mx-6`), controls have `px-6` padding
 - On LG+: Gallery constrained to container (`lg:mx-0`), controls have no padding (`lg:px-0`)
 
 ### SecondaryArticleCard (Internal Component)
@@ -96,12 +97,28 @@ interface SectionType1Props extends SectionType1Data {
 | 2XL        | 1536px    | Large desktop |
 
 ### Featured Title Font Sizes
-| Breakpoint | Class | Size |
-|------------|-------|------|
+| Breakpoint | Class/Style | Size |
+|------------|-------------|------|
 | SM | `text-2xl` | 1.5rem (24px) |
 | MD | `md:text-3xl` | 1.875rem (30px) |
 | LG | `lg:text-4xl` | 2.25rem (36px) |
-| 2XL | `2xl:text-5xl` | 3rem (48px) |
+| 2XL | Dynamic (see below) | 1.5rem - 3rem |
+
+### Dynamic Title Sizing (2XL only)
+
+At the 2XL breakpoint, the title and gallery are displayed side-by-side. To prevent the text content from overflowing the gallery height, the component dynamically adjusts the title font size.
+
+**How it works:**
+1. Measures the gallery height (which is determined by its 3:2 aspect ratio)
+2. Iterates through font sizes from largest to smallest: 3rem → 2.25rem → 1.875rem → 1.5rem
+3. Selects the largest size where text content fits within the gallery height
+4. Recalculates on window resize and gallery size changes
+
+**Implementation:**
+- Uses `useLayoutEffect` for measurements before paint
+- `ResizeObserver` monitors gallery size changes
+- Window resize listener handles breakpoint transitions
+- Falls back to Tailwind classes below 2XL breakpoint (1536px)
 
 ---
 
@@ -133,7 +150,7 @@ interface SectionType1Props extends SectionType1Data {
 
 **Layout Details:**
 - Everything stacked vertically, full width
-- Gallery bleeds to full viewport (`-mx-4`)
+- Gallery bleeds to full viewport (`-mx-6`)
 - Secondary articles: 3 rows
   - Row 1: Article 1 (full width, `col-span-2`)
   - Row 2: Article 2 (full width, `col-span-2`)
@@ -171,7 +188,7 @@ interface SectionType1Props extends SectionType1Data {
 
 **Layout Details:**
 - Everything stacked vertically, full width
-- Gallery bleeds to full viewport (`-mx-4`)
+- Gallery bleeds to full viewport (`-mx-6`)
 - Secondary articles: 2x2 grid
   - All articles are `md:col-span-1`
   - Column padding: left column `md:pr-4`, right column `md:pl-4`

@@ -163,7 +163,7 @@ Header
 - Text primary: `#212223`
 - Text secondary: `#404040`
 - Text muted: `#5d5d5d`
-- Border: `#e5e5e5`
+- Border: `gray-300` (Tailwind class, consistent with section component borders)
 - Search button: `#8b8b8b` (hover: `#6b6b6b`)
 
 ### Z-Index Layers

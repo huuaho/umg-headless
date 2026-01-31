@@ -2,27 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-
-// Always visible in main nav (md+)
-const mainCategories = [
-  { name: "World News & Politics", slug: "world-news-politics" },
-  { name: "Profiles & Opinions", slug: "profiles-opinions" },
-  { name: "Economy & Business", slug: "economy-business" },
-];
-
-// Only visible in main nav on lg+, moves to More dropdown below lg
-const lgOnlyCategory = { name: "Diplomacy", slug: "diplomacy" };
-
-// Always in More dropdown
-const moreCategories = [
-  { name: "Art & Culture", slug: "art-culture" },
-  { name: "Education & Youth", slug: "education-youth" },
-  { name: "Local Community", slug: "local-community" },
-  { name: "Wellbeing, Environment, Technology", slug: "wellbeing-env-tech" },
-];
-
-// All categories for mobile nav
-const allCategories = [...mainCategories, lgOnlyCategory, ...moreCategories];
+import {
+  mainCategories,
+  lgOnlyCategory,
+  moreCategories,
+  allCategories,
+} from "@/lib/categories";
 
 function ChevronDown({ className }: { className?: string }) {
   return (

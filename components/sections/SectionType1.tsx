@@ -1,8 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import type { SectionType1Data, SecondaryArticle } from "@/lib/dummyData";
+
+// Title font sizes in rem (for 2XL breakpoint): 5xl, 4xl, 3xl, 2xl
+const TITLE_SIZES_REM = [3, 2.25, 1.875, 1.5] as const;
+const XXL_BREAKPOINT = 1536;
 
 function Gallery({ images }: { images: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,7 +31,7 @@ function Gallery({ images }: { images: string[] }) {
         />
       </div>
       {/* Bottom bar: pagination left, arrows right */}
-      <div className="flex items-center justify-between py-2 px-4 lg:px-0">
+      <div className="flex items-center justify-between py-2 px-6 lg:px-0">
         {/* Pagination tracker */}
         <span className="text-sm text-gray-500">
           [{currentIndex + 1}/{images.length}]
@@ -101,8 +105,70 @@ export default function SectionType1({
   featured,
   secondary,
 }: SectionType1Props) {
+  const textRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [titleFontSize, setTitleFontSize] = useState<number | null>(null);
+
+  // Find the right title size by iterating until text fits (only at 2XL)
+  const calculateOptimalSize = () => {
+    // Only adjust at 2XL where text and gallery are side-by-side
+    if (typeof window === "undefined" || window.innerWidth < XXL_BREAKPOINT) {
+      setTitleFontSize(null);
+      return;
+    }
+
+    if (!textRef.current || !galleryRef.current || !titleRef.current) return;
+
+    const galleryHeight = galleryRef.current.offsetHeight;
+
+    // Try each size from largest to smallest until text fits
+    for (const size of TITLE_SIZES_REM) {
+      titleRef.current.style.fontSize = `${size}rem`;
+      const textHeight = textRef.current.offsetHeight;
+
+      if (textHeight <= galleryHeight) {
+        setTitleFontSize(size);
+        return;
+      }
+    }
+
+    // If none fit, use smallest
+    setTitleFontSize(TITLE_SIZES_REM[TITLE_SIZES_REM.length - 1]);
+  };
+
+  // Measure and adjust title size after layout
+  useLayoutEffect(() => {
+    requestAnimationFrame(() => {
+      calculateOptimalSize();
+    });
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Force recalculation by resetting first, then recalculating
+      setTitleFontSize(null);
+      requestAnimationFrame(() => {
+        calculateOptimalSize();
+      });
+    };
+
+    // Observe gallery size changes
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (galleryRef.current) {
+      resizeObserver.observe(galleryRef.current);
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <section id={slug} className="py-6 scroll-mt-24">
+    <section id={slug} className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300">
       {/* Category Label */}
       <div className="mb-4">
         <a
@@ -127,15 +193,19 @@ export default function SectionType1({
           */}
           <article className="mb-6 lg:mb-0 2xl:mb-6 2xl:flex 2xl:gap-8">
             {/* Text content */}
-            <div className="2xl:w-1/3">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-tight mb-3">
+            <div ref={textRef} className="2xl:w-1/3">
+              <h2
+                ref={titleRef}
+                className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3"
+                style={titleFontSize ? { fontSize: `${titleFontSize}rem` } : undefined}
+              >
                 {featured.title}
               </h2>
               <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
               <span className="text-sm text-gray-500">{featured.time}</span>
             </div>
             {/* Gallery */}
-            <div className="mt-4 2xl:mt-0 -mx-4 lg:mx-0 2xl:w-2/3">
+            <div ref={galleryRef} className="mt-4 2xl:mt-0 -mx-6 lg:mx-0 2xl:w-2/3">
               <Gallery images={featured.gallery} />
             </div>
           </article>
@@ -148,17 +218,17 @@ export default function SectionType1({
             2XL: 4 equal columns below featured
         */}
         <div className="lg:w-1/3 2xl:w-full">
-          <div className="border-t md:border-t-0 lg:border-t-0 2xl:border-t-0 border-b lg:border-b-0 2xl:border-b border-gray-200 grid grid-cols-2 lg:grid-cols-1 2xl:grid-cols-4">
+          <div className="border-t md:border-t-0 lg:border-t-0 border-gray-300 grid grid-cols-2 lg:grid-cols-1 2xl:grid-cols-4">
             {/* Article 1 */}
-            <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-200 md:pr-4 lg:pr-0 2xl:pr-4">
+            <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-300 md:pr-4 lg:pr-0 2xl:pr-4">
               <SecondaryArticleCard article={secondary[0]} />
             </div>
             {/* Article 2 */}
-            <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-200 md:pl-4 lg:pl-0 2xl:pl-4 2xl:pr-4">
+            <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-300 md:pl-4 lg:pl-0 2xl:pl-4 2xl:pr-4">
               <SecondaryArticleCard article={secondary[1]} />
             </div>
             {/* Article 3 */}
-            <div className="col-span-1 lg:col-span-1 2xl:col-span-1 pr-2 md:pr-4 lg:pr-0 2xl:pr-4 2xl:pl-4 lg:border-b 2xl:border-b-0 border-gray-200">
+            <div className="col-span-1 lg:col-span-1 2xl:col-span-1 pr-2 md:pr-4 lg:pr-0 2xl:pr-4 2xl:pl-4 lg:border-b 2xl:border-b-0 border-gray-300">
               <SecondaryArticleCard article={secondary[2]} />
             </div>
             {/* Article 4 */}

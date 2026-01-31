@@ -154,7 +154,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-[#e5e5e5]">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-300">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-14">
           {/* Logo area - left blank for future icon */}
@@ -180,7 +180,7 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
-                  className="flex-1 h-10 px-4 border border-[#e5e5e5] text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
+                  className="flex-1 h-10 px-4 border border-gray-300 text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
                 />
                 <button
                   type="submit"
@@ -243,7 +243,7 @@ export default function Header() {
                 </button>
 
                 {moreOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-[#e5e5e5] shadow-lg py-2 z-50">
+                  <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-gray-300 shadow-lg py-2 z-50">
                     {/* Diplomacy - only in dropdown below lg */}
                     <Link
                       href={`/#${lgOnlyCategory.slug}`}
@@ -302,7 +302,7 @@ export default function Header() {
       </div>
 
       {/* Banner - Below main header */}
-      <div className="border-t border-[#e5e5e5]">
+      <div className="border-t border-gray-300">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="h-10 flex items-center">
             <div className="animate-marquee flex shrink-0">
@@ -326,7 +326,7 @@ export default function Header() {
 
       {/* Mobile Menu - Full Screen Below Header + Banner */}
       {mobileMenuOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-50 bg-white md:hidden overflow-y-auto border-t border-[#e5e5e5] pt-4" style={{ top: '6rem' }}>
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-white md:hidden overflow-y-auto border-t border-gray-300 pt-4" style={{ top: '6rem' }}>
           {/* Mobile Search */}
           <div className="px-4 pt-4 pb-8 flex justify-center">
             <form
@@ -340,7 +340,7 @@ export default function Header() {
                 value={mobileSearchQuery}
                 onChange={(e) => setMobileSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="flex-1 h-10 px-4 border border-[#e5e5e5] text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
+                className="flex-1 h-10 px-4 border border-gray-300 text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
               />
               <button
                 type="submit"
@@ -353,7 +353,7 @@ export default function Header() {
           </div>
 
           {/* Categories Header */}
-          <div className="px-4 pt-8 pb-3 border-t border-[#e5e5e5]">
+          <div className="px-4 pt-8 pb-3 border-t border-gray-300">
             <h2 className="text-xs font-bold text-[#404040] uppercase tracking-wider">
               Categories
             </h2>

@@ -19,17 +19,17 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
   );
 }
 
-interface SectionType2Props extends SectionData {
+interface SectionType3Props extends SectionData {
   slug: string;
   category: string;
 }
 
-export default function SectionType2({
+export default function SectionType3({
   slug,
   category,
   featured,
   secondary,
-}: SectionType2Props) {
+}: SectionType3Props) {
   const textRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -134,28 +134,24 @@ export default function SectionType2({
           </div>
         </article>
 
-        {/* Secondary Articles
-              SM: 4 rows, all full width
-              MD: 2x2 grid
-              LG: 4 columns in a row below featured
-              2XL: stacked vertically in 1 column
+        {/* Secondary Articles (3 articles)
+              SM: 3 rows, all full width
+              MD: 1 row, 3 columns
+              LG: 3 columns in a row below featured
+              2XL: stacked vertically in 1 column (3 rows)
           */}
-        <div className="border-t md:border-t-0 border-gray-300 md:grid md:grid-cols-2 lg:grid-cols-4 2xl:block 2xl:border-t-0">
+        <div className="border-t md:border-t-0 border-gray-300 md:grid md:grid-cols-3 lg:grid-cols-3 2xl:block 2xl:border-t-0">
           {/* Article 1 */}
-          <div className="border-b md:border-b lg:border-b-0 border-gray-300 md:pr-4 lg:pr-4 2xl:pr-0 2xl:border-b">
+          <div className="border-b md:border-b-0 lg:border-b-0 border-gray-300 md:pr-4 lg:pr-4 2xl:pr-0 2xl:border-b">
             <SecondaryArticleCard article={secondary[0]} />
           </div>
           {/* Article 2 */}
-          <div className="border-b md:border-b lg:border-b-0 border-gray-300 md:pl-4 lg:pl-4 lg:pr-4 2xl:pl-0 2xl:pr-0 2xl:border-b">
+          <div className="border-b md:border-b-0 lg:border-b-0 border-gray-300 md:px-4 lg:px-4 2xl:px-0 2xl:border-b">
             <SecondaryArticleCard article={secondary[1]} />
           </div>
           {/* Article 3 */}
-          <div className="border-b md:border-b-0 lg:border-b-0 border-gray-300 md:pr-4 lg:pl-4 lg:pr-4 2xl:pl-0 2xl:pr-0 2xl:border-b">
-            <SecondaryArticleCard article={secondary[2]} />
-          </div>
-          {/* Article 4 */}
           <div className="md:pl-4 lg:pl-4 2xl:pl-0">
-            <SecondaryArticleCard article={secondary[3]} />
+            <SecondaryArticleCard article={secondary[2]} />
           </div>
         </div>
       </div>

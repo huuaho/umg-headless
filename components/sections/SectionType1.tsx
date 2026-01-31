@@ -21,6 +21,7 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
 
 interface SectionType1Props extends SectionData {
   slug: string;
+  category: string;
 }
 
 export default function SectionType1({

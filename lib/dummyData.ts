@@ -14,14 +14,13 @@ export interface SecondaryArticle {
 
 // All section types share the same data structure
 // The display (gallery vs single image) is determined by the gallery value
+// Category is passed separately by the page, not included in data
 export interface SectionData {
-  category: string;
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
 
 export const sectionType1Data: SectionData = {
-  category: "United States",
   featured: {
     title: "Thousands demonstrate in Minnesota and across US to protest ICE",
     snippet:
@@ -58,7 +57,6 @@ export const sectionType1Data: SectionData = {
 };
 
 export const sectionType2Data: SectionData = {
-  category: "Profiles & Opinions",
   featured: {
     title: "Global leaders gather for historic climate summit in Geneva",
     snippet:
@@ -85,6 +83,30 @@ export const sectionType2Data: SectionData = {
       title:
         "Youth activists stage peaceful demonstration outside conference venue",
       time: "2 min read",
+    },
+  ],
+};
+
+export const sectionType3Data: SectionData = {
+  featured: {
+    title: "Central banks signal coordinated approach to interest rate policy",
+    snippet:
+      "Major central banks around the world are signaling a more coordinated approach to monetary policy as global inflation concerns persist and economic growth forecasts remain uncertain.",
+    time: "6 min read",
+    gallery: "https://picsum.photos/seed/type3feat/900/600",
+  },
+  secondary: [
+    {
+      title: "Stock markets rally on positive earnings reports from tech sector",
+      time: "3 min read",
+    },
+    {
+      title: "Supply chain disruptions continue to impact manufacturing globally",
+      time: "4 min read",
+    },
+    {
+      title: "Emerging markets show resilience despite currency volatility",
+      time: "5 min read",
     },
   ],
 };

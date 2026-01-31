@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   mainCategories,
   lgOnlyCategory,
@@ -91,12 +92,39 @@ export default function Header() {
   const [mobileSearchQuery, setMobileSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [searchOpen]);
+
+  // Handle smooth scroll when navigating from another page with a hash
+  useEffect(() => {
+    if (pathname === "/" && window.location.hash) {
+      const slug = window.location.hash.slice(1); // Remove the #
+      const element = document.getElementById(slug);
+      if (element) {
+        // Small delay to ensure page is fully rendered
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+  }, [pathname]);
+
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
+    // If we're on the homepage, handle smooth scroll manually
+    if (pathname === "/") {
+      e.preventDefault();
+      const element = document.getElementById(slug);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    // If on another page, let the Link navigate to /#slug normally
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,7 +206,9 @@ export default function Header() {
               {mainCategories.map((category) => (
                 <Link
                   key={category.slug}
-                  href={`/category/${category.slug}`}
+                  href={`/#${category.slug}`}
+                  scroll={false}
+                  onClick={(e) => scrollToSection(e, category.slug)}
                   className="px-3 py-2 text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors text-center"
                 >
                   {category.name}
@@ -187,7 +217,9 @@ export default function Header() {
 
               {/* Diplomacy - only visible on lg+ */}
               <Link
-                href={`/category/${lgOnlyCategory.slug}`}
+                href={`/#${lgOnlyCategory.slug}`}
+                scroll={false}
+                onClick={(e) => scrollToSection(e, lgOnlyCategory.slug)}
                 className="hidden lg:block px-3 py-2 text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors text-center"
               >
                 {lgOnlyCategory.name}
@@ -214,7 +246,9 @@ export default function Header() {
                   <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-[#e5e5e5] shadow-lg py-2 z-50">
                     {/* Diplomacy - only in dropdown below lg */}
                     <Link
-                      href={`/category/${lgOnlyCategory.slug}`}
+                      href={`/#${lgOnlyCategory.slug}`}
+                      scroll={false}
+                      onClick={(e) => scrollToSection(e, lgOnlyCategory.slug)}
                       className="block lg:hidden px-4 py-2 text-sm text-[#5d5d5d] hover:text-[#212223] hover:bg-[#f5f5f5] transition-colors"
                     >
                       {lgOnlyCategory.name}
@@ -222,7 +256,9 @@ export default function Header() {
                     {moreCategories.map((category) => (
                       <Link
                         key={category.slug}
-                        href={`/category/${category.slug}`}
+                        href={`/#${category.slug}`}
+                        scroll={false}
+                        onClick={(e) => scrollToSection(e, category.slug)}
                         className="block px-4 py-2 text-sm text-[#5d5d5d] hover:text-[#212223] hover:bg-[#f5f5f5] transition-colors"
                       >
                         {category.name}
@@ -326,8 +362,12 @@ export default function Header() {
             {allCategories.map((category) => (
               <Link
                 key={category.slug}
-                href={`/category/${category.slug}`}
-                onClick={closeMobileMenu}
+                href={`/#${category.slug}`}
+                scroll={false}
+                onClick={(e) => {
+                  scrollToSection(e, category.slug);
+                  closeMobileMenu();
+                }}
                 className="block py-3 text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors"
               >
                 {category.name}

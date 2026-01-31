@@ -8,7 +8,7 @@ export default function CategorySection({ category }: CategorySectionProps) {
   return (
     <section
       id={category.slug}
-      className={`h-64 ${category.color} flex items-center justify-center`}
+      className={`h-64 ${category.color} flex items-center justify-center scroll-mt-24`}
     >
       <h2 className="text-xl font-bold text-[#212223]">{category.name}</h2>
     </section>

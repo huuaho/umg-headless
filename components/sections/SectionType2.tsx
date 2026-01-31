@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import type { SectionType2Data, SecondaryArticle } from "@/lib/dummyData";
+import FeaturedMedia from "./components/FeaturedMedia";
 
 // Title font sizes in rem (for LG+ breakpoints): 5xl, 4xl, 3xl, 2xl
 const TITLE_SIZES_REM = [3, 2.25, 1.875, 1.5] as const;
@@ -127,16 +127,9 @@ export default function SectionType2({
             <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
             <span className="text-sm text-gray-500">{featured.time}</span>
           </div>
-          {/* Image */}
+          {/* Featured Media (Gallery or Single Image) */}
           <div ref={imageRef} className="mt-4 lg:mt-0 -mx-6 lg:mx-0 lg:w-2/3 2xl:w-auto 2xl:col-span-2 2xl:mt-0">
-            <div className="relative aspect-3/2 w-full">
-              <Image
-                src={featured.image}
-                alt={featured.title}
-                fill
-                className="object-cover"
-              />
-            </div>
+            <FeaturedMedia images={featured.gallery} alt={featured.title} />
           </div>
         </article>
 

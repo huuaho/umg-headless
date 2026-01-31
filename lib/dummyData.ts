@@ -4,7 +4,7 @@ export interface FeaturedArticle {
   title: string;
   snippet: string;
   time: string;
-  gallery: string[];
+  gallery: string | string[]; // Single image or array for gallery carousel
 }
 
 export interface SecondaryArticle {
@@ -12,23 +12,17 @@ export interface SecondaryArticle {
   time: string;
 }
 
+// Both section types share the same data structure
+// The display (gallery vs single image) is determined by the gallery value
 export interface SectionType1Data {
-  category: string; // Category name displayed as section label
+  category: string;
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
 
-// Section Type 2: Single image instead of gallery
-export interface FeaturedArticleType2 {
-  title: string;
-  snippet: string;
-  time: string;
-  image: string; // Single image instead of gallery
-}
-
 export interface SectionType2Data {
   category: string;
-  featured: FeaturedArticleType2;
+  featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
 
@@ -76,15 +70,17 @@ export const sectionType2Data: SectionType2Data = {
     snippet:
       "World leaders from over 150 countries have convened in Geneva for what is being called the most significant climate conference since the Paris Agreement, with ambitious new targets expected to be announced.",
     time: "8 min read",
-    image: "https://picsum.photos/seed/type2feat/900/600",
+    gallery: "https://picsum.photos/seed/type2feat/900/600",
   },
   secondary: [
     {
-      title: "UN Secretary-General calls for immediate action on carbon emissions",
+      title:
+        "UN Secretary-General calls for immediate action on carbon emissions",
       time: "4 min read",
     },
     {
-      title: "Small island nations demand stronger commitments from industrialized countries",
+      title:
+        "Small island nations demand stronger commitments from industrialized countries",
       time: "5 min read",
     },
     {
@@ -92,7 +88,8 @@ export const sectionType2Data: SectionType2Data = {
       time: "3 min read",
     },
     {
-      title: "Youth activists stage peaceful demonstration outside conference venue",
+      title:
+        "Youth activists stage peaceful demonstration outside conference venue",
       time: "2 min read",
     },
   ],

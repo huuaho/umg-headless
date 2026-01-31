@@ -1,88 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import type { SectionType1Data, SecondaryArticle } from "@/lib/dummyData";
+import FeaturedMedia from "./components/FeaturedMedia";
 
 // Title font sizes in rem (for 2XL breakpoint): 5xl, 4xl, 3xl, 2xl
 const TITLE_SIZES_REM = [3, 2.25, 1.875, 1.5] as const;
 const XXL_BREAKPOINT = 1536;
-
-function Gallery({ images }: { images: string[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  return (
-    <div>
-      {/* Image */}
-      <div className="relative aspect-3/2 w-full">
-        <Image
-          src={images[currentIndex]}
-          alt="Gallery image"
-          fill
-          className="object-cover"
-        />
-      </div>
-      {/* Bottom bar: pagination left, arrows right */}
-      <div className="flex items-center justify-between py-2 px-6 lg:px-0">
-        {/* Pagination tracker */}
-        <span className="text-sm text-gray-500">
-          [{currentIndex + 1}/{images.length}]
-        </span>
-        {/* Navigation arrows */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={goToPrevious}
-            className="p-1 text-gray-600 hover:text-black transition-colors"
-            aria-label="Previous image"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={goToNext}
-            className="p-1 text-gray-600 hover:text-black transition-colors"
-            aria-label="Next image"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
   return (
@@ -204,9 +128,9 @@ export default function SectionType1({
               <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
               <span className="text-sm text-gray-500">{featured.time}</span>
             </div>
-            {/* Gallery */}
+            {/* Featured Media (Gallery or Single Image) */}
             <div ref={galleryRef} className="mt-4 2xl:mt-0 -mx-6 lg:mx-0 2xl:w-2/3">
-              <Gallery images={featured.gallery} />
+              <FeaturedMedia images={featured.gallery} alt={featured.title} />
             </div>
           </article>
         </div>

@@ -12,21 +12,15 @@ export interface SecondaryArticle {
   time: string;
 }
 
-// Both section types share the same data structure
+// All section types share the same data structure
 // The display (gallery vs single image) is determined by the gallery value
-export interface SectionType1Data {
+export interface SectionData {
   category: string;
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
 
-export interface SectionType2Data {
-  category: string;
-  featured: FeaturedArticle;
-  secondary: SecondaryArticle[];
-}
-
-export const sectionType1Data: SectionType1Data = {
+export const sectionType1Data: SectionData = {
   category: "United States",
   featured: {
     title: "Thousands demonstrate in Minnesota and across US to protest ICE",
@@ -63,7 +57,7 @@ export const sectionType1Data: SectionType1Data = {
   ],
 };
 
-export const sectionType2Data: SectionType2Data = {
+export const sectionType2Data: SectionData = {
   category: "Profiles & Opinions",
   featured: {
     title: "Global leaders gather for historic climate summit in Geneva",

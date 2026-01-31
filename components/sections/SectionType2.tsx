@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
-import type { SectionType2Data, SecondaryArticle } from "@/lib/dummyData";
+import type { SectionData, SecondaryArticle } from "@/lib/dummyData";
 import FeaturedMedia from "./components/FeaturedMedia";
 
 // Title font sizes in rem (for LG+ breakpoints): 5xl, 4xl, 3xl, 2xl
@@ -19,7 +19,7 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
   );
 }
 
-interface SectionType2Props extends SectionType2Data {
+interface SectionType2Props extends SectionData {
   slug: string;
 }
 

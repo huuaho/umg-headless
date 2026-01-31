@@ -10,7 +10,8 @@ A news section featuring 5 articles: 1 featured (main) article and 4 secondary a
 
 | File | Description |
 |------|-------------|
-| `components/sections/SectionType1.tsx` | Main component with Gallery and SecondaryArticleCard sub-components |
+| `components/sections/SectionType1.tsx` | Main component with SecondaryArticleCard sub-component |
+| `components/sections/components/FeaturedMedia.tsx` | Shared media component (handles single image or gallery carousel) |
 | `lib/dummyData.ts` | TypeScript interfaces and mock data |
 
 ---
@@ -24,7 +25,7 @@ export interface FeaturedArticle {
   title: string;
   snippet: string;
   time: string;
-  gallery: string[];
+  gallery: string | string[]; // Single image or array for gallery carousel
 }
 
 export interface SecondaryArticle {
@@ -32,15 +33,16 @@ export interface SecondaryArticle {
   time: string;
 }
 
-export interface SectionType1Data {
-  category: string; // Category name displayed as section label
+// All section types share the same data structure
+export interface SectionData {
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
 
-// Component props extend the data interface with a slug for anchor navigation
-interface SectionType1Props extends SectionType1Data {
+// Component props - category is passed separately from page
+interface SectionType1Props extends SectionData {
   slug: string;
+  category: string;
 }
 ```
 
@@ -53,7 +55,7 @@ interface SectionType1Props extends SectionType1Data {
 - **Title**: Large headline (responsive sizing: 2xl → 3xl → 4xl → 5xl)
 - **Snippet**: Brief excerpt from the article
 - **Time**: Reading time (e.g., "7 min read")
-- **Gallery**: Image carousel with navigation arrows (aspect ratio 3:2)
+- **Gallery**: Image carousel via FeaturedMedia component with navigation arrows (aspect ratio 3:2)
 
 ### Secondary Articles (x4)
 - **Title**: Headline only
@@ -69,14 +71,15 @@ interface SectionType1Props extends SectionType1Data {
 - Uses `scroll-mt-24` to account for sticky header when scrolling
 - Section-level bottom border (`border-b border-gray-300`) for consistent separation
 
-### Gallery (Internal Component)
-- Client component using `useState` for image index tracking
-- Displays images at 3:2 aspect ratio using Next.js `Image` with `fill` and `object-cover`
-- Navigation: Previous/Next arrow buttons with wrap-around behavior
-- Pagination tracker shows `[currentIndex/total]` format
-- Bottom bar layout: pagination left, arrows right
-- On SM/MD: Gallery bleeds to full viewport width (`-mx-6`), controls have `px-6` padding
-- On LG+: Gallery constrained to container (`lg:mx-0`), controls have no padding (`lg:px-0`)
+### FeaturedMedia (Shared Component)
+- Located at `components/sections/components/FeaturedMedia.tsx`
+- Accepts `images` prop (string or string array) and `alt` text
+- Renders single image when given a string or single-item array
+- Renders gallery carousel when given array with 2+ images
+- Gallery features: Previous/Next arrow buttons with wrap-around, pagination tracker `[currentIndex/total]`
+- Images displayed at 3:2 aspect ratio using Next.js `Image` with `fill` and `object-cover`
+- On SM/MD: Bleeds to full viewport width (`-mx-6`), controls have `px-6` padding
+- On LG+: Constrained to container (`lg:mx-0`), controls have no padding (`lg:px-0`)
 
 ### SecondaryArticleCard (Internal Component)
 - Simple card displaying title and time
@@ -290,7 +293,6 @@ import { sectionType1Data } from "@/lib/dummyData";
 
 ```json
 {
-  "category": "United States",
   "featured": {
     "title": "Thousands demonstrate in Minnesota and across US to protest ICE",
     "snippet": "Thousands of protesters took to the streets in Minneapolis and students across the United States staged walkouts on Friday to demand the withdrawal of federal immigration agents from Minnesota following the fatal shootings of two U.S. citizens.",

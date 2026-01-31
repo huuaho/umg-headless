@@ -226,7 +226,7 @@ export default function Header() {
                 </button>
 
                 {moreOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-[#e5e5e5] shadow-lg py-2">
+                  <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-[#e5e5e5] shadow-lg py-2 z-50">
                     {/* Diplomacy - only in dropdown below lg */}
                     <Link
                       href={`/category/${lgOnlyCategory.slug}`}

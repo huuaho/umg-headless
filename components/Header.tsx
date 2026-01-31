@@ -281,18 +281,22 @@ export default function Header() {
       </div>
 
       {/* Banner - Below main header */}
-      <div className="border-t border-[#e5e5e5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-10">
-            <div className="flex-1 text-center">
-              <span className="text-xs font-bold text-[#212223]">[LOGO #1]</span>
-            </div>
-            <div className="flex-1 text-center">
-              <span className="text-xs font-bold text-[#212223]">[LOGO #2]</span>
-            </div>
-            <div className="flex-1 text-center">
-              <span className="text-xs font-bold text-[#212223]">[LOGO #3]</span>
-            </div>
+      <div className="border-t border-[#e5e5e5] overflow-hidden">
+        <div className="h-10 flex items-center">
+          <div className="animate-marquee flex shrink-0">
+            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
+            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
+            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
+            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
+            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
+            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
+            {/* Duplicate for seamless loop */}
+            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
+            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
+            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
+            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
+            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
+            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
           </div>
         </div>
       </div>

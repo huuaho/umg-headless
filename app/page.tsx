@@ -12,6 +12,7 @@ export default function Home() {
           return (
             <SectionType1
               key={category.slug}
+              slug={category.slug}
               category={category.name}
               featured={sectionType1Data.featured}
               secondary={sectionType1Data.secondary}

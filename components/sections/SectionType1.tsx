@@ -91,13 +91,18 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
   );
 }
 
+interface SectionType1Props extends SectionType1Data {
+  slug: string;
+}
+
 export default function SectionType1({
+  slug,
   category,
   featured,
   secondary,
-}: SectionType1Data) {
+}: SectionType1Props) {
   return (
-    <section className="py-6">
+    <section id={slug} className="py-6 scroll-mt-24">
       {/* Category Label */}
       <div className="mb-4">
         <a
@@ -108,38 +113,59 @@ export default function SectionType1({
         </a>
       </div>
 
-      {/* Featured Article */}
-      <article className="mb-6">
-        <h2 className="text-2xl font-bold leading-tight mb-3">
-          {featured.title}
-        </h2>
-        <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
-        <span className="text-sm text-gray-500">{featured.time}</span>
-        <div className="mt-4 -mx-4 lg:mx-0">
-          <Gallery images={featured.gallery} />
-        </div>
-      </article>
-
-      {/* Secondary Articles
-          SM: 3 rows (1, 1, 2 columns) - horizontal borders, top/bottom border
-          MD: 2x2 grid - no top border, no vertical borders, horizontal border between rows + bottom border
+      {/* Main content wrapper
+          SM/MD: stacked vertically
+          LG: 2/3 featured | 1/3 secondary side by side
+          2XL: stacked (featured with gallery side-by-side, then secondary in 4 cols)
       */}
-      <div className="border-t md:border-t-0 border-b border-gray-200 grid grid-cols-2">
-        {/* Article 1 */}
-        <div className="col-span-2 md:col-span-1 border-b border-gray-200 md:pr-4">
-          <SecondaryArticleCard article={secondary[0]} />
+      <div className="lg:flex lg:gap-8 2xl:block">
+        {/* Featured Article Column */}
+        <div className="lg:w-2/3 2xl:w-full">
+          {/* Featured Article
+              SM/MD/LG: title, snippet, time stacked, then gallery below
+              2XL: 1/3 text | 2/3 gallery side by side
+          */}
+          <article className="mb-6 lg:mb-0 2xl:mb-6 2xl:flex 2xl:gap-8">
+            {/* Text content */}
+            <div className="2xl:w-1/3">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-bold leading-tight mb-3">
+                {featured.title}
+              </h2>
+              <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
+              <span className="text-sm text-gray-500">{featured.time}</span>
+            </div>
+            {/* Gallery */}
+            <div className="mt-4 2xl:mt-0 -mx-4 lg:mx-0 2xl:w-2/3">
+              <Gallery images={featured.gallery} />
+            </div>
+          </article>
         </div>
-        {/* Article 2 */}
-        <div className="col-span-2 md:col-span-1 border-b border-gray-200 md:pl-4">
-          <SecondaryArticleCard article={secondary[1]} />
-        </div>
-        {/* Article 3 */}
-        <div className="col-span-1 pr-2 md:pr-4">
-          <SecondaryArticleCard article={secondary[2]} />
-        </div>
-        {/* Article 4 */}
-        <div className="col-span-1 pl-2 md:pl-4">
-          <SecondaryArticleCard article={secondary[3]} />
+
+        {/* Secondary Articles Column
+            SM: 3 rows (1, 1, 2 columns)
+            MD: 2x2 grid
+            LG: 1/3 width, stacked vertically
+            2XL: 4 equal columns below featured
+        */}
+        <div className="lg:w-1/3 2xl:w-full">
+          <div className="border-t md:border-t-0 lg:border-t-0 2xl:border-t-0 border-b lg:border-b-0 2xl:border-b border-gray-200 grid grid-cols-2 lg:grid-cols-1 2xl:grid-cols-4">
+            {/* Article 1 */}
+            <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-200 md:pr-4 lg:pr-0 2xl:pr-4">
+              <SecondaryArticleCard article={secondary[0]} />
+            </div>
+            {/* Article 2 */}
+            <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-200 md:pl-4 lg:pl-0 2xl:pl-4 2xl:pr-4">
+              <SecondaryArticleCard article={secondary[1]} />
+            </div>
+            {/* Article 3 */}
+            <div className="col-span-1 lg:col-span-1 2xl:col-span-1 pr-2 md:pr-4 lg:pr-0 2xl:pr-4 2xl:pl-4 lg:border-b 2xl:border-b-0 border-gray-200">
+              <SecondaryArticleCard article={secondary[2]} />
+            </div>
+            {/* Article 4 */}
+            <div className="col-span-1 lg:col-span-1 2xl:col-span-1 pl-2 md:pl-4 lg:pl-0 2xl:pl-4">
+              <SecondaryArticleCard article={secondary[3]} />
+            </div>
+          </div>
         </div>
       </div>
     </section>

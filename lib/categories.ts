@@ -22,3 +22,11 @@ export const mainCategories = categories.slice(0, 3);
 export const lgOnlyCategory = categories[3]; // Diplomacy
 export const moreCategories = categories.slice(4);
 export const allCategories = categories;
+
+// Footer navigation - alphabetically sorted and split into two columns
+export const sortedCategories = [...categories].sort((a, b) =>
+  a.name.localeCompare(b.name)
+);
+const midpoint = Math.ceil(sortedCategories.length / 2);
+export const leftCategories = sortedCategories.slice(0, midpoint);
+export const rightCategories = sortedCategories.slice(midpoint);

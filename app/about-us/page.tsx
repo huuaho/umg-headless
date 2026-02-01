@@ -43,7 +43,7 @@ export default function AboutUsPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="max-w-325 mx-auto px-6 py-12 md:py-16">
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h1 className="text-3xl md:text-4xl font-bold text-center text-[#212223] mb-6">
           About Us
         </h1>
@@ -60,7 +60,7 @@ export default function AboutUsPage() {
 
       {/* Mission & Vision Section */}
       <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-325 mx-auto px-6 py-12 md:py-16">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div>
               <h2 className="text-2xl font-bold text-[#212223] mb-4">
@@ -90,7 +90,7 @@ export default function AboutUsPage() {
       </section>
 
       {/* Our Network Section */}
-      <section className="max-w-325 mx-auto px-6 py-12 md:py-16">
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
           Our Network of Media Companies
         </h2>
@@ -123,7 +123,7 @@ export default function AboutUsPage() {
 
       {/* Content & Readership Section */}
       <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-325 mx-auto px-6 py-12 md:py-16">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div>
               <h2 className="text-2xl font-bold text-[#212223] mb-4">
@@ -166,7 +166,7 @@ export default function AboutUsPage() {
       </section>
 
       {/* Our Values Section */}
-      <section className="max-w-325 mx-auto px-6 py-12 md:py-16">
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
           Our Values
         </h2>
@@ -187,7 +187,7 @@ export default function AboutUsPage() {
 
       {/* Partnerships Section */}
       <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-325 mx-auto px-6 py-12 md:py-16">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
           <div className="max-w-xl mx-auto">
             <h2 className="text-2xl font-bold text-[#212223] mb-4">
               Our Partnerships
@@ -215,7 +215,7 @@ export default function AboutUsPage() {
       </section>
 
       {/* Leadership Section */}
-      <section className="max-w-325 mx-auto px-6 py-12 md:py-16">
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
           <div>
             <h2 className="text-2xl font-bold text-[#212223] mb-4">
@@ -242,7 +242,7 @@ export default function AboutUsPage() {
 
       {/* Contact CTA Section */}
       <section className="bg-[#212223] text-white">
-        <div className="max-w-325 mx-auto px-6 py-12 md:py-16 text-center">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Contact Us</h2>
           <p className="text-gray-300 mb-6">
             We welcome you to connect with us.

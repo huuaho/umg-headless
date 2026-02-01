@@ -29,3 +29,8 @@ body {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Remove bottom border from last section to avoid clash with footer's top border */
+main > section:last-of-type {
+  border-bottom: none;
+}

@@ -157,7 +157,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-300">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-325 mx-auto px-6">
         <div className="flex items-center h-14">
           {/* Logo area - left blank for future icon */}
           <div className="shrink-0 w-35">

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "United Media Group",
-  description: "News aggregator from Diplomatic Watch, Echo Media, and International Spectrum",
+  description: "News aggregator for Diplomatic Watch, Echo Media, and International Spectrum",
 };
 
 export default function RootLayout({

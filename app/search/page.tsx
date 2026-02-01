@@ -1,9 +1,16 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
 import { searchArticles, type ApiArticle } from "@/lib/api";
+
+// Decode HTML entities like &amp; -> &
+function decodeHtmlEntities(text: string): string {
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = text;
+  return textarea.value;
+}
 
 interface SearchResultCardProps {
   article: ApiArticle;
@@ -32,7 +39,7 @@ function SearchResultCard({ article }: SearchResultCardProps) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
-            {article.category && <span>{article.category}</span>}
+            {article.category && <span>{decodeHtmlEntities(article.category)}</span>}
             {article.category && article.source_label && <span>·</span>}
             {article.source_label && <span>{article.source_label}</span>}
           </div>
@@ -77,6 +84,54 @@ function SearchResultsSkeleton() {
         </div>
       ))}
     </div>
+  );
+}
+
+function SearchBar({ initialQuery }: { initialQuery: string }) {
+  const [searchInput, setSearchInput] = useState(initialQuery);
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      router.push(`/search?search=${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mb-8">
+      <div className="flex">
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Search articles..."
+          className="flex-1 h-12 px-5 text-lg border border-gray-300 border-r-0 text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
+          autoFocus
+        />
+        <button
+          type="submit"
+          className="h-12 px-6 bg-[#8b8b8b] hover:bg-[#6b6b6b] transition-colors"
+          aria-label="Search"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-6 h-6 text-white"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -136,6 +191,8 @@ function SearchContent() {
   return (
     <main className="min-h-screen bg-white max-w-325 mx-auto px-6 py-8">
       <div className="max-w-3xl mx-auto">
+        <SearchBar initialQuery={query} />
+
         {query ? (
           <>
             <h1 className="text-2xl font-bold mb-2">
@@ -143,7 +200,7 @@ function SearchContent() {
             </h1>
             {!isLoading && !error && (
               <p className="text-sm text-gray-500 mb-6">
-                {total} {total === 1 ? "result" : "results"} found
+                Showing {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} of {total} {total === 1 ? "result" : "results"}
               </p>
             )}
           </>

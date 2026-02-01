@@ -94,6 +94,7 @@ export default function Header() {
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const isSearchPage = pathname === "/search";
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -167,8 +168,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop: Search Expanded State */}
-          {searchOpen && (
+          {/* Desktop: Search Expanded State (hidden on search page) */}
+          {searchOpen && !isSearchPage && (
             <div className="hidden md:flex flex-1 items-center justify-end">
               <form
                 onSubmit={handleSearchSubmit}
@@ -270,8 +271,8 @@ export default function Header() {
             </nav>
           )}
 
-          {/* Desktop: Right side - Search icon (hidden when search is open) */}
-          {!searchOpen && (
+          {/* Desktop: Right side - Search icon (hidden when search is open or on search page) */}
+          {!searchOpen && !isSearchPage && (
             <div className="hidden md:flex items-center justify-end w-35">
               <button
                 onClick={() => setSearchOpen(true)}
@@ -327,33 +328,35 @@ export default function Header() {
       {/* Mobile Menu - Full Screen Below Header + Banner */}
       {mobileMenuOpen && (
         <div className="fixed inset-x-0 bottom-0 z-50 bg-white md:hidden overflow-y-auto border-t border-gray-300 pt-4" style={{ top: '6rem' }}>
-          {/* Mobile Search */}
-          <div className="px-4 pt-4 pb-8 flex justify-center">
-            <form
-              onSubmit={handleMobileSearchSubmit}
-              className="flex"
-              style={{ width: "75%" }}
-            >
-              <input
-                ref={mobileSearchInputRef}
-                type="text"
-                value={mobileSearchQuery}
-                onChange={(e) => setMobileSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="flex-1 h-10 px-4 border border-gray-300 text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
-              />
-              <button
-                type="submit"
-                className="h-10 px-4 bg-[#8b8b8b] hover:bg-[#6b6b6b] transition-colors"
-                aria-label="Submit search"
+          {/* Mobile Search (hidden on search page) */}
+          {!isSearchPage && (
+            <div className="px-4 pt-4 pb-8 flex justify-center">
+              <form
+                onSubmit={handleMobileSearchSubmit}
+                className="flex"
+                style={{ width: "75%" }}
               >
-                <SearchIcon className="w-5 h-5 text-white" />
-              </button>
-            </form>
-          </div>
+                <input
+                  ref={mobileSearchInputRef}
+                  type="text"
+                  value={mobileSearchQuery}
+                  onChange={(e) => setMobileSearchQuery(e.target.value)}
+                  placeholder="Search..."
+                  className="flex-1 h-10 px-4 border border-gray-300 text-[#212223] placeholder-[#5d5d5d] focus:outline-none focus:border-[#404040]"
+                />
+                <button
+                  type="submit"
+                  className="h-10 px-4 bg-[#8b8b8b] hover:bg-[#6b6b6b] transition-colors"
+                  aria-label="Submit search"
+                >
+                  <SearchIcon className="w-5 h-5 text-white" />
+                </button>
+              </form>
+            </div>
+          )}
 
           {/* Categories Header */}
-          <div className="px-4 pt-8 pb-3 border-t border-gray-300">
+          <div className={`px-4 pb-3 ${isSearchPage ? "pt-0" : "pt-8 border-t border-gray-300"}`}>
             <h2 className="text-xs font-bold text-[#404040] uppercase tracking-wider">
               Categories
             </h2>

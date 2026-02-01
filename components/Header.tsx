@@ -159,13 +159,17 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-300">
       <div className="max-w-325 mx-auto px-6">
         <div className="flex items-center h-14">
-          {/* Logo area - left blank for future icon */}
-          <div className="shrink-0 w-35">
+          {/* Logo */}
+          <div className="shrink-0">
             <Link
               href="/"
-              className="block text-sm pl-2 font-bold text-[#212223] hover:opacity-80 transition-opacity"
+              className="block hover:opacity-80 transition-opacity"
             >
-              [LOGO]
+              <img
+                src="https://www.unitedmediadc.com/wp-content/uploads/2025/12/UMG-Masthead.svg"
+                alt="United Media Group"
+                className="h-8 w-auto"
+              />
             </Link>
           </div>
 
@@ -385,6 +389,17 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+
+          {/* About Us Link */}
+          <div className="px-4 pt-6 pb-4 border-t border-gray-300 mt-4">
+            <Link
+              href="/about-us"
+              onClick={closeMobileMenu}
+              className="block text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors"
+            >
+              About Us
+            </Link>
+          </div>
         </div>
       )}
     </header>

@@ -18,8 +18,8 @@ export const categories: Category[] = [
 ];
 
 // Header navigation splits
-export const mainCategories = categories.slice(0, 3);
-export const lgOnlyCategory = categories[3]; // Diplomacy
+export const mainCategories = categories.slice(0, 2); // Always visible on MD+
+export const lgOnlyCategories = categories.slice(2, 4); // Economy & Business, Diplomacy - visible on LG+
 export const moreCategories = categories.slice(4);
 export const allCategories = categories;
 

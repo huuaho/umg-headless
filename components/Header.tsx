@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   mainCategories,
-  lgOnlyCategory,
+  lgOnlyCategories,
   moreCategories,
   allCategories,
 } from "@/lib/categories";
@@ -224,15 +224,18 @@ export default function Header() {
                 </Link>
               ))}
 
-              {/* Diplomacy - only visible on lg+ */}
-              <Link
-                href={`/#${lgOnlyCategory.slug}`}
-                scroll={false}
-                onClick={(e) => scrollToSection(e, lgOnlyCategory.slug)}
-                className="hidden lg:block px-3 py-2 text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors text-center"
-              >
-                {lgOnlyCategory.name}
-              </Link>
+              {/* Categories only visible on lg+ */}
+              {lgOnlyCategories.map((category) => (
+                <Link
+                  key={category.slug}
+                  href={`/#${category.slug}`}
+                  scroll={false}
+                  onClick={(e) => scrollToSection(e, category.slug)}
+                  className="hidden lg:block px-3 py-2 text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors text-center"
+                >
+                  {category.name}
+                </Link>
+              ))}
 
               {/* More Dropdown */}
               <div className="relative">
@@ -253,15 +256,18 @@ export default function Header() {
 
                 {moreOpen && (
                   <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-gray-300 shadow-lg py-2 z-50">
-                    {/* Diplomacy - only in dropdown below lg */}
-                    <Link
-                      href={`/#${lgOnlyCategory.slug}`}
-                      scroll={false}
-                      onClick={(e) => scrollToSection(e, lgOnlyCategory.slug)}
-                      className="block lg:hidden px-4 py-2 text-sm text-[#5d5d5d] hover:text-[#212223] hover:bg-[#f5f5f5] transition-colors"
-                    >
-                      {lgOnlyCategory.name}
-                    </Link>
+                    {/* LG-only categories - shown in dropdown below lg */}
+                    {lgOnlyCategories.map((category) => (
+                      <Link
+                        key={category.slug}
+                        href={`/#${category.slug}`}
+                        scroll={false}
+                        onClick={(e) => scrollToSection(e, category.slug)}
+                        className="block lg:hidden px-4 py-2 text-sm text-[#5d5d5d] hover:text-[#212223] hover:bg-[#f5f5f5] transition-colors"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
                     {moreCategories.map((category) => (
                       <Link
                         key={category.slug}

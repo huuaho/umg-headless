@@ -12,7 +12,14 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
   return (
     <article className="py-3">
       <h3 className="font-semibold text-base leading-tight mb-1">
-        {article.title}
+        <a
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          {article.title}
+        </a>
       </h3>
       <span className="text-sm text-gray-500">{article.time}</span>
     </article>
@@ -123,7 +130,14 @@ export default function SectionType3({
               className="text-2xl md:text-3xl font-bold leading-tight mb-3"
               style={titleFontSize ? { fontSize: `${titleFontSize}rem` } : undefined}
             >
-              {featured.title}
+              <a
+                href={featured.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {featured.title}
+              </a>
             </h2>
             <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
             <span className="text-sm text-gray-500">{featured.time}</span>

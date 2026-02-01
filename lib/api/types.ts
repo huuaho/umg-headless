@@ -19,6 +19,7 @@ export interface ApiArticle {
   source_url: string;
   excerpt: string;
   featured_image: string | null;
+  images: string[]; // All images (featured + gallery + content images)
   author_name: string;
   category: string;
   categories: ApiCategory[];

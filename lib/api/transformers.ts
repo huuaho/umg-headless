@@ -15,6 +15,24 @@ function formatReadTime(minutes: number): string {
 }
 
 /**
+ * Get gallery images from article
+ * Returns array if multiple images, single string if one, or placeholder
+ */
+function getGalleryImages(article: ApiArticle): string | string[] {
+  // Use images array if available and has content
+  if (article.images && article.images.length > 0) {
+    // Return array for galleries, single string for single image
+    return article.images.length > 1 ? article.images : article.images[0];
+  }
+  // Fall back to featured_image
+  if (article.featured_image) {
+    return article.featured_image;
+  }
+  // Last resort placeholder
+  return "/placeholder.jpg";
+}
+
+/**
  * Transform API article to featured article format
  */
 export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
@@ -22,7 +40,8 @@ export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
     title: article.title,
     snippet: article.excerpt,
     time: formatReadTime(article.read_time_minutes),
-    gallery: article.featured_image || "/placeholder.jpg",
+    gallery: getGalleryImages(article),
+    url: article.source_url,
   };
 }
 
@@ -33,6 +52,7 @@ export function toSecondaryArticle(article: ApiArticle): SecondaryArticle {
   return {
     title: article.title,
     time: formatReadTime(article.read_time_minutes),
+    url: article.source_url,
   };
 }
 
@@ -43,10 +63,15 @@ export function toType4Article(
   article: ApiArticle,
   includeImage = true
 ): Type4Article {
+  // For Type4, use first image from array or featured_image
+  const firstImage =
+    article.images?.[0] || article.featured_image || undefined;
+
   return {
     title: article.title,
     time: formatReadTime(article.read_time_minutes),
-    image: includeImage ? article.featured_image || undefined : undefined,
+    image: includeImage ? firstImage : undefined,
+    url: article.source_url,
   };
 }
 

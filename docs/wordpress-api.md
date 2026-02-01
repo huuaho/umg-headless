@@ -44,7 +44,8 @@ interface Article {
   source_label: string;          // Human-readable source name
   source_url: string;            // Original article URL (for redirects)
   excerpt: string;               // 30-word excerpt
-  featured_image: string | null; // Image URL from source
+  featured_image: string | null; // Primary image URL from source
+  images: string[];              // All images (featured + gallery + content)
   author_name: string;           // Author display name
   category: string;              // Parent category name (for display)
   categories: Category[];        // Full category array
@@ -92,6 +93,11 @@ curl "https://yoursite.com/wp-json/um/v1/articles?source=diplomaticwatch&per_pag
       "source_url": "https://diplomaticwatch.com/global-leaders-climate-summit",
       "excerpt": "World leaders from over 150 countries have convened in Geneva for what is being called the most significant climate conference since...",
       "featured_image": "https://diplomaticwatch.com/wp-content/uploads/2025/01/summit.jpg",
+      "images": [
+        "https://diplomaticwatch.com/wp-content/uploads/2025/01/summit.jpg",
+        "https://diplomaticwatch.com/wp-content/uploads/2025/01/delegates.jpg",
+        "https://diplomaticwatch.com/wp-content/uploads/2025/01/conference-hall.jpg"
+      ],
       "author_name": "John Smith",
       "category": "World News & Politics",
       "categories": [

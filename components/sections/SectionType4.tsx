@@ -61,7 +61,14 @@ function ArticleCard({
         {/* Text content - 2/3 width on SM/MD, full width below image at LG */}
         <div className={!textOnly ? "w-2/3 lg:w-full order-1 lg:order-2" : ""}>
           <h3 className="font-semibold text-base leading-tight mb-1">
-            {article.title}
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {article.title}
+            </a>
           </h3>
           <span className="text-sm text-gray-500">{article.time}</span>
         </div>

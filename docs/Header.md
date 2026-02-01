@@ -2,54 +2,64 @@
 
 ## Overview
 
-The Header component (`components/Header.tsx`) is a responsive, sticky navigation bar inspired by Reuters' design. It includes category navigation, search functionality, a mobile menu, and a scrolling logo banner.
+The Header component (`components/Header.tsx`) is a responsive, sticky navigation bar inspired by Reuters' design. It includes category navigation, search functionality, a mobile menu, and a scrolling logo banner featuring subsidiary media companies.
 
 ## Features
 
 ### 1. Sticky Header
 - Fixed to top of viewport with `sticky top-0 z-50`
-- White background with bottom border
-- Max width of 1440px, centered
+- White background with bottom border (`border-gray-300`)
+- Max width of `max-w-325` (custom utility), centered
 
-### 2. Category Navigation
+### 2. Logo
+- UMG masthead logo (SVG from WordPress media library)
+- Centered on mobile, left-aligned on desktop
+- Links to homepage
+
+### 3. Category Navigation
 - Links to homepage sections via hash navigation (`/#slug`)
 - Smooth scrolling behavior (see [Smooth Scrolling](#smooth-scrolling) section)
 - Responsive visibility:
-  - **md+ (768px+)**: Shows main categories + "More" dropdown
-  - **lg+ (1024px+)**: Additionally shows "Diplomacy" in main nav
+  - **md+ (768px+)**: Shows main categories (first 2) + "More" dropdown
+  - **lg+ (1024px+)**: Additionally shows "Economy & Business" and "Diplomacy" in main nav
   - **Below md**: Hidden (uses mobile menu instead)
 
-### 3. Search
-- Desktop: Expandable search bar (click icon to expand)
+### 4. Search
+- **Desktop**: Expandable search bar (click icon to expand)
   - Takes 50% width, right-aligned
   - Includes submit button and close button
   - Auto-focuses input when opened
-- Mobile: Search bar in mobile menu (75% width, centered)
+  - Submits to `/search?search={query}` page
+  - Hidden when on search page (search bar is on that page)
+- **Mobile**: Search bar in mobile menu (75% width, centered)
+  - Also hidden when on search page
 
-### 4. Mobile Menu
+### 5. Mobile Menu
 - Full-screen overlay below header + banner
 - Hamburger/close toggle button
 - Contains:
-  - Search bar at top
+  - Search bar at top (hidden on search page)
   - "Categories" header
-  - Two-column grid of all category links
+  - Two-column grid of all 8 category links
+  - "About Us" link at bottom
 
-### 5. Logo Banner
+### 6. Logo Banner
 - Positioned below main header, separated by border
 - Scrolling marquee animation (20s loop)
 - Pauses on hover
-- Contains logos linking to subsidiary sites:
-  - Echo Media (https://www.echo-media.info/)
-  - International Spectrum (https://www.internationalspectrum.org/)
-  - Diplomatic Watch (https://diplomaticwatch.com/)
+- Contains logos linking to subsidiary sites (from `lib/mediaCompanies.ts`):
+  - Echo Media
+  - International Spectrum Media
+  - Diplomatic Watch Magazine
+- Logos repeated 4x for seamless infinite loop
 
 ## Responsive Breakpoints
 
 | Breakpoint | Width | Behavior |
 |------------|-------|----------|
-| Default | < 768px | Mobile menu, hamburger icon |
-| md | 768px+ | Desktop nav, search icon, hide hamburger |
-| lg | 1024px+ | Show "Diplomacy" in main nav (not just dropdown) |
+| Default | < 768px | Mobile menu, hamburger icon, centered logo |
+| md | 768px+ | Desktop nav, search icon, left-aligned logo |
+| lg | 1024px+ | Show "Economy & Business" and "Diplomacy" in main nav |
 
 ## Categories Configuration
 
@@ -74,10 +84,39 @@ export const categories: Category[] = [
 ];
 
 // Header navigation splits
-export const mainCategories = categories.slice(0, 3);  // First 3 always visible
-export const lgOnlyCategory = categories[3];           // Diplomacy (lg+ only)
-export const moreCategories = categories.slice(4);     // Rest in "More" dropdown
-export const allCategories = categories;               // All for mobile menu
+export const mainCategories = categories.slice(0, 2);      // Always visible on MD+
+export const lgOnlyCategories = categories.slice(2, 4);    // Economy & Business, Diplomacy (LG+ only)
+export const moreCategories = categories.slice(4);         // Rest in "More" dropdown
+export const allCategories = categories;                   // All for mobile menu
+
+// Footer navigation - alphabetically sorted
+export const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+export const leftCategories = sortedCategories.slice(0, midpoint);
+export const rightCategories = sortedCategories.slice(midpoint);
+```
+
+## Media Companies Configuration
+
+Banner logos are defined in `lib/mediaCompanies.ts`:
+
+```typescript
+export interface MediaCompany {
+  name: string;
+  description: string;
+  url: string;
+  logo: string;      // Color logo for banner
+  logoBW: string;    // Black/white logo for footer
+}
+
+export const mediaCompanies: MediaCompany[] = [
+  {
+    name: "Echo Media",
+    url: "https://www.echo-media.info/",
+    logo: "https://www.unitedmediadc.com/wp-content/uploads/...",
+    // ...
+  },
+  // ... International Spectrum, Diplomatic Watch
+];
 ```
 
 ## Smooth Scrolling
@@ -132,29 +171,50 @@ All category links use `scroll={false}` to prevent Next.js from jumping to hash:
 ### Scroll Offset
 Category sections use `scroll-mt-24` class to account for sticky header height.
 
+## Search Integration
+
+The header integrates with the `/search` page:
+
+```typescript
+const handleSearchSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  if (searchQuery.trim()) {
+    router.push(`/search?search=${encodeURIComponent(searchQuery.trim())}`);
+    closeSearch();
+  }
+};
+```
+
+When on the search page (`isSearchPage = pathname === "/search"`):
+- Desktop search icon is hidden
+- Desktop expanded search is hidden
+- Mobile search bar in menu is hidden
+
 ## Component Structure
 
 ```
 Header
 ├── Main Header (h-14)
-│   ├── Logo (w-35, left)
+│   ├── Mobile Left Spacer (w-8, balances hamburger for centered logo)
+│   ├── Logo (centered mobile, left desktop)
 │   ├── Desktop Navigation (md+, centered)
-│   │   ├── Main Categories (3 links)
-│   │   ├── Diplomacy (lg+ only)
+│   │   ├── Main Categories (2 links)
+│   │   ├── LG-Only Categories (lg+, 2 links)
 │   │   └── More Dropdown
-│   │       ├── Diplomacy (below lg)
-│   │       └── Remaining Categories
-│   ├── Desktop Search Icon (md+, w-35, right)
+│   │       ├── LG-Only Categories (below lg)
+│   │       └── Remaining Categories (4 links)
+│   ├── Desktop Search Icon (md+, right)
 │   ├── Desktop Search Expanded (replaces nav when open)
 │   └── Mobile Hamburger (below md)
 │
 ├── Logo Banner (h-10)
-│   └── Marquee Scrolling Logos
+│   └── Marquee Scrolling Logos (4x repeat)
 │
 └── Mobile Menu (full screen overlay, below md)
-    ├── Search Bar
+    ├── Search Bar (hidden on search page)
     ├── Categories Header
-    └── Two-Column Category Grid
+    ├── Two-Column Category Grid (8 links)
+    └── About Us Link
 ```
 
 ## Styling Notes
@@ -163,7 +223,7 @@ Header
 - Text primary: `#212223`
 - Text secondary: `#404040`
 - Text muted: `#5d5d5d`
-- Border: `gray-300` (Tailwind class, consistent with section component borders)
+- Border: `border-gray-300` (consistent with all components)
 - Search button: `#8b8b8b` (hover: `#6b6b6b`)
 
 ### Z-Index Layers
@@ -174,8 +234,10 @@ Header
 ## Dependencies
 
 - `next/link` - Client-side navigation
-- `next/navigation` - `usePathname` hook
+- `next/navigation` - `usePathname`, `useRouter` hooks
 - React hooks: `useState`, `useRef`, `useEffect`
+- `lib/categories.ts` - Category configuration
+- `lib/mediaCompanies.ts` - Media company logos and URLs
 
 ## Files
 
@@ -183,4 +245,5 @@ Header
 |------|---------|
 | `components/Header.tsx` | Main header component |
 | `lib/categories.ts` | Shared category configuration |
+| `lib/mediaCompanies.ts` | Media company data for banner |
 | `app/globals.css` | Marquee animation, smooth scroll CSS |

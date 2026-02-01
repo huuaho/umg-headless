@@ -159,8 +159,11 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-300">
       <div className="max-w-325 mx-auto px-6">
         <div className="flex items-center h-14">
-          {/* Logo */}
-          <div className="shrink-0">
+          {/* Mobile: Left spacer to balance hamburger button for centering logo */}
+          <div className="w-8 md:hidden" />
+
+          {/* Logo - centered on mobile, left-aligned on desktop */}
+          <div className="shrink-0 md:shrink flex-1 md:flex-none flex justify-center md:justify-start">
             <Link
               href="/"
               className="block hover:opacity-80 transition-opacity"
@@ -289,8 +292,6 @@ export default function Header() {
             </div>
           )}
 
-          {/* Mobile: Spacer */}
-          <div className="flex-1 md:hidden" />
 
           {/* Mobile: Hamburger/Close menu button - always visible on mobile */}
           <button

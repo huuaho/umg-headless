@@ -14,7 +14,7 @@ export default function Footer() {
               className="hover:opacity-80 transition-opacity"
             >
               <img
-                src="https://www.unitedmediadc.com/wp-content/uploads/2026/01/UMG-Masthead-Black.svg"
+                src="https://api.unitedmediadc.com/wp-content/uploads/2026/01/UMG-Masthead-Black.svg"
                 alt="United Media Group"
                 className="h-12 w-auto"
               />

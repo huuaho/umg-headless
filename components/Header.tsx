@@ -169,7 +169,7 @@ export default function Header() {
               className="block hover:opacity-80 transition-opacity"
             >
               <img
-                src="https://www.unitedmediadc.com/wp-content/uploads/2025/12/UMG-Masthead.svg"
+                src="https://api.unitedmediadc.com/wp-content/uploads/2025/12/UMG-Masthead.svg"
                 alt="United Media Group"
                 className="h-8 w-auto"
               />

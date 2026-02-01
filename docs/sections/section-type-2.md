@@ -26,11 +26,13 @@ export interface FeaturedArticle {
   snippet: string;
   time: string;
   gallery: string | string[]; // Single image or array for gallery carousel
+  url: string; // Link to original source
 }
 
 export interface SecondaryArticle {
   title: string;
   time: string;
+  url: string; // Link to original source
 }
 
 // All section types share the same data structure
@@ -304,24 +306,29 @@ import { sectionType2Data } from "@/lib/dummyData";
     "title": "Global leaders gather for historic climate summit in Geneva",
     "snippet": "World leaders from over 150 countries have convened in Geneva for what is being called the most significant climate conference since the Paris Agreement, with ambitious new targets expected to be announced.",
     "time": "8 min read",
-    "gallery": "https://picsum.photos/seed/type2feat/900/600"
+    "gallery": "https://picsum.photos/seed/type2feat/900/600",
+    "url": "#"
   },
   "secondary": [
     {
       "title": "UN Secretary-General calls for immediate action on carbon emissions",
-      "time": "4 min read"
+      "time": "4 min read",
+      "url": "#"
     },
     {
       "title": "Small island nations demand stronger commitments from industrialized countries",
-      "time": "5 min read"
+      "time": "5 min read",
+      "url": "#"
     },
     {
       "title": "Tech giants pledge billions toward renewable energy initiatives",
-      "time": "3 min read"
+      "time": "3 min read",
+      "url": "#"
     },
     {
       "title": "Youth activists stage peaceful demonstration outside conference venue",
-      "time": "2 min read"
+      "time": "2 min read",
+      "url": "#"
     }
   ]
 }

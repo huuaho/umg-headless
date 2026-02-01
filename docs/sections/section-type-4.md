@@ -24,6 +24,7 @@ export interface Type4Article {
   title: string;
   time: string;
   image?: string; // Optional - only used when textOnly is false
+  url: string; // Link to original source
 }
 
 export interface SectionType4Data {
@@ -249,22 +250,26 @@ import { sectionType4Data, sectionType4TextOnlyData } from "@/lib/dummyData";
     {
       "title": "Catherine O'Hara, star of 'Schitt's Creek' and 'Home Alone,' dead at 71",
       "time": "4 min read",
-      "image": "https://picsum.photos/seed/type4a1/900/600"
+      "image": "https://picsum.photos/seed/type4a1/900/600",
+      "url": "#"
     },
     {
       "title": "Baby long-necked dinosaurs were a 'perfect snack' for predators",
       "time": "3 min read",
-      "image": "https://picsum.photos/seed/type4a2/900/600"
+      "image": "https://picsum.photos/seed/type4a2/900/600",
+      "url": "#"
     },
     {
       "title": "Survival showdown in 'Send Help' is full of firsts for star Rachel McAdams",
       "time": "5 min read",
-      "image": "https://picsum.photos/seed/type4a3/900/600"
+      "image": "https://picsum.photos/seed/type4a3/900/600",
+      "url": "#"
     },
     {
       "title": "Galaxy cluster observed forming surprisingly early in universe's history",
       "time": "6 min read",
-      "image": "https://picsum.photos/seed/type4a4/900/600"
+      "image": "https://picsum.photos/seed/type4a4/900/600",
+      "url": "#"
     }
   ]
 }
@@ -276,19 +281,23 @@ import { sectionType4Data, sectionType4TextOnlyData } from "@/lib/dummyData";
   "articles": [
     {
       "title": "Bitcoin falls below $80,000, continuing decline as liquidity worries mount",
-      "time": "3 min read"
+      "time": "3 min read",
+      "url": "#"
     },
     {
       "title": "Japan's Takaichi cites weak yen's benefits even as her government threatens intervention",
-      "time": "4 min read"
+      "time": "4 min read",
+      "url": "#"
     },
     {
       "title": "Wall St Week Ahead Heavy earnings week, jobs data to test US stocks after Microsoft swoon",
-      "time": "5 min read"
+      "time": "5 min read",
+      "url": "#"
     },
     {
       "title": "Boeing reaches labor deal with former Spirit AeroSystems white-collar workers",
-      "time": "2 min read"
+      "time": "2 min read",
+      "url": "#"
     }
   ]
 }

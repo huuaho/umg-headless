@@ -26,11 +26,13 @@ export interface FeaturedArticle {
   snippet: string;
   time: string;
   gallery: string | string[]; // Single image or array for gallery carousel
+  url: string; // Link to original source
 }
 
 export interface SecondaryArticle {
   title: string;
   time: string;
+  url: string; // Link to original source
 }
 
 // All section types share the same data structure
@@ -301,24 +303,29 @@ import { sectionType1Data } from "@/lib/dummyData";
       "https://picsum.photos/seed/news1/900/600",
       "https://picsum.photos/seed/news2/900/600",
       "https://picsum.photos/seed/news3/900/600"
-    ]
+    ],
+    "url": "#"
   },
   "secondary": [
     {
       "title": "US Justice Dept opens civil rights probe into Alex Pretti shooting, official says",
-      "time": "4 min read"
+      "time": "4 min read",
+      "url": "#"
     },
     {
       "title": "Ex-CNN journalist Don Lemon arrested after anti-ICE church protest in Minnesota",
-      "time": "3 min read"
+      "time": "3 min read",
+      "url": "#"
     },
     {
       "title": "New York governor proposes bill to ban local law enforcement from being deputized by ICE",
-      "time": "5 min read"
+      "time": "5 min read",
+      "url": "#"
     },
     {
       "title": "Lawsuit challenges ICE ability to enter homes without warrants from US judges",
-      "time": "6 min read"
+      "time": "6 min read",
+      "url": "#"
     }
   ]
 }

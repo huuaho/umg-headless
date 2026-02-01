@@ -26,11 +26,13 @@ export interface FeaturedArticle {
   snippet: string;
   time: string;
   gallery: string | string[]; // Single image or array for gallery carousel
+  url: string; // Link to original source
 }
 
 export interface SecondaryArticle {
   title: string;
   time: string;
+  url: string; // Link to original source
 }
 
 // All section types share the same data structure
@@ -294,20 +296,24 @@ import { sectionType3Data } from "@/lib/dummyData";
     "title": "Central banks signal coordinated approach to interest rate policy",
     "snippet": "Major central banks around the world are signaling a more coordinated approach to monetary policy as global inflation concerns persist and economic growth forecasts remain uncertain.",
     "time": "6 min read",
-    "gallery": "https://picsum.photos/seed/type3feat/900/600"
+    "gallery": "https://picsum.photos/seed/type3feat/900/600",
+    "url": "#"
   },
   "secondary": [
     {
       "title": "Stock markets rally on positive earnings reports from tech sector",
-      "time": "3 min read"
+      "time": "3 min read",
+      "url": "#"
     },
     {
       "title": "Supply chain disruptions continue to impact manufacturing globally",
-      "time": "4 min read"
+      "time": "4 min read",
+      "url": "#"
     },
     {
       "title": "Emerging markets show resilience despite currency volatility",
-      "time": "5 min read"
+      "time": "5 min read",
+      "url": "#"
     }
   ]
 }

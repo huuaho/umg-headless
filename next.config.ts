@@ -11,6 +11,30 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "diplomaticwatch.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.diplomaticwatch.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.echo-media.info",
+      },
+      {
+        protocol: "https",
+        hostname: "www.internationalspectrum.org",
+      },
+      {
+        protocol: "https",
+        hostname: "www.unitedmediadc.com",
+      },
+      {
+        protocol: "https",
+        hostname: "unitedmediadc.com",
+      },
     ],
   },
 };

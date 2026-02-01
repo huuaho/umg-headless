@@ -2,7 +2,14 @@ import { categories } from "@/lib/categories";
 import SectionType1 from "@/components/sections/SectionType1";
 import SectionType2 from "@/components/sections/SectionType2";
 import SectionType3 from "@/components/sections/SectionType3";
-import { sectionType1Data, sectionType2Data, sectionType3Data } from "@/lib/dummyData";
+import SectionType4 from "@/components/sections/SectionType4";
+import {
+  sectionType1Data,
+  sectionType2Data,
+  sectionType3Data,
+  sectionType4Data,
+  sectionType4TextOnlyData,
+} from "@/lib/dummyData";
 
 // Section options for random assignment (component + matching data)
 const sectionOptions = [
@@ -22,7 +29,7 @@ const getHashIndex = (slug: string) => {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white max-w-[1300px] mx-auto px-6">
+    <main className="min-h-screen bg-white max-w-325 mx-auto px-6">
       {categories.map((category) => {
         // World News & Politics uses SectionType1
         if (category.slug === "world-news-politics") {
@@ -57,6 +64,29 @@ export default function Home() {
               category={category.name}
               featured={sectionType3Data.featured}
               secondary={sectionType3Data.secondary}
+            />
+          );
+        }
+        // Diplomacy uses SectionType4 with images
+        if (category.slug === "diplomacy") {
+          return (
+            <SectionType4
+              key={category.slug}
+              slug={category.slug}
+              category={category.name}
+              articles={sectionType4Data.articles}
+            />
+          );
+        }
+        // Art & Culture uses SectionType4 text-only variant
+        if (category.slug === "art-culture") {
+          return (
+            <SectionType4
+              key={category.slug}
+              slug={category.slug}
+              category={category.name}
+              articles={sectionType4TextOnlyData.articles}
+              textOnly
             />
           );
         }

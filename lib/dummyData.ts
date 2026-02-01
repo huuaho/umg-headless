@@ -12,6 +12,17 @@ export interface SecondaryArticle {
   time: string;
 }
 
+// Section Type 4 - simpler structure with 4 equal articles
+export interface Type4Article {
+  title: string;
+  time: string;
+  image?: string; // Optional - only used when textOnly is false
+}
+
+export interface SectionType4Data {
+  articles: Type4Article[];
+}
+
 // All section types share the same data structure
 // The display (gallery vs single image) is determined by the gallery value
 // Category is passed separately by the page, not included in data
@@ -107,6 +118,61 @@ export const sectionType3Data: SectionData = {
     {
       title: "Emerging markets show resilience despite currency volatility",
       time: "5 min read",
+    },
+  ],
+};
+
+// Section Type 4 - with images variant
+export const sectionType4Data: SectionType4Data = {
+  articles: [
+    {
+      title:
+        "Catherine O'Hara, star of 'Schitt's Creek' and 'Home Alone,' dead at 71",
+      time: "4 min read",
+      image: "https://picsum.photos/seed/type4a1/900/600",
+    },
+    {
+      title: "Baby long-necked dinosaurs were a 'perfect snack' for predators",
+      time: "3 min read",
+      image: "https://picsum.photos/seed/type4a2/900/600",
+    },
+    {
+      title:
+        "Survival showdown in 'Send Help' is full of firsts for star Rachel McAdams",
+      time: "5 min read",
+      image: "https://picsum.photos/seed/type4a3/900/600",
+    },
+    {
+      title:
+        "Galaxy cluster observed forming surprisingly early in universe's history",
+      time: "6 min read",
+      image: "https://picsum.photos/seed/type4a4/900/600",
+    },
+  ],
+};
+
+// Section Type 4 - text only variant
+export const sectionType4TextOnlyData: SectionType4Data = {
+  articles: [
+    {
+      title:
+        "Bitcoin falls below $80,000, continuing decline as liquidity worries mount",
+      time: "3 min read",
+    },
+    {
+      title:
+        "Japan's Takaichi cites weak yen's benefits even as her government threatens intervention",
+      time: "4 min read",
+    },
+    {
+      title:
+        "Wall St Week Ahead Heavy earnings week, jobs data to test US stocks after Microsoft swoon",
+      time: "5 min read",
+    },
+    {
+      title:
+        "Boeing reaches labor deal with former Spirit AeroSystems white-collar workers",
+      time: "2 min read",
     },
   ],
 };

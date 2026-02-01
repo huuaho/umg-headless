@@ -1,5 +1,28 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import type { SectionType4Data, Type4Article } from "@/lib/dummyData";
+
+function ImageContainer({ image, title }: { image?: string; title: string }) {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <div className="w-1/3 lg:w-full order-2 lg:order-1">
+      <div className="relative aspect-3/2 bg-gray-100">
+        {image && !imageError && (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+            onError={() => setImageError(true)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ArticleCard({
   article,
@@ -45,17 +68,8 @@ function ArticleCard({
         }`}
       >
         {/* Image - 1/3 width on SM/MD, full width on top at LG */}
-        {!textOnly && article.image && (
-          <div className="w-1/3 lg:w-full order-2 lg:order-1">
-            <div className="relative aspect-3/2">
-              <Image
-                src={article.image}
-                alt={article.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
+        {!textOnly && (
+          <ImageContainer image={article.image} title={article.title} />
         )}
 
         {/* Text content - 2/3 width on SM/MD, full width below image at LG */}

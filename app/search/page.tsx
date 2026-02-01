@@ -26,7 +26,7 @@ function SearchResultCard({ article }: SearchResultCardProps) {
   return (
     <article className="py-4 border-b border-gray-200 last:border-b-0">
       <div className="flex gap-4">
-        <div className="shrink-0 w-24 h-16 md:w-32 md:h-20 relative">
+        <div className="shrink-0 w-24 h-16 md:w-32 md:h-20 relative bg-gray-100">
           {firstImage && !imageError && (
             <Image
               src={firstImage}

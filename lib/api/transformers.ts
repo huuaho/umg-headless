@@ -15,6 +15,41 @@ function formatReadTime(minutes: number): string {
 }
 
 /**
+ * Check if an article has at least one image
+ */
+function hasImages(article: ApiArticle): boolean {
+  return (
+    (article.images && article.images.length > 0) ||
+    Boolean(article.featured_image)
+  );
+}
+
+/**
+ * Reorder articles so the first article with images becomes featured.
+ * If the first article already has images, return as-is.
+ * If no articles have images, return as-is.
+ */
+function ensureFeaturedHasImage(articles: ApiArticle[]): ApiArticle[] {
+  if (articles.length === 0) return articles;
+
+  // If first article already has images, no need to swap
+  if (hasImages(articles[0])) return articles;
+
+  // Find the first article with images
+  const indexWithImage = articles.findIndex(hasImages);
+
+  // If no article has images, return as-is
+  if (indexWithImage === -1) return articles;
+
+  // Swap: move the article with images to the front
+  const reordered = [...articles];
+  const [articleWithImage] = reordered.splice(indexWithImage, 1);
+  reordered.unshift(articleWithImage);
+
+  return reordered;
+}
+
+/**
  * Get gallery images from article
  * Returns array if multiple images, single string if one, or placeholder
  */
@@ -79,7 +114,9 @@ export function toType4Article(
  * Transform articles for SectionType1/2 (featured + 4 secondary)
  */
 export function toSectionData(articles: ApiArticle[]): SectionData {
-  const [featured, ...rest] = articles;
+  // Ensure featured article has an image
+  const reordered = ensureFeaturedHasImage(articles);
+  const [featured, ...rest] = reordered;
 
   return {
     featured: toFeaturedArticle(featured),
@@ -91,7 +128,9 @@ export function toSectionData(articles: ApiArticle[]): SectionData {
  * Transform articles for SectionType3 (featured + 3 secondary)
  */
 export function toSectionType3Data(articles: ApiArticle[]): SectionData {
-  const [featured, ...rest] = articles;
+  // Ensure featured article has an image
+  const reordered = ensureFeaturedHasImage(articles);
+  const [featured, ...rest] = reordered;
 
   return {
     featured: toFeaturedArticle(featured),

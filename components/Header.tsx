@@ -9,6 +9,7 @@ import {
   moreCategories,
   allCategories,
 } from "@/lib/categories";
+import { mediaCompanies } from "@/lib/mediaCompanies";
 
 function ChevronDown({ className }: { className?: string }) {
   return (
@@ -306,20 +307,25 @@ export default function Header() {
       <div className="border-t border-gray-300">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="h-10 flex items-center">
-            <div className="animate-marquee flex shrink-0">
-            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
-            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
-            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
-            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
-            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
-            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
-            {/* Duplicate for seamless loop */}
-            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
-            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
-            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
-            <a href="https://www.echo-media.info/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #1]</a>
-            <a href="https://www.internationalspectrum.org/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #2]</a>
-            <a href="https://diplomaticwatch.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#212223] hover:opacity-70 transition-opacity mx-16">[LOGO #3]</a>
+            <div className="animate-marquee flex shrink-0 items-center">
+              {/* Repeat 4x for seamless loop */}
+              {[...Array(4)].map((_, repeatIndex) =>
+                mediaCompanies.map((company, index) => (
+                  <a
+                    key={`${repeatIndex}-${index}`}
+                    href={company.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-70 transition-opacity mx-16"
+                  >
+                    <img
+                      src={company.logo}
+                      alt={company.name}
+                      className="h-6 w-auto"
+                    />
+                  </a>
+                ))
+              )}
             </div>
           </div>
         </div>

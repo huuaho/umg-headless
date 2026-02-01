@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   mainCategories,
   lgOnlyCategory,
@@ -93,6 +93,7 @@ export default function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -129,17 +130,16 @@ export default function Header() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // TODO: Navigate to search results
-      console.log("Search:", searchQuery);
+      router.push(`/search?search=${encodeURIComponent(searchQuery.trim())}`);
+      closeSearch();
     }
   };
 
   const handleMobileSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (mobileSearchQuery.trim()) {
-      // TODO: Navigate to search results
-      console.log("Mobile Search:", mobileSearchQuery);
-      setMobileMenuOpen(false);
+      router.push(`/search?search=${encodeURIComponent(mobileSearchQuery.trim())}`);
+      closeMobileMenu();
     }
   };
 

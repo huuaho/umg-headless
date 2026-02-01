@@ -40,3 +40,10 @@ export interface FetchArticlesOptions {
   perPage?: number;
   page?: number;
 }
+
+export interface SearchArticlesOptions {
+  search: string;
+  category?: string;
+  perPage?: number;
+  page?: number;
+}

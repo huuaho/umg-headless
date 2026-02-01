@@ -9,10 +9,10 @@ const SECTION_TYPE_MAP: Record<string, SectionType> = {
   "profiles-opinions": "type2",
   "economy-business": "type3",
   diplomacy: "type4",
-  "art-culture": "type4-text",
+  "art-culture": "type4",
   "education-youth": "type1",
   "local-community": "type2",
-  "wellbeing-env-tech": "type3",
+  "wellbeing-env-tech": "type4-text",
 };
 
 export default function Home() {

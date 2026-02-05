@@ -8,6 +8,26 @@ import type {
 } from "@/lib/dummyData";
 
 /**
+ * Decode common HTML entities to their character equivalents
+ */
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&hellip;/g, "\u2026")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#8217;/g, "\u2019")
+    .replace(/&#8216;/g, "\u2018")
+    .replace(/&#8220;/g, "\u201C")
+    .replace(/&#8221;/g, "\u201D")
+    .replace(/&#8211;/g, "\u2013")
+    .replace(/&#8212;/g, "\u2014");
+}
+
+/**
  * Format read time as display string
  */
 function formatReadTime(minutes: number): string {
@@ -72,8 +92,8 @@ function getGalleryImages(article: ApiArticle): string | string[] {
  */
 export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
   return {
-    title: article.title,
-    snippet: article.excerpt,
+    title: decodeHtmlEntities(article.title),
+    snippet: decodeHtmlEntities(article.excerpt),
     time: formatReadTime(article.read_time_minutes),
     gallery: getGalleryImages(article),
     url: article.source_url,
@@ -85,7 +105,7 @@ export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
  */
 export function toSecondaryArticle(article: ApiArticle): SecondaryArticle {
   return {
-    title: article.title,
+    title: decodeHtmlEntities(article.title),
     time: formatReadTime(article.read_time_minutes),
     url: article.source_url,
   };
@@ -103,7 +123,7 @@ export function toType4Article(
     article.images?.[0] || article.featured_image || undefined;
 
   return {
-    title: article.title,
+    title: decodeHtmlEntities(article.title),
     time: formatReadTime(article.read_time_minutes),
     image: includeImage ? firstImage : undefined,
     url: article.source_url,

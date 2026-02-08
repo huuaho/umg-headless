@@ -28,12 +28,15 @@ function ArticleCard({
   article,
   textOnly,
   index,
+  total,
 }: {
   article: Type4Article;
   textOnly: boolean;
   index: number;
+  total: number;
 }) {
-  // SM: All except last (index 3) have bottom borders
+  const isLast = index === total - 1;
+  // SM: All except last have bottom borders
   // MD: Only top row (indexes 0, 1) have bottom borders
   // LG: No individual article borders
   const isTopRow = index < 2;
@@ -54,7 +57,7 @@ function ArticleCard({
     // MD: Only top row has bottom border
     // LG: No borders
     let classes = "border-gray-300";
-    if (index < 3) classes += " border-b";
+    if (!isLast) classes += " border-b";
     if (!isTopRow) classes += " md:border-b-0";
     classes += " lg:border-b-0";
     return classes;
@@ -126,6 +129,7 @@ export default function SectionType4({
             article={article}
             textOnly={textOnly}
             index={index}
+            total={articles.length}
           />
         ))}
       </div>

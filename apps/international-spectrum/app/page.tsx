@@ -12,7 +12,7 @@ const SECTION_TYPE_MAP: Record<string, SectionType> = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white max-w-280 mx-auto px-6">
+    <main className="min-h-screen bg-white max-w-280 mx-auto px-6 [&>section:last-child]:border-b-0">
       {categories.map((category) => (
         <CategorySectionWrapper
           key={category.slug}

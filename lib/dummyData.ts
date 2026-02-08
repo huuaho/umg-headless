@@ -1,38 +1,15 @@
+// Re-export types from @umg/api (canonical source)
+export type {
+  FeaturedArticle,
+  SecondaryArticle,
+  Type4Article,
+  SectionType4Data,
+  SectionData,
+} from "@umg/api";
+
+import type { SectionData, SectionType4Data } from "@umg/api";
+
 // Simulated API response data for development
-
-export interface FeaturedArticle {
-  title: string;
-  snippet: string;
-  time: string;
-  gallery: string | string[]; // Single image or array for gallery carousel
-  url: string; // Link to original source
-}
-
-export interface SecondaryArticle {
-  title: string;
-  time: string;
-  url: string; // Link to original source
-}
-
-// Section Type 4 - simpler structure with 4 equal articles
-export interface Type4Article {
-  title: string;
-  time: string;
-  image?: string; // Optional - only used when textOnly is false
-  url: string; // Link to original source
-}
-
-export interface SectionType4Data {
-  articles: Type4Article[];
-}
-
-// All section types share the same data structure
-// The display (gallery vs single image) is determined by the gallery value
-// Category is passed separately by the page, not included in data
-export interface SectionData {
-  featured: FeaturedArticle;
-  secondary: SecondaryArticle[];
-}
 
 export const sectionType1Data: SectionData = {
   featured: {

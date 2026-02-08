@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
-import { searchArticles, type ApiArticle } from "@/lib/api";
+import { searchArticles, type ApiArticle } from "@umg/api";
 
 // Decode HTML entities like &amp; -> &
 function decodeHtmlEntities(text: string): string {

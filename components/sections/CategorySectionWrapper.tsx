@@ -1,11 +1,11 @@
 "use client";
 
-import { useArticles } from "@/hooks/useArticles";
 import {
+  useArticles,
   toSectionData,
   toSectionType3Data,
   toSectionType4Data,
-} from "@/lib/api/transformers";
+} from "@umg/api";
 import SectionType1 from "./SectionType1";
 import SectionType2 from "./SectionType2";
 import SectionType3 from "./SectionType3";

@@ -1,11 +1,11 @@
-import type { ApiArticle } from "./types";
 import type {
+  ApiArticle,
   FeaturedArticle,
   SecondaryArticle,
   Type4Article,
   SectionData,
   SectionType4Data,
-} from "@/lib/dummyData";
+} from "./types";
 
 /**
  * Decode common HTML entities to their character equivalents

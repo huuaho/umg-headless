@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { ApiArticle } from "@/lib/api/types";
-import { fetchArticles } from "@/lib/api/client";
+import type { ApiArticle } from "../types";
+import { fetchArticles } from "../client";
 
 interface UseArticlesOptions {
   category: string;

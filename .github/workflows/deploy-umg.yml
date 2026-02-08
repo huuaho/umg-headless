@@ -1,9 +1,12 @@
-name: Deploy to SiteGround
+name: Deploy UMG to SiteGround
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Manual trigger option
+    paths:
+      - 'apps/umg/**'
+      - 'packages/**'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -23,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npx turbo run build --filter=umg
         env:
           NEXT_PUBLIC_WP_API_URL: ${{ secrets.WP_API_URL }}
 
@@ -34,6 +37,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          local-dir: ./out/
+          local-dir: ./apps/umg/out/
           server-dir: ./unitedmediadc.com/public_html/
           dangerous-clean-slate: true

@@ -1,8 +1,31 @@
 import Link from "next/link";
-import { leftCategories, rightCategories } from "@/lib/categories";
-import { mediaCompanies } from "@/lib/mediaCompanies";
+import type { NavCategory, BannerCompany } from "./Header";
 
-export default function Footer() {
+export interface FooterProps {
+  logoUrl: string;
+  logoAlt: string;
+  categories: NavCategory[];
+  companies: BannerCompany[];
+  email: string;
+  copyright: string;
+}
+
+export default function Footer({
+  logoUrl,
+  logoAlt,
+  categories,
+  companies,
+  email,
+  copyright,
+}: FooterProps) {
+  // Sort categories alphabetically and split into two columns
+  const sortedCategories = [...categories].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+  const midpoint = Math.ceil(sortedCategories.length / 2);
+  const leftCategories = sortedCategories.slice(0, midpoint);
+  const rightCategories = sortedCategories.slice(midpoint);
+
   return (
     <footer className="border-t border-gray-300">
       {/* Row 1: Big Logo */}
@@ -14,8 +37,8 @@ export default function Footer() {
               className="hover:opacity-80 transition-opacity"
             >
               <img
-                src="https://api.unitedmediadc.com/wp-content/uploads/2026/01/UMG-Masthead-Black.svg"
-                alt="United Media Group"
+                src={logoUrl}
+                alt={logoAlt}
                 className="h-12 w-auto"
               />
             </Link>
@@ -30,7 +53,7 @@ export default function Footer() {
           <div className="hidden lg:flex">
             {/* Col 1: Media logos */}
             <div className="flex flex-col space-y-4 pr-8">
-              {mediaCompanies.map((company) => (
+              {companies.map((company) => (
                 <a
                   key={company.name}
                   href={company.url}
@@ -88,13 +111,13 @@ export default function Footer() {
                 About Us
               </Link>
               <a
-                href="mailto:unitedmediagroup196@gmail.com"
+                href={`mailto:${email}`}
                 className="text-sm text-[#404040] hover:text-[#212223] transition-colors"
               >
                 Contact Us
               </a>
               <p className="text-sm text-gray-500 mt-4">
-                &copy; 2026 United Media Group
+                {copyright}
               </p>
               <p className="text-sm text-gray-500">All Rights Reserved</p>
             </div>
@@ -104,7 +127,7 @@ export default function Footer() {
           <div className="lg:hidden space-y-8">
             {/* Row 1: Media logos (centered) */}
             <div className="flex flex-col items-center space-y-4">
-              {mediaCompanies.map((company) => (
+              {companies.map((company) => (
                 <a
                   key={company.name}
                   href={company.url}
@@ -156,13 +179,13 @@ export default function Footer() {
                 About Us
               </Link>
               <a
-                href="mailto:unitedmediagroup196@gmail.com"
+                href={`mailto:${email}`}
                 className="text-sm text-[#404040] hover:text-[#212223] transition-colors"
               >
                 Contact Us
               </a>
               <p className="text-sm text-gray-500 mt-2">
-                &copy; 2026 United Media Group
+                {copyright}
               </p>
               <p className="text-sm text-gray-500">All Rights Reserved</p>
             </div>

@@ -7,3 +7,7 @@ export { default as SectionType4 } from "./sections/SectionType4";
 export { default as SectionSkeleton } from "./sections/SectionSkeleton";
 export { default as SectionError } from "./sections/SectionError";
 export { default as FeaturedMedia } from "./sections/components/FeaturedMedia";
+export { default as Header } from "./Header";
+export type { HeaderProps, NavCategory, BannerCompany } from "./Header";
+export { default as Footer } from "./Footer";
+export type { FooterProps } from "./Footer";

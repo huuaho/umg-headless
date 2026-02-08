@@ -3,13 +3,25 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  mainCategories,
-  lgOnlyCategories,
-  moreCategories,
-  allCategories,
-} from "@/lib/categories";
-import { mediaCompanies } from "@/lib/mediaCompanies";
+
+export interface NavCategory {
+  name: string;
+  slug: string;
+}
+
+export interface BannerCompany {
+  name: string;
+  url: string;
+  logo: string;
+  logoBW: string;
+}
+
+export interface HeaderProps {
+  logoUrl: string;
+  logoAlt: string;
+  categories: NavCategory[];
+  bannerCompanies: BannerCompany[];
+}
 
 function ChevronDown({ className }: { className?: string }) {
   return (
@@ -85,7 +97,18 @@ function HamburgerIcon({ className }: { className?: string }) {
   );
 }
 
-export default function Header() {
+export default function Header({
+  logoUrl,
+  logoAlt,
+  categories,
+  bannerCompanies,
+}: HeaderProps) {
+  // Compute category splits for responsive nav
+  const mainCategories = categories.slice(0, 2);
+  const lgOnlyCategories = categories.slice(2, 4);
+  const moreCategories = categories.slice(4);
+  const allCategories = categories;
+
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -169,8 +192,8 @@ export default function Header() {
               className="block hover:opacity-80 transition-opacity"
             >
               <img
-                src="https://api.unitedmediadc.com/wp-content/uploads/2025/12/UMG-Masthead.svg"
-                alt="United Media Group"
+                src={logoUrl}
+                alt={logoAlt}
                 className="h-8 w-auto"
               />
             </Link>
@@ -321,7 +344,7 @@ export default function Header() {
             <div className="animate-marquee flex shrink-0 items-center">
               {/* Repeat 4x for seamless loop */}
               {[...Array(4)].map((_, repeatIndex) =>
-                mediaCompanies.map((company, index) => (
+                bannerCompanies.map((company, index) => (
                   <a
                     key={`${repeatIndex}-${index}`}
                     href={company.url}

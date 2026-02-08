@@ -1,14 +1,13 @@
 import { categories } from "@/lib/categories";
 import { CategorySectionWrapper, type SectionType } from "@umg/ui";
 
-// TODO: Update section type mapping once IS categories are finalized
 const SECTION_TYPE_MAP: Record<string, SectionType> = {
-  "global-culture": "type1",
-  "cross-cultural-stories": "type2",
-  "arts-heritage": "type3",
-  "travel-exchange": "type4",
-  diaspora: "type1",
-  perspectives: "type4-text",
+  communitypublicprograms: "type1",
+  civicandculturalaffairs: "type2",
+  arts: "type3",
+  historylegacy: "type4",
+  socialimpactjustice: "type1",
+  leadershipyouthengagement: "type4-text",
 };
 
 export default function Home() {

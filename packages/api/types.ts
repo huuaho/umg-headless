@@ -1,6 +1,8 @@
 /**
  * WordPress API Response Types
- * Based on United Media Ingestor plugin REST API
+ * Supports two modes:
+ * - "custom": United Media Ingestor plugin (um/v1/articles) — used by UMG
+ * - "wp": Standard WP REST API (wp/v2/posts) — used by Echo Media, International Spectrum
  */
 
 export interface ApiCategory {
@@ -46,6 +48,31 @@ export interface SearchArticlesOptions {
   category?: string;
   perPage?: number;
   page?: number;
+}
+
+/**
+ * Standard WP REST API post type (wp/v2/posts?_embed)
+ */
+export interface WpPost {
+  id: number;
+  slug: string;
+  title: { rendered: string };
+  excerpt: { rendered: string };
+  content: { rendered: string };
+  date: string;
+  link: string;
+  featured_media: number;
+  categories: number[];
+  _embedded?: {
+    author?: Array<{ name: string }>;
+    "wp:featuredmedia"?: Array<{
+      source_url: string;
+      media_details?: {
+        sizes?: Record<string, { source_url: string; width: number; height: number }>;
+      };
+    }>;
+    "wp:term"?: Array<Array<{ id: number; name: string; slug: string }>>;
+  };
 }
 
 /**

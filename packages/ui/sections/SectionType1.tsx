@@ -158,22 +158,26 @@ export default function SectionType1({
         */}
         <div className="lg:w-1/3 2xl:w-full">
           <div className="border-t md:border-t-0 lg:border-t-0 border-gray-300 grid grid-cols-2 lg:grid-cols-1 2xl:grid-cols-4">
-            {/* Article 1 */}
+            {secondary[0] && (
             <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-300 md:pr-4 lg:pr-0 2xl:pr-4">
               <SecondaryArticleCard article={secondary[0]} />
             </div>
-            {/* Article 2 */}
+            )}
+            {secondary[1] && (
             <div className="col-span-2 md:col-span-1 lg:col-span-1 2xl:col-span-1 border-b lg:border-b 2xl:border-b-0 border-gray-300 md:pl-4 lg:pl-0 2xl:pl-4 2xl:pr-4">
               <SecondaryArticleCard article={secondary[1]} />
             </div>
-            {/* Article 3 */}
+            )}
+            {secondary[2] && (
             <div className="col-span-1 lg:col-span-1 2xl:col-span-1 pr-2 md:pr-4 lg:pr-0 2xl:pr-4 2xl:pl-4 lg:border-b 2xl:border-b-0 border-gray-300">
               <SecondaryArticleCard article={secondary[2]} />
             </div>
-            {/* Article 4 */}
+            )}
+            {secondary[3] && (
             <div className="col-span-1 lg:col-span-1 2xl:col-span-1 pl-2 md:pl-4 lg:pl-0 2xl:pl-4">
               <SecondaryArticleCard article={secondary[3]} />
             </div>
+            )}
           </div>
         </div>
       </div>

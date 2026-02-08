@@ -3,17 +3,25 @@ import type {
   FetchArticlesOptions,
   SearchArticlesOptions,
 } from "./types";
+import { fetchArticlesWP, searchArticlesWP } from "./wp-client";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
   "https://your-wordpress-site.com/wp-json";
 
+const API_MODE = process.env.NEXT_PUBLIC_API_MODE || "custom";
+
 /**
  * Fetch articles from WordPress API
+ * Delegates to standard WP REST API when API_MODE is "wp"
  */
 export async function fetchArticles(
   options: FetchArticlesOptions
 ): Promise<ArticlesResponse> {
+  if (API_MODE === "wp") {
+    return fetchArticlesWP(options);
+  }
+
   const { category, perPage = 5, page = 1 } = options;
 
   const params = new URLSearchParams({
@@ -39,10 +47,15 @@ export async function fetchArticles(
 
 /**
  * Search articles from WordPress API
+ * Delegates to standard WP REST API when API_MODE is "wp"
  */
 export async function searchArticles(
   options: SearchArticlesOptions
 ): Promise<ArticlesResponse> {
+  if (API_MODE === "wp") {
+    return searchArticlesWP(options);
+  }
+
   const { search, category, perPage = 20, page = 1 } = options;
 
   const params = new URLSearchParams({

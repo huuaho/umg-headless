@@ -1,14 +1,10 @@
 import { categories } from "@/lib/categories";
 import { CategorySectionWrapper, type SectionType } from "@umg/ui";
 
-// TODO: Update section type mapping once EM categories are finalized
 const SECTION_TYPE_MAP: Record<string, SectionType> = {
-  education: "type1",
-  "youth-development": "type2",
-  "personal-growth": "type3",
-  community: "type4",
-  inspiration: "type1",
-  resources: "type4-text",
+  artculture: "type1",
+  education: "type2",
+  environment: "type3",
 };
 
 export default function Home() {

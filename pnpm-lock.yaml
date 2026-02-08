@@ -155,6 +155,13 @@ importers:
       react:
         specifier: ^18 || ^19
         version: 19.2.3
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.33
+      '@types/react':
+        specifier: ^19
+        version: 19.2.13
 
   packages/config:
     dependencies:
@@ -173,6 +180,10 @@ importers:
       react:
         specifier: ^18 || ^19
         version: 19.2.3
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.13
 
 packages:
 

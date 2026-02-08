@@ -155,22 +155,26 @@ export default function SectionType2({
               2XL: stacked vertically in 1 column
           */}
         <div className="border-t md:border-t-0 border-gray-300 md:grid md:grid-cols-2 lg:grid-cols-4 2xl:block 2xl:border-t-0">
-          {/* Article 1 */}
+          {secondary[0] && (
           <div className="border-b md:border-b lg:border-b-0 border-gray-300 md:pr-4 lg:pr-4 2xl:pr-0 2xl:border-b">
             <SecondaryArticleCard article={secondary[0]} />
           </div>
-          {/* Article 2 */}
+          )}
+          {secondary[1] && (
           <div className="border-b md:border-b lg:border-b-0 border-gray-300 md:pl-4 lg:pl-4 lg:pr-4 2xl:pl-0 2xl:pr-0 2xl:border-b">
             <SecondaryArticleCard article={secondary[1]} />
           </div>
-          {/* Article 3 */}
+          )}
+          {secondary[2] && (
           <div className="border-b md:border-b-0 lg:border-b-0 border-gray-300 md:pr-4 lg:pl-4 lg:pr-4 2xl:pl-0 2xl:pr-0 2xl:border-b">
             <SecondaryArticleCard article={secondary[2]} />
           </div>
-          {/* Article 4 */}
+          )}
+          {secondary[3] && (
           <div className="md:pl-4 lg:pl-4 2xl:pl-0">
             <SecondaryArticleCard article={secondary[3]} />
           </div>
+          )}
         </div>
       </div>
     </section>

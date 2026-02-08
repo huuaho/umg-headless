@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { SectionType4Data, Type4Article } from "@/lib/dummyData";
+import type { SectionType4Data, Type4Article } from "@umg/api";
 
 function ImageContainer({ image, title }: { image?: string; title: string }) {
   const [imageError, setImageError] = useState(false);

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@umg/api"],
+  transpilePackages: ["@umg/api", "@umg/config"],
   // Enable static export for headless WP hosting
   output: "export",
   images: {

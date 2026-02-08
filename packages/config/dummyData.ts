@@ -1,15 +1,6 @@
-// Re-export types from @umg/api (canonical source)
-export type {
-  FeaturedArticle,
-  SecondaryArticle,
-  Type4Article,
-  SectionType4Data,
-  SectionData,
-} from "@umg/api";
+// Simulated API response data for development
 
 import type { SectionData, SectionType4Data } from "@umg/api";
-
-// Simulated API response data for development
 
 export const sectionType1Data: SectionData = {
   featured: {

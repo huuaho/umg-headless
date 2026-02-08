@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useLayoutEffect, useState } from "react";
-import type { SectionData, SecondaryArticle } from "@/lib/dummyData";
+import type { SectionData, SecondaryArticle } from "@umg/api";
 import FeaturedMedia from "./components/FeaturedMedia";
 
 // Title font sizes in rem (for 2XL breakpoint): 5xl, 4xl, 3xl, 2xl

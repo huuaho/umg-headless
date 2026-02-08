@@ -2,11 +2,13 @@
   "name": "umg-workspace",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "npm@11.6.2",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "packageManager": "pnpm@10.26.2",
+  "scripts": {
+    "dev": "turbo run dev --filter=umg",
+    "dev:umg": "turbo run dev --filter=umg",
+    "dev:em": "turbo run dev --filter=echo-media",
+    "dev:is": "turbo run dev --filter=international-spectrum"
+  },
   "devDependencies": {
     "turbo": "^2.8.3"
   }

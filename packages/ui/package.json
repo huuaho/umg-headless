@@ -5,7 +5,10 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "dependencies": {
-    "@umg/api": "*"
+    "@umg/api": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19"
   },
   "peerDependencies": {
     "next": "*",

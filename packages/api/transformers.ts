@@ -12,7 +12,7 @@ import type {
  */
 function decodeHtmlEntities(text: string): string {
   return text
-    .replace(/&hellip;/g, "\u2026")
+    .replace(/&hellip;|&#8230;/g, "\u2026")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")

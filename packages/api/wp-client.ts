@@ -44,10 +44,25 @@ async function getCategoryId(slug: string): Promise<number | null> {
 }
 
 /**
- * Strip HTML tags from a string
+ * Strip HTML tags and decode common HTML entities
  */
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "").trim();
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&hellip;|&#8230;/g, "\u2026")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#8217;/g, "\u2019")
+    .replace(/&#8216;/g, "\u2018")
+    .replace(/&#8220;/g, "\u201C")
+    .replace(/&#8221;/g, "\u201D")
+    .replace(/&#8211;/g, "\u2013")
+    .replace(/&#8212;/g, "\u2014")
+    .trim();
 }
 
 /**

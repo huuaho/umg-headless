@@ -1,7 +1,5 @@
 import { categories } from "@/lib/categories";
-import CategorySectionWrapper, {
-  type SectionType,
-} from "@/components/sections/CategorySectionWrapper";
+import { CategorySectionWrapper, type SectionType } from "@umg/ui";
 
 // Category slug to section type mapping
 const SECTION_TYPE_MAP: Record<string, SectionType> = {

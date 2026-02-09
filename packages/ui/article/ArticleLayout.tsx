@@ -1,6 +1,7 @@
 "use client";
 
 import FeaturedMedia from "../sections/components/FeaturedMedia";
+import CommentsSection from "./CommentsSection";
 
 interface ArticleLayoutProps {
   title: string;
@@ -10,6 +11,7 @@ interface ArticleLayoutProps {
   readTime: string;
   images: string[]; // All images (featured + gallery)
   content: string; // Sanitized HTML (Divi stripped)
+  postId?: number; // WP post ID for comments (EM/IS only)
 }
 
 export default function ArticleLayout({
@@ -20,6 +22,7 @@ export default function ArticleLayout({
   readTime,
   images,
   content,
+  postId,
 }: ArticleLayoutProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
@@ -64,6 +67,9 @@ export default function ArticleLayout({
           className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-700 prose-img:rounded-lg"
           dangerouslySetInnerHTML={{ __html: content }}
         />
+
+        {/* Comments Section */}
+        {postId != null && <CommentsSection postId={postId} />}
       </article>
     </main>
   );

@@ -1,5 +1,7 @@
 import type {
   WpPost,
+  WpComment,
+  CreateCommentPayload,
   ApiArticle,
   ApiCategory,
   ArticlesResponse,
@@ -314,4 +316,62 @@ export async function fetchAllSlugsWP(): Promise<string[]> {
   }
 
   return slugs;
+}
+
+/**
+ * Fetch all approved comments for a post from WP REST API.
+ */
+export async function fetchCommentsWP(postId: number): Promise<WpComment[]> {
+  const params = new URLSearchParams({
+    post: String(postId),
+    per_page: "100",
+    orderby: "date",
+    order: "asc",
+  });
+
+  const url = `${API_BASE_URL}/wp/v2/comments?${params}`;
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch comments: ${response.status} ${response.statusText}`
+    );
+  }
+
+  return response.json();
+}
+
+/**
+ * Submit a new comment via WP REST API.
+ * Returns the created comment (status may be "hold" if moderation is on).
+ */
+export async function postCommentWP(
+  payload: CreateCommentPayload
+): Promise<WpComment> {
+  const url = `${API_BASE_URL}/wp/v2/comments`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `Failed to post comment: ${response.status}`;
+    try {
+      const errorBody = await response.json();
+      if (errorBody.message) {
+        errorMessage = errorBody.message;
+      }
+    } catch {
+      // Use generic error message
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
 }

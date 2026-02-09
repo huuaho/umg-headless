@@ -116,3 +116,28 @@ export interface SectionData {
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
+
+/**
+ * WordPress comment object returned by GET /wp/v2/comments
+ */
+export interface WpComment {
+  id: number;
+  post: number;
+  parent: number; // 0 = top-level
+  author_name: string;
+  date: string;
+  date_gmt: string;
+  content: { rendered: string };
+  status: "approved" | "hold" | string;
+}
+
+/**
+ * Payload for creating a new comment via POST /wp/v2/comments
+ */
+export interface CreateCommentPayload {
+  post: number;
+  content: string;
+  author_name: string;
+  author_email: string;
+  parent?: number; // 0 or omitted for top-level
+}

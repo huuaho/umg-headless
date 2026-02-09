@@ -46,6 +46,7 @@ export default async function ArticlePage({
       readTime={`${article.read_time_minutes} min read`}
       images={article.images}
       content={article.content}
+      postId={article.id}
     />
   );
 }

@@ -1,5 +1,7 @@
 import type {
   ApiArticle,
+  WpComment,
+  CreateCommentPayload,
   ArticlesResponse,
   FetchArticlesOptions,
   SearchArticlesOptions,
@@ -9,6 +11,8 @@ import {
   searchArticlesWP,
   fetchArticleBySlugWP,
   fetchAllSlugsWP,
+  fetchCommentsWP,
+  postCommentWP,
 } from "./wp-client";
 
 const API_BASE_URL =
@@ -111,4 +115,28 @@ export async function fetchAllSlugs(): Promise<string[]> {
     return fetchAllSlugsWP();
   }
   return [];
+}
+
+/**
+ * Fetch comments for a post.
+ * Only supported in WP mode (EM/IS). Returns [] for custom mode (UMG).
+ */
+export async function fetchComments(postId: number): Promise<WpComment[]> {
+  if (API_MODE === "wp") {
+    return fetchCommentsWP(postId);
+  }
+  return [];
+}
+
+/**
+ * Post a new comment.
+ * Only supported in WP mode (EM/IS). Throws in custom mode.
+ */
+export async function postComment(
+  payload: CreateCommentPayload
+): Promise<WpComment> {
+  if (API_MODE === "wp") {
+    return postCommentWP(payload);
+  }
+  throw new Error("Comments are not supported in custom API mode");
 }

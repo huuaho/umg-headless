@@ -5,6 +5,16 @@
  */
 
 /**
+ * Convert a WordPress thumbnail URL to its full-size version.
+ * WP appends "-WxH" before the extension for resized images, e.g.:
+ *   photo-150x150.jpg → photo.jpg
+ *   photo-1024x768.png → photo.png
+ */
+export function toFullSizeUrl(url: string): string {
+  return url.replace(/-\d+x\d+(\.\w+)$/, "$1");
+}
+
+/**
  * Decode HTML entities commonly found in Divi shortcode attributes.
  * WP encodes quotes as &#8221; &#8243; etc. in content.rendered.
  */
@@ -104,13 +114,13 @@ export function processContent(rawHtml: string): {
   const diviImageRegex = /\[et_pb_image[^\]]*\bsrc="([^"]*)"[^\]]*\]/g;
   let match;
   while ((match = diviImageRegex.exec(decodedForParsing)) !== null) {
-    if (match[1]) imageSet.add(match[1]);
+    if (match[1]) imageSet.add(toFullSizeUrl(match[1]));
   }
 
   // Extract from <img src="..."> HTML tags
   const imgTagRegex = /<img[^>]*\bsrc="([^"]*)"[^>]*>/g;
   while ((match = imgTagRegex.exec(rawHtml)) !== null) {
-    if (match[1]) imageSet.add(match[1]);
+    if (match[1]) imageSet.add(toFullSizeUrl(match[1]));
   }
 
   // Extract gallery IDs for async resolution

@@ -6,7 +6,7 @@ import type {
   FetchArticlesOptions,
   SearchArticlesOptions,
 } from "./types";
-import { processContent } from "./content";
+import { processContent, toFullSizeUrl } from "./content";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
@@ -97,8 +97,8 @@ async function resolveMediaIds(ids: number[]): Promise<string[]> {
   const media: Array<{ id: number; source_url: string }> =
     await response.json();
 
-  // Return URLs in the same order as the input IDs
-  const urlMap = new Map(media.map((m) => [m.id, m.source_url]));
+  // Return full-size URLs in the same order as the input IDs
+  const urlMap = new Map(media.map((m) => [m.id, toFullSizeUrl(m.source_url)]));
   return ids.map((id) => urlMap.get(id)).filter(Boolean) as string[];
 }
 
@@ -108,7 +108,8 @@ async function resolveMediaIds(ids: number[]): Promise<string[]> {
  */
 async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
   const featuredMedia = post._embedded?.["wp:featuredmedia"]?.[0];
-  const featuredImage = featuredMedia?.source_url || null;
+  const rawFeaturedImage = featuredMedia?.source_url || null;
+  const featuredImage = rawFeaturedImage ? toFullSizeUrl(rawFeaturedImage) : null;
   const authorName = post._embedded?.author?.[0]?.name || "Unknown";
 
   // Get category info from embedded terms

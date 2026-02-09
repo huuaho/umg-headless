@@ -49,13 +49,3 @@ jobs:
           local-dir: ./apps/echo-media/out/
           server-dir: ./echo-media.info/public_html/
           dangerous-clean-slate: true
-
-      - name: Purge SiteGround cache
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EM_SSH_HOST }}
-          username: ${{ secrets.EM_SSH_USERNAME }}
-          password: ${{ secrets.EM_SSH_PASSWORD }}
-          script: |
-            curl -sSX PURGE http://127.0.0.1/* -H "Host: www.echo-media.info"
-            curl -sSX PURGE http://127.0.0.1/* -H "Host: echo-media.info"

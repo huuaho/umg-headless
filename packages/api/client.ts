@@ -22,6 +22,68 @@ const API_BASE_URL =
 const API_MODE = process.env.NEXT_PUBLIC_API_MODE || "custom";
 
 /**
+ * Source site IDs → their headless frontend base URL.
+ * Used to build correct /articles/{slug} links for EM/IS articles on UMG.
+ */
+const SOURCE_FRONTEND: Record<string, string> = {
+  "echo-media": "https://www.echo-media.info",
+  "internationalspectrum": "https://www.internationalspectrum.org",
+};
+
+/**
+ * Fallback: extract slug from WP date permalink for articles ingested before
+ * the um_remote_slug field was added.
+ */
+const HEADLESS_DOMAINS: Record<string, string> = {
+  "echo-media.info": "https://www.echo-media.info",
+  "www.echo-media.info": "https://www.echo-media.info",
+  "api.echo-media.info": "https://www.echo-media.info",
+  "internationalspectrum.org": "https://www.internationalspectrum.org",
+  "www.internationalspectrum.org": "https://www.internationalspectrum.org",
+  "api.internationalspectrum.org": "https://www.internationalspectrum.org",
+};
+
+function normalizeSourceUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const frontendBase = HEADLESS_DOMAINS[parsed.hostname];
+    if (frontendBase) {
+      const match = parsed.pathname.match(
+        /^\/\d{4}\/\d{2}\/\d{2}\/([^/]+)\/?$/
+      );
+      if (match) {
+        return `${frontendBase}/articles/${match[1]}`;
+      }
+    }
+  } catch {
+    // Invalid URL — return as-is
+  }
+  return url;
+}
+
+function normalizeArticleUrls(data: ArticlesResponse): ArticlesResponse {
+  data.items = data.items.map((item) => {
+    const frontendBase = SOURCE_FRONTEND[item.source];
+
+    if (frontendBase && item.slug) {
+      // Use slug directly — most reliable
+      return {
+        ...item,
+        source_url: `${frontendBase}/articles/${item.slug}`,
+        slug: "", // clear so ArticleLink uses external URL, not internal route
+      };
+    }
+
+    // Fallback: regex-parse the WP permalink (pre-existing articles without slug)
+    return {
+      ...item,
+      source_url: normalizeSourceUrl(item.source_url),
+    };
+  });
+  return data;
+}
+
+/**
  * Fetch articles from WordPress API
  * Delegates to standard WP REST API when API_MODE is "wp"
  */
@@ -55,7 +117,7 @@ export async function fetchArticles(
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  return normalizeArticleUrls(await response.json());
 }
 
 /**
@@ -93,7 +155,7 @@ export async function searchArticles(
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  return normalizeArticleUrls(await response.json());
 }
 
 /**

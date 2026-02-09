@@ -82,7 +82,49 @@ fetchArticles(category, perPage)
 
 ## Key Difference: Article Links
 
-- **UMG**: Articles link externally (`target="_blank"` to `source_url` on the original site)
-- **EM/IS**: Articles are hosted internally — links point to the site's own pages
+- **UMG**: Articles link externally (`target="_blank"` to `source_url` on the original site) — no `slug`
+- **EM/IS**: Articles are hosted internally at `/articles/[slug]` — articles have `slug` and `content`
 
-Currently the section components use `<a target="_blank">` for all article links. For EM/IS, articles link to the WordPress permalink for now. A future update will create internal article detail pages (`/articles/[slug]`) and update section components accordingly.
+Section components use `<ArticleLink>` which renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external articles (slug absent). See [ArticleLink.md](ArticleLink.md).
+
+---
+
+## WP Content Processing (`packages/api/content.ts`)
+
+WP `content.rendered` contains Divi builder shortcodes with HTML-encoded quotes. The API package processes this before delivering content to the frontend:
+
+| Function | Purpose |
+|----------|---------|
+| `toFullSizeUrl(url)` | Strips WP thumbnail suffixes (`-150x150.jpg` → `.jpg`) from image URLs |
+| `decodeShortcodeEntities(text)` | Decodes `&#8221;`, `&#8243;`, `&amp;` etc. within shortcode brackets |
+| `stripDiviShortcodes(html)` | Converts `[et_pb_image src="URL"]` → `<img>`, strips `[et_pb_gallery]` and all `[et_pb_*]` tags, preserves inner HTML |
+| `extractGalleryIds(rawHtml)` | Extracts media IDs from `[et_pb_gallery gallery_ids="1,2,3"]` |
+| `processContent(rawHtml)` | Returns `{ html, images: string[], galleryIds: number[] }` |
+
+### Image Pipeline
+
+All images are collected from multiple sources, converted to full-size URLs, and deduplicated:
+
+```
+Featured image (_embedded["wp:featuredmedia"])  → toFullSizeUrl()
+[et_pb_image src="..."] shortcodes              → toFullSizeUrl()
+<img src="..."> tags in content                 → toFullSizeUrl()
+[et_pb_gallery gallery_ids="..."]               → resolveMediaIds() → toFullSizeUrl()
+                                                → deduplicate via Set
+                                                → ApiArticle.images[]
+```
+
+### Category Name Decoding
+
+WP API returns category names with HTML entities (e.g., `Art &amp; Culture`). The adapter runs `stripHtml()` on `cat.name` to decode these before storing in `ApiArticle.category`.
+
+---
+
+## Article Detail Pages
+
+EM and IS have article detail pages at `/articles/[slug]`:
+- Static export via `generateStaticParams()` (EM: ~25 articles, IS: ~45 articles)
+- Uses `ArticleLayout` component with `FeaturedMedia` for gallery/lightbox support
+- Body content rendered with Tailwind Typography (`prose prose-lg`)
+
+See [ArticleLayout.md](ArticleLayout.md) and [sections/FeaturedMedia.md](sections/FeaturedMedia.md) for component details.

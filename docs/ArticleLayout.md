@@ -23,6 +23,7 @@ interface ArticleLayoutProps {
   readTime: string;    // Pre-formatted (e.g., "3 min read")
   images: string[];    // All images (featured + gallery), deduplicated, full-size URLs
   content: string;     // Sanitized HTML body (Divi shortcodes stripped)
+  postId?: number;     // WP post ID — enables CommentsSection (EM/IS only)
 }
 ```
 
@@ -46,6 +47,11 @@ interface ArticleLayoutProps {
 │                                              │
 │  Article body content rendered with          │
 │  Tailwind prose classes...                   │
+│                                              │
+│  ─────────────── border-t ───────────────    │
+│                                              │
+│  Comments (12)                               │
+│  (CommentsSection — only if postId set)      │
 │                                              │
 └──────────────────────────────────────────────┘
 ```
@@ -77,6 +83,12 @@ interface ArticleLayoutProps {
 - Tailwind Typography classes: `prose prose-lg max-w-none`
 - Custom overrides: `prose-headings:font-bold prose-a:text-blue-700 prose-img:rounded-lg`
 
+### Comments Section
+- Rendered only when `postId` is provided (EM/IS only, not UMG)
+- `{postId != null && <CommentsSection postId={postId} />}`
+- Interactive client-side component — fetches/posts comments via WP REST API
+- See `docs/CommentsSection.md` for full spec
+
 ## Usage
 
 ### In Article Page Routes
@@ -101,6 +113,7 @@ export default async function ArticlePage({ params }) {
       readTime={`${article.read_time_minutes} min read`}
       images={article.images}
       content={article.content}
+      postId={article.id}
     />
   );
 }
@@ -133,11 +146,12 @@ WP content.rendered (raw Divi HTML)
 
 ## Client Component
 
-This component has `"use client"` because it uses `FeaturedMedia`, which requires `useState` for gallery navigation and lightbox state.
+This component has `"use client"` because it uses `FeaturedMedia` (gallery/lightbox state) and `CommentsSection` (comment fetching/submission state).
 
 ## Dependencies
 
 - `packages/ui/sections/components/FeaturedMedia` — Image/gallery display with lightbox
+- `packages/ui/article/CommentsSection` — Interactive comments section (see `docs/CommentsSection.md`)
 - `@tailwindcss/typography` — Must be installed and configured in each app's `globals.css`
 
 ## Files
@@ -145,6 +159,7 @@ This component has `"use client"` because it uses `FeaturedMedia`, which require
 | File | Purpose |
 |------|---------|
 | `packages/ui/article/ArticleLayout.tsx` | This component |
+| `packages/ui/article/CommentsSection.tsx` | Comments section (rendered when `postId` is set) |
 | `packages/ui/sections/components/FeaturedMedia.tsx` | Image/gallery/lightbox |
 | `packages/ui/index.ts` | Barrel export (`ArticleLayout`) |
 | `apps/echo-media/app/articles/[slug]/page.tsx` | EM article route |

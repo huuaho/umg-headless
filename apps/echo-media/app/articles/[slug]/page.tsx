@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { fetchArticleBySlug, fetchAllSlugs } from "@umg/api";
 import { ArticleLayout } from "@umg/ui";
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const slugs = await fetchAllSlugs();
   return slugs.map((slug) => ({ slug }));

@@ -13,3 +13,4 @@ export { default as Footer } from "./Footer";
 export type { FooterProps } from "./Footer";
 export { default as ArticleLink } from "./ArticleLink";
 export { default as ArticleLayout } from "./article/ArticleLayout";
+export { default as NotFoundPage } from "./NotFoundPage";

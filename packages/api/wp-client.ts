@@ -116,7 +116,7 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
   const wpCategories = post._embedded?.["wp:term"]?.[0] || [];
   const apiCategories: ApiCategory[] = wpCategories.map((cat) => ({
     id: cat.id,
-    name: cat.name,
+    name: stripHtml(cat.name),
     slug: cat.slug,
     parent: 0,
   }));

@@ -74,10 +74,11 @@ function normalizeArticleUrls(data: ArticlesResponse): ArticlesResponse {
       };
     }
 
-    // Fallback: regex-parse the WP permalink (pre-existing articles without slug)
+    // Non-headless sites (DW) or articles without slug: keep original URL, clear slug
     return {
       ...item,
       source_url: normalizeSourceUrl(item.source_url),
+      slug: "", // UMG has no article pages — all links are external
     };
   });
   return data;

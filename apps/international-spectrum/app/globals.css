@@ -8,6 +8,7 @@ html {
 }
 
 body {
+  opacity: 1;
   background: #ffffff;
   color: #212223;
   font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;

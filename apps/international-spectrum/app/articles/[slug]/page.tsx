@@ -44,7 +44,7 @@ export default async function ArticlePage({
       date={article.date}
       category={article.category}
       readTime={`${article.read_time_minutes} min read`}
-      featuredImage={article.featured_image}
+      images={article.images}
       content={article.content}
     />
   );

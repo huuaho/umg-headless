@@ -75,9 +75,38 @@ function estimateReadTime(content: string): number {
 }
 
 /**
- * Convert a standard WP REST API post to the ApiArticle format
+ * Resolve WP media IDs to source URLs via the media API.
+ * Fetches in a single batch request.
  */
-function wpPostToApiArticle(post: WpPost): ApiArticle {
+async function resolveMediaIds(ids: number[]): Promise<string[]> {
+  if (ids.length === 0) return [];
+
+  const params = new URLSearchParams({
+    include: ids.join(","),
+    per_page: String(ids.length),
+    _fields: "id,source_url",
+  });
+
+  const url = `${API_BASE_URL}/wp/v2/media?${params}`;
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) return [];
+
+  const media: Array<{ id: number; source_url: string }> =
+    await response.json();
+
+  // Return URLs in the same order as the input IDs
+  const urlMap = new Map(media.map((m) => [m.id, m.source_url]));
+  return ids.map((id) => urlMap.get(id)).filter(Boolean) as string[];
+}
+
+/**
+ * Convert a standard WP REST API post to the ApiArticle format.
+ * Async because it resolves gallery media IDs via the WP media API.
+ */
+async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
   const featuredMedia = post._embedded?.["wp:featuredmedia"]?.[0];
   const featuredImage = featuredMedia?.source_url || null;
   const authorName = post._embedded?.author?.[0]?.name || "Unknown";
@@ -93,11 +122,18 @@ function wpPostToApiArticle(post: WpPost): ApiArticle {
 
   const categoryName = apiCategories[0]?.name || "";
 
-  // Process content: strip Divi shortcodes, extract images
+  // Process content: strip Divi shortcodes, extract images + gallery IDs
   const processed = processContent(post.content.rendered);
-  const allImages = featuredImage
-    ? [featuredImage, ...processed.images]
-    : processed.images;
+
+  // Resolve gallery media IDs to URLs
+  const galleryUrls = await resolveMediaIds(processed.galleryIds);
+
+  // Combine all images, deduplicated
+  const imageSet = new Set<string>();
+  if (featuredImage) imageSet.add(featuredImage);
+  for (const img of processed.images) imageSet.add(img);
+  for (const img of galleryUrls) imageSet.add(img);
+  const allImages = Array.from(imageSet);
 
   return {
     id: post.id,
@@ -110,7 +146,7 @@ function wpPostToApiArticle(post: WpPost): ApiArticle {
     excerpt: stripHtml(post.excerpt.rendered),
     content: processed.html,
     featured_image: featuredImage,
-    images: allImages.length > 0 ? allImages : [],
+    images: allImages,
     author_name: authorName,
     category: categoryName,
     categories: apiCategories,
@@ -161,7 +197,7 @@ export async function fetchArticlesWP(
     per_page: perPage,
     total,
     total_pages: totalPages,
-    items: posts.map(wpPostToApiArticle),
+    items: await Promise.all(posts.map(wpPostToApiArticle)),
   };
 }
 
@@ -209,7 +245,7 @@ export async function searchArticlesWP(
     per_page: perPage,
     total,
     total_pages: totalPages,
-    items: posts.map(wpPostToApiArticle),
+    items: await Promise.all(posts.map(wpPostToApiArticle)),
   };
 }
 

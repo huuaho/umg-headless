@@ -1,4 +1,6 @@
-import Image from "next/image";
+"use client";
+
+import FeaturedMedia from "../sections/components/FeaturedMedia";
 
 interface ArticleLayoutProps {
   title: string;
@@ -6,7 +8,7 @@ interface ArticleLayoutProps {
   date: string;
   category: string;
   readTime: string;
-  featuredImage: string | null;
+  images: string[]; // All images (featured + gallery)
   content: string; // Sanitized HTML (Divi stripped)
 }
 
@@ -16,7 +18,7 @@ export default function ArticleLayout({
   date,
   category,
   readTime,
-  featuredImage,
+  images,
   content,
 }: ArticleLayoutProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
@@ -47,15 +49,12 @@ export default function ArticleLayout({
           <time dateTime={date}>{formattedDate}</time>
         </div>
 
-        {/* Featured Image */}
-        {featuredImage && (
-          <div className="relative w-full aspect-3/2 mb-8 -mx-6 md:mx-0">
-            <Image
-              src={featuredImage}
+        {/* Featured Image / Gallery */}
+        {images.length > 0 && (
+          <div className="mb-8 -mx-6 md:mx-0">
+            <FeaturedMedia
+              images={images.length > 1 ? images : images[0]}
               alt={title}
-              fill
-              className="object-cover"
-              priority
             />
           </div>
         )}

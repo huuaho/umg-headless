@@ -1,8 +1,8 @@
-# Section Type 2
+# Section Type 3
 
 > **Development Approach**: Mobile-first. The mobile version is the primary focus of this website. Base styles target SM, then progressively enhance for MD, LG, and 2XL.
 
-A news section featuring 5 articles: 1 featured (main) article with a single image and 4 secondary articles. Similar to Section Type 1 but with a single image instead of a gallery carousel.
+A news section featuring 4 articles: 1 featured (main) article with a single image and 3 secondary articles. Similar to Section Type 2 but with fewer secondary articles.
 
 ---
 
@@ -10,83 +10,86 @@ A news section featuring 5 articles: 1 featured (main) article with a single ima
 
 | File | Description |
 |------|-------------|
-| `components/sections/SectionType2.tsx` | Main component with SecondaryArticleCard sub-component |
-| `components/sections/components/FeaturedMedia.tsx` | Shared media component (handles single image or gallery) |
-| `lib/dummyData.ts` | TypeScript interfaces and mock data |
+| `packages/ui/sections/SectionType3.tsx` | Main component with SecondaryArticleCard sub-component |
+| `packages/ui/sections/components/FeaturedMedia.tsx` | Shared media component (handles single image or gallery) |
+| `packages/api/types.ts` | TypeScript interfaces (`FeaturedArticle`, `SecondaryArticle`, `SectionData`) |
 
 ---
 
 ## TypeScript Interfaces
 
 ```typescript
-// lib/dummyData.ts
+// packages/api/types.ts
 
 export interface FeaturedArticle {
   title: string;
   snippet: string;
   time: string;
   gallery: string | string[]; // Single image or array for gallery carousel
-  url: string; // Link to original source
+  url: string;
+  slug?: string;   // Present for internal articles (EM/IS), absent for external (UMG)
 }
 
 export interface SecondaryArticle {
   title: string;
   time: string;
-  url: string; // Link to original source
+  url: string;
+  slug?: string;
 }
 
-// All section types share the same data structure
 export interface SectionData {
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
 }
 
-// Component props - category is passed separately from page
-interface SectionType2Props extends SectionData {
+// Component props
+interface SectionType3Props extends SectionData {
   slug: string;
   category: string;
 }
 ```
+
+All article links use `ArticleLink` — renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external (slug absent). See [../components/ArticleLink.md](../components/ArticleLink.md).
 
 ---
 
 ## Content Structure
 
 ### Featured Article
-- **Category**: Category name displayed as section label (e.g., "Profiles & Opinions >")
+- **Category**: Category name displayed as section label (e.g., "Economy & Business >")
 - **Title**: Large headline (responsive sizing with dynamic adjustment at LG+)
 - **Snippet**: Brief excerpt from the article
-- **Time**: Reading time (e.g., "8 min read")
+- **Time**: Reading time (e.g., "6 min read")
 - **Image**: Single image via FeaturedMedia component (aspect ratio 3:2)
 
-### Secondary Articles (x4)
+### Secondary Articles (x3)
 - **Title**: Headline only
 - **Time**: Reading time (e.g., "X min read")
 
 ---
 
-## Key Differences from Section Type 1
+## Key Differences from Section Type 2
 
-| Feature | Section Type 1 | Section Type 2 |
+| Feature | Section Type 2 | Section Type 3 |
 |---------|---------------|----------------|
-| Featured media | Gallery carousel (array) | Single image (string) |
-| LG layout | 2/3 featured + 1/3 secondary side-by-side | 1/3 text + 2/3 image, secondary 4-col below |
-| 2XL layout | Text + gallery side-by-side, secondary 4-col below | 4-col grid (1 text, 2 image, 1 secondary stack) |
-| Dynamic title sizing | At 2XL only | At LG+ (1024px) |
-| SM secondary articles | 3 rows (1, 1, 2 cols) | 4 rows (all full width) |
+| Total articles | 5 (1 + 4) | 4 (1 + 3) |
+| SM secondary | 4 rows | 3 rows |
+| MD secondary | 2x2 grid | 1 row, 3 columns |
+| LG secondary | 4 columns | 3 columns |
+| 2XL secondary | 4 stacked rows | 3 stacked rows |
 
 ---
 
 ## Component Architecture
 
-### SectionType2 (Main Component)
+### SectionType3 (Main Component)
 - Renders the full section with category label, featured article, and secondary articles
 - Has `id={slug}` for anchor navigation from header
 - Uses `scroll-mt-24` to account for sticky header when scrolling
 - Section-level bottom border (`border-b border-gray-300`) for consistent separation
 
 ### FeaturedMedia (Shared Component)
-- Located at `components/sections/components/FeaturedMedia.tsx`
+- Located at `packages/ui/sections/components/FeaturedMedia.tsx`
 - Accepts `images` prop (string or string array) and `alt` text
 - Renders single image when given a string or single-item array
 - Renders gallery carousel when given array with 2+ images
@@ -158,21 +161,18 @@ At LG and above, the title and image are displayed side-by-side. To prevent the 
 ├─────────────────────────────────────────────────────────────────┤
 │ Art 3 Title                                                     │
 │ Time                                                            │
-├─────────────────────────────────────────────────────────────────┤
-│ Art 4 Title                                                     │
-│ Time                                                            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 **Layout Details:**
 - Everything stacked vertically, full width
 - Image bleeds to full viewport (`-mx-6`)
-- Secondary articles: 4 rows, all full width
+- Secondary articles: 3 rows, all full width
 - All articles have bottom border except the last one
 
 **Borders:**
 - Top border on secondary container (`border-t`)
-- Bottom border between all articles (`border-b`)
+- Bottom border between articles 1-2 and 2-3 (`border-b`)
 - Section-level bottom border
 
 ---
@@ -189,25 +189,22 @@ At LG and above, the title and image are displayed side-by-side. To prevent the 
 │ │                        Image                                │ │
 │ │                     (aspect 3:2)                            │ │
 │ └─────────────────────────────────────────────────────────────┘ │
-├────────────────────────────────┬────────────────────────────────┤
-│ Art 1 Title                    │ Art 2 Title                    │
-│ Time                           │ Time                           │
-├────────────────────────────────┼────────────────────────────────┤
-│ Art 3 Title                    │ Art 4 Title                    │
-│ Time                           │ Time                           │
-└────────────────────────────────┴────────────────────────────────┘
+├─────────────────────┬─────────────────────┬─────────────────────┤
+│ Art 1 Title         │ Art 2 Title         │ Art 3 Title         │
+│ Time                │ Time                │ Time                │
+└─────────────────────┴─────────────────────┴─────────────────────┘
 ```
 
 **Layout Details:**
 - Everything stacked vertically, full width
 - Image bleeds to full viewport (`-mx-6`)
-- Secondary articles: 2x2 grid (`md:grid-cols-2`)
-- Column padding: left column `md:pr-4`, right column `md:pl-4`
+- Secondary articles: 1 row, 3 equal columns (`md:grid-cols-3`)
+- Column padding: `md:pr-4`, `md:px-4`, `md:pl-4`
 
 **Borders:**
 - No top border (`md:border-t-0`)
 - No vertical borders between columns
-- Horizontal border between rows 1-2 (`border-b`)
+- No bottom borders on articles (`md:border-b-0`)
 - Section-level bottom border
 
 ---
@@ -224,11 +221,10 @@ At LG and above, the title and image are displayed side-by-side. To prevent the 
 │ Snippet           │             (aspect 3:2)                    │
 │ Time              │                                             │
 │      (1/3)        │                                             │
-├────────┬──────────┴────────┬────────────────┬───────────────────┤
-│ Art 1  │ Art 2             │ Art 3          │ Art 4             │
-│ Title  │ Title             │ Title          │ Title             │
-│ Time   │ Time              │ Time           │ Time              │
-└────────┴───────────────────┴────────────────┴───────────────────┘
+├───────────────────┴──────────────────┬──────────────────────────┤
+│ Art 1 Title       │ Art 2 Title      │ Art 3 Title              │
+│ Time              │ Time             │ Time                     │
+└───────────────────┴──────────────────┴──────────────────────────┘
 ```
 
 **Layout Details:**
@@ -236,7 +232,7 @@ At LG and above, the title and image are displayed side-by-side. To prevent the 
   - Text content: 1/3 width (`lg:w-1/3`)
   - Image: 2/3 width (`lg:w-2/3`)
 - Image contained within column (`lg:mx-0`)
-- Secondary articles: 4 equal columns (`lg:grid-cols-4`)
+- Secondary articles: 3 equal columns (`lg:grid-cols-3`)
 - Column padding for spacing between articles
 
 **Borders:**
@@ -260,9 +256,6 @@ At LG and above, the title and image are displayed side-by-side. To prevent the 
 │ Time         │                                 ├────────────────┤
 │              │                                 │ Art 3 Title    │
 │    (1/4)     │                                 │ Time           │
-│              │                                 ├────────────────┤
-│              │                                 │ Art 4 Title    │
-│              │                                 │ Time           │
 └──────────────┴─────────────────────────────────┴────────────────┘
 ```
 
@@ -283,16 +276,16 @@ At LG and above, the title and image are displayed side-by-side. To prevent the 
 
 ## Usage Example
 
-```tsx
-// app/page.tsx
-import SectionType2 from "@/components/sections/SectionType2";
-import { sectionType2Data } from "@/lib/dummyData";
+SectionType3 is not used directly — it's rendered by `CategorySectionWrapper` based on the `sectionType` prop. See [CategorySectionWrapper.md](CategorySectionWrapper.md).
 
-<SectionType2
-  slug="profiles-opinions"
-  category="Profiles & Opinions"
-  featured={sectionType2Data.featured}
-  secondary={sectionType2Data.secondary}
+```tsx
+// apps/*/app/page.tsx
+import { CategorySectionWrapper } from "@umg/ui";
+
+<CategorySectionWrapper
+  slug="economy-business"
+  category="Economy & Business"
+  sectionType="type3"
 />
 ```
 
@@ -303,31 +296,26 @@ import { sectionType2Data } from "@/lib/dummyData";
 ```json
 {
   "featured": {
-    "title": "Global leaders gather for historic climate summit in Geneva",
-    "snippet": "World leaders from over 150 countries have convened in Geneva for what is being called the most significant climate conference since the Paris Agreement, with ambitious new targets expected to be announced.",
-    "time": "8 min read",
-    "gallery": "https://picsum.photos/seed/type2feat/900/600",
+    "title": "Central banks signal coordinated approach to interest rate policy",
+    "snippet": "Major central banks around the world are signaling a more coordinated approach to monetary policy as global inflation concerns persist and economic growth forecasts remain uncertain.",
+    "time": "6 min read",
+    "gallery": "https://picsum.photos/seed/type3feat/900/600",
     "url": "#"
   },
   "secondary": [
     {
-      "title": "UN Secretary-General calls for immediate action on carbon emissions",
-      "time": "4 min read",
-      "url": "#"
-    },
-    {
-      "title": "Small island nations demand stronger commitments from industrialized countries",
-      "time": "5 min read",
-      "url": "#"
-    },
-    {
-      "title": "Tech giants pledge billions toward renewable energy initiatives",
+      "title": "Stock markets rally on positive earnings reports from tech sector",
       "time": "3 min read",
       "url": "#"
     },
     {
-      "title": "Youth activists stage peaceful demonstration outside conference venue",
-      "time": "2 min read",
+      "title": "Supply chain disruptions continue to impact manufacturing globally",
+      "time": "4 min read",
+      "url": "#"
+    },
+    {
+      "title": "Emerging markets show resilience despite currency volatility",
+      "time": "5 min read",
       "url": "#"
     }
   ]
@@ -339,7 +327,7 @@ import { sectionType2Data } from "@/lib/dummyData";
 ## Reference Images
 
 Reference images are located in `claude-context/sections/`:
-- `section-type-2-2XL+.png` (if available)
-- `section-type-2-LG+.png` (if available)
-- `section-type-2-MD+.png` (if available)
-- `section-type-2-SM+.png` (if available)
+- `section-type-3-2XL+.png` (if available)
+- `section-type-3-LG+.png` (if available)
+- `section-type-3-MD+.png` (if available)
+- `section-type-3-SM+.png` (if available)

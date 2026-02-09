@@ -10,32 +10,33 @@ A news section featuring 5 articles: 1 featured (main) article and 4 secondary a
 
 | File | Description |
 |------|-------------|
-| `components/sections/SectionType1.tsx` | Main component with SecondaryArticleCard sub-component |
-| `components/sections/components/FeaturedMedia.tsx` | Shared media component (handles single image or gallery carousel) |
-| `lib/dummyData.ts` | TypeScript interfaces and mock data |
+| `packages/ui/sections/SectionType1.tsx` | Main component with SecondaryArticleCard sub-component |
+| `packages/ui/sections/components/FeaturedMedia.tsx` | Shared media component (handles single image or gallery carousel) |
+| `packages/api/types.ts` | TypeScript interfaces (`FeaturedArticle`, `SecondaryArticle`, `SectionData`) |
 
 ---
 
 ## TypeScript Interfaces
 
 ```typescript
-// lib/dummyData.ts
+// packages/api/types.ts
 
 export interface FeaturedArticle {
   title: string;
   snippet: string;
   time: string;
   gallery: string | string[]; // Single image or array for gallery carousel
-  url: string; // Link to original source
+  url: string;     // Link to original source
+  slug?: string;   // Present for internal articles (EM/IS), absent for external (UMG)
 }
 
 export interface SecondaryArticle {
   title: string;
   time: string;
-  url: string; // Link to original source
+  url: string;
+  slug?: string;
 }
 
-// All section types share the same data structure
 export interface SectionData {
   featured: FeaturedArticle;
   secondary: SecondaryArticle[];
@@ -47,6 +48,8 @@ interface SectionType1Props extends SectionData {
   category: string;
 }
 ```
+
+All article links use `ArticleLink` (`packages/ui/ArticleLink.tsx`) — renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external (slug absent). See [../components/ArticleLink.md](../components/ArticleLink.md).
 
 ---
 
@@ -74,7 +77,7 @@ interface SectionType1Props extends SectionData {
 - Section-level bottom border (`border-b border-gray-300`) for consistent separation
 
 ### FeaturedMedia (Shared Component)
-- Located at `components/sections/components/FeaturedMedia.tsx`
+- Located at `packages/ui/sections/components/FeaturedMedia.tsx`
 - Accepts `images` prop (string or string array) and `alt` text
 - Renders single image when given a string or single-item array
 - Renders gallery carousel when given array with 2+ images
@@ -276,16 +279,16 @@ At the 2XL breakpoint, the title and gallery are displayed side-by-side. To prev
 
 ## Usage Example
 
-```tsx
-// app/page.tsx
-import SectionType1 from "@/components/sections/SectionType1";
-import { sectionType1Data } from "@/lib/dummyData";
+SectionType1 is not used directly — it's rendered by `CategorySectionWrapper` based on the `sectionType` prop. See [CategorySectionWrapper.md](CategorySectionWrapper.md).
 
-<SectionType1
+```tsx
+// apps/*/app/page.tsx
+import { CategorySectionWrapper } from "@umg/ui";
+
+<CategorySectionWrapper
   slug="world-news-politics"
   category="World News & Politics"
-  featured={sectionType1Data.featured}
-  secondary={sectionType1Data.secondary}
+  sectionType="type1"
 />
 ```
 

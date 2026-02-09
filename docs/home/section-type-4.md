@@ -10,21 +10,22 @@ A simpler news section featuring 4 equal-weight articles with two variants: with
 
 | File | Description |
 |------|-------------|
-| `components/sections/SectionType4.tsx` | Main component with ArticleCard sub-component |
-| `lib/dummyData.ts` | TypeScript interfaces and mock data |
+| `packages/ui/sections/SectionType4.tsx` | Main component with ArticleCard sub-component |
+| `packages/api/types.ts` | TypeScript interfaces (`Type4Article`, `SectionType4Data`) |
 
 ---
 
 ## TypeScript Interfaces
 
 ```typescript
-// lib/dummyData.ts
+// packages/api/types.ts
 
 export interface Type4Article {
   title: string;
   time: string;
   image?: string; // Optional - only used when textOnly is false
-  url: string; // Link to original source
+  url: string;
+  slug?: string;  // Present for internal articles (EM/IS), absent for external (UMG)
 }
 
 export interface SectionType4Data {
@@ -38,6 +39,8 @@ interface SectionType4Props extends SectionType4Data {
   textOnly?: boolean; // Default: false (show images)
 }
 ```
+
+All article links use `ArticleLink` — renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external (slug absent). See [../components/ArticleLink.md](../components/ArticleLink.md).
 
 ---
 
@@ -218,24 +221,24 @@ interface SectionType4Props extends SectionType4Data {
 
 ## Usage Example
 
+SectionType4 is not used directly — it's rendered by `CategorySectionWrapper` based on the `sectionType` prop. See [CategorySectionWrapper.md](CategorySectionWrapper.md).
+
 ```tsx
-// app/page.tsx
-import SectionType4 from "@/components/sections/SectionType4";
-import { sectionType4Data, sectionType4TextOnlyData } from "@/lib/dummyData";
+// apps/*/app/page.tsx
+import { CategorySectionWrapper } from "@umg/ui";
 
 // With images
-<SectionType4
+<CategorySectionWrapper
   slug="diplomacy"
   category="Diplomacy"
-  articles={sectionType4Data.articles}
+  sectionType="type4"
 />
 
 // Text only
-<SectionType4
+<CategorySectionWrapper
   slug="art-culture"
   category="Art & Culture"
-  articles={sectionType4TextOnlyData.articles}
-  textOnly
+  sectionType="type4-text"
 />
 ```
 

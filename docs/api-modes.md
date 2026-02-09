@@ -85,7 +85,7 @@ fetchArticles(category, perPage)
 - **UMG**: Articles link externally (`target="_blank"` to `source_url` on the original site) — no `slug`
 - **EM/IS**: Articles are hosted internally at `/articles/[slug]` — articles have `slug` and `content`
 
-Section components use `<ArticleLink>` which renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external articles (slug absent). See [ArticleLink.md](ArticleLink.md).
+Section components use `<ArticleLink>` which renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external articles (slug absent). See [ArticleLink.md](components/ArticleLink.md).
 
 ---
 
@@ -127,4 +127,4 @@ EM and IS have article detail pages at `/articles/[slug]`:
 - Uses `ArticleLayout` component with `FeaturedMedia` for gallery/lightbox support
 - Body content rendered with Tailwind Typography (`prose prose-lg`)
 
-See [ArticleLayout.md](ArticleLayout.md) and [sections/FeaturedMedia.md](sections/FeaturedMedia.md) for component details.
+See [ArticleLayout.md](article/ArticleLayout.md) and [FeaturedMedia.md](components/FeaturedMedia.md) for component details.

@@ -94,14 +94,14 @@ interface ArticleLayoutProps {
 - Rendered only when `postId` is provided (EM/IS only, not UMG)
 - `{postId != null && <CommentsSection postId={postId} />}`
 - Interactive client-side component — fetches/posts comments via WP REST API
-- See `docs/CommentsSection.md` for full spec
+- See `CommentsSection.md` for full spec
 
 ### More Articles Carousel
 - Rendered only when `currentSlug` and `category` are provided (EM/IS only, not UMG)
 - `{currentSlug && category && <MoreArticles currentSlug={currentSlug} category={category} />}`
 - Horizontal-scroll carousel of 10 articles (alternating same-category and recent)
 - Desktop arrow buttons + mobile swipe
-- See `docs/MoreArticles.md` for full spec
+- See `MoreArticles.md` for full spec
 
 ## Usage
 

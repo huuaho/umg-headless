@@ -2,27 +2,28 @@
 
 ## Overview
 
-This Next.js frontend uses static export (`output: 'export'`) and can be deployed to any static hosting provider. This guide covers deployment to SiteGround with GitHub Actions for automated deployments.
+This Turborepo monorepo uses pnpm and static export (`output: 'export'`) for each app. Each app can be deployed independently to its own domain. This guide covers deployment to SiteGround with GitHub Actions.
 
 ## Architecture
 
-```
-┌─────────────────┐     API calls      ┌─────────────────┐
-│  Static Frontend │ ────────────────► │  WordPress API  │
-│  (SiteGround)    │    at runtime     │  (SiteGround)   │
-│  your-domain.com │                   │  api.your-domain│
-└─────────────────┘                    └─────────────────┘
-```
+Each app is a separate static site that fetches data from its respective WordPress backend at runtime:
 
-- **Frontend**: Static HTML/CSS/JS files served from main domain
-- **WordPress**: Runs on subdomain, provides REST API for content
+| App | Domain | WordPress API |
+|-----|--------|--------------|
+| UMG | unitedmediadc.com | api.unitedmediadc.com/wp-json |
+| Echo Media | echo-media.info | echo-media.info/wp-json |
+| International Spectrum | internationalspectrum.org | internationalspectrum.org/wp-json |
+
+- **Frontend**: Static HTML/CSS/JS files served from each domain
+- **WordPress**: Provides REST API for content (UMG uses custom plugin, EM/IS use standard WP REST API)
 - **Data Flow**: Browser fetches data from WordPress API at runtime
 
 ## Prerequisites
 
 - SiteGround hosting account
 - GitHub repository for the project
-- WordPress site with United Media Ingestor plugin installed
+- pnpm (specified via `packageManager` in root `package.json`)
+- WordPress sites configured for each app
 
 ## Step 1: Prepare WordPress Subdomain
 
@@ -139,51 +140,38 @@ add_action('rest_api_init', function() {
 ### Build the Project
 
 ```bash
-npm run build
+# Build all apps
+pnpm turbo run build
+
+# Build a specific app
+pnpm turbo run build --filter=umg
+pnpm turbo run build --filter=echo-media
+pnpm turbo run build --filter=international-spectrum
 ```
 
-This creates an `out/` directory containing all static files.
+This creates an `out/` directory inside each app (e.g., `apps/umg/out/`).
 
 ### Upload to SiteGround
 
-**Option A: File Manager**
-
-1. Log in to SiteGround Site Tools
-2. Go to Site → File Manager
-3. Navigate to `public_html` for your main domain
-4. Upload contents of `out/` directory (not the folder itself)
-
-**Option B: SFTP**
-
-1. Get FTP credentials from SiteGround Site Tools → Site → FTP Accounts
-2. Connect using FileZilla or similar client
-3. Upload `out/` contents to `public_html`
-
-After upload, `public_html` should contain:
-
-```
-public_html/
-├── index.html
-├── about-us.html
-├── search.html
-├── _next/
-├── favicon.ico
-└── ...
-```
+Upload the contents of the app's `out/` directory (e.g., `apps/umg/out/`) to the domain's `public_html` folder via File Manager or SFTP.
 
 ## Step 3: GitHub Actions (Automated Deployment)
 
-### Create Workflow File
+### Workflow Files
 
-Create `.github/workflows/deploy.yml`:
+Each app has its own deploy workflow. Currently deployed: `.github/workflows/deploy-umg.yml`.
 
 ```yaml
-name: Deploy to SiteGround
+# .github/workflows/deploy-umg.yml
+name: Deploy UMG to SiteGround
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Manual trigger option
+    paths:
+      - 'apps/umg/**'
+      - 'packages/**'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -197,13 +185,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm turbo run build --filter=umg
         env:
           NEXT_PUBLIC_WP_API_URL: ${{ secrets.WP_API_URL }}
 
@@ -214,15 +204,17 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          local-dir: ./out/
-          server-dir: ./yourdomain.com/public_html/
+          local-dir: ./apps/umg/out/
+          server-dir: ./unitedmediadc.com/public_html/
           dangerous-clean-slate: true
 ```
 
-**Note:** The `server-dir` path depends on your SiteGround FTP structure. Connect via an FTP client (like FileZilla) to see your directory layout. Common patterns:
-- `./yourdomain.com/public_html/` - if FTP root is above the domain folder
-- `/public_html/` - if FTP root is the domain folder
-- `./` - if FTP root is already inside public_html
+Key differences from a single-app deploy:
+- `pnpm/action-setup@v4` to install pnpm
+- `pnpm install --frozen-lockfile` instead of `npm ci`
+- `pnpm turbo run build --filter=<app>` to build one app with its dependencies
+- `local-dir: ./apps/<app>/out/` — output is inside the app folder
+- `paths` filter: only triggers when app or shared packages change
 
 ### Configure GitHub Secrets
 
@@ -296,11 +288,11 @@ After setup, the workflow is:
 Before deploying, test the static build:
 
 ```bash
-# Build
-npm run build
+# Build a specific app
+pnpm turbo run build --filter=umg
 
 # Serve locally
-npx serve out/
+npx serve apps/umg/out/
 
 # Visit http://localhost:3000
 ```
@@ -354,7 +346,7 @@ The `Access-Control-Allow-Origin` header must **exactly** match the request orig
 
 - Ensure all environment variables are set in GitHub Secrets
 - Check Node.js version matches local development (v20 recommended)
-- Run `npm ci` instead of `npm install` for consistent dependencies
+- Use `pnpm install --frozen-lockfile` for consistent dependencies
 
 ### SSL Certificate Errors on Subdomain
 
@@ -433,18 +425,18 @@ After moving WordPress to the subdomain, any hardcoded image URLs pointing to th
 **Example:** URLs like `https://www.yourdomain.com/wp-content/uploads/...` need to become `https://api.yourdomain.com/wp-content/uploads/...`
 
 **Files to check:**
-- `lib/mediaCompanies.ts` - Logo URLs for Header banner and Footer
-- `components/Header.tsx` - Main site logo
-- `components/Footer.tsx` - Footer logo
+- `apps/*/lib/mediaCompanies.ts` - Logo URLs for Header banner and Footer
+- `packages/ui/Header.tsx` - Main site logo
+- `packages/ui/Footer.tsx` - Footer logo
 
 **After updating URLs:** Rebuild and redeploy since these are embedded in the JavaScript bundle at build time.
 
 ## Files
 
-| File                           | Purpose                                   |
-| ------------------------------ | ----------------------------------------- |
-| `.github/workflows/deploy.yml` | GitHub Actions workflow                   |
-| `out/`                         | Build output directory (git-ignored)      |
-| `.env.local`                   | Local environment variables               |
-| `.env.example`                 | Environment variable template             |
-| `next.config.ts`               | Contains `output: 'export'` configuration |
+| File                                    | Purpose                                   |
+| --------------------------------------- | ----------------------------------------- |
+| `.github/workflows/deploy-umg.yml`      | GitHub Actions workflow for UMG           |
+| `apps/*/out/`                           | Build output directory (git-ignored)      |
+| `apps/*/.env.local`                     | Local environment variables per app       |
+| `apps/umg/.env.example`                 | Environment variable template             |
+| `apps/*/next.config.ts`                 | Contains `output: 'export'` configuration |

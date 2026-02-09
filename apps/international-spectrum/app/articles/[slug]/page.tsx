@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { fetchArticleBySlug, fetchAllSlugs } from "@umg/api";
 import { ArticleLayout } from "@umg/ui";
+import { categories } from "../../../lib/categories";
 
 export const dynamicParams = false;
 
@@ -39,6 +40,9 @@ export default async function ArticlePage({
     notFound();
   }
 
+  const categoryColorMap = Object.fromEntries(categories.map((c) => [c.name, c.color]));
+  const categoryColor = categoryColorMap[article.category];
+
   return (
     <ArticleLayout
       title={article.title}
@@ -50,6 +54,8 @@ export default async function ArticlePage({
       content={article.content}
       postId={article.id}
       currentSlug={article.slug}
+      categoryColor={categoryColor}
+      categoryColorMap={categoryColorMap}
     />
   );
 }

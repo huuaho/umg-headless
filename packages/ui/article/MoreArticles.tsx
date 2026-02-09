@@ -12,6 +12,7 @@ const TOTAL_COUNT = 10;
 interface MoreArticlesProps {
   currentSlug: string;
   category: string;
+  categoryColorMap?: Record<string, string>;
 }
 
 /**
@@ -30,6 +31,7 @@ function interleave(a: ApiArticle[], b: ApiArticle[]): ApiArticle[] {
 export default function MoreArticles({
   currentSlug,
   category,
+  categoryColorMap,
 }: MoreArticlesProps) {
   const [articles, setArticles] = useState<ApiArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -207,7 +209,10 @@ export default function MoreArticles({
                   <span className="text-gray-400 text-xs">No image</span>
                 </div>
               )}
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-2">
+              <p
+                className="text-xs font-semibold uppercase tracking-wide mt-2"
+                style={{ color: (categoryColorMap && article.category && categoryColorMap[article.category]) || '#6b7280' }}
+              >
                 {article.category}
               </p>
               <h3 className="text-sm font-semibold leading-snug line-clamp-2 mt-1 text-gray-900">

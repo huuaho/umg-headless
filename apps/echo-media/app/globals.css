@@ -5,6 +5,7 @@
 
 :root {
   --banner-border-color: #0281b3;
+  --footer-bg: #d9ecf3;
 }
 
 html {
@@ -14,7 +15,7 @@ html {
 body {
   background: #ffffff;
   color: #212223;
-  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
   margin: 0;
   padding: 0;
 }

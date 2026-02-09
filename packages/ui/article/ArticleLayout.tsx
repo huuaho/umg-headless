@@ -14,6 +14,8 @@ interface ArticleLayoutProps {
   content: string; // Sanitized HTML (Divi stripped)
   postId?: number; // WP post ID for comments (EM/IS only)
   currentSlug?: string; // Current article slug for More Articles carousel
+  categoryColor?: string; // Hex color for category label
+  categoryColorMap?: Record<string, string>; // Map of category names to hex colors for More Articles
 }
 
 export default function ArticleLayout({
@@ -26,6 +28,8 @@ export default function ArticleLayout({
   content,
   postId,
   currentSlug,
+  categoryColor,
+  categoryColorMap,
 }: ArticleLayoutProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
@@ -38,7 +42,7 @@ export default function ArticleLayout({
       <article className="max-w-4xl mx-auto px-6 pt-28 pb-8">
         {/* Category + Read Time */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <span className="font-semibold text-black">{category}</span>
+          <span className="font-semibold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category}</span>
           <span>&middot;</span>
           <span>{readTime}</span>
         </div>
@@ -76,7 +80,7 @@ export default function ArticleLayout({
 
         {/* More Articles Carousel */}
         {currentSlug && category && (
-          <MoreArticles currentSlug={currentSlug} category={category} />
+          <MoreArticles currentSlug={currentSlug} category={category} categoryColorMap={categoryColorMap} />
         )}
       </article>
     </main>

@@ -27,7 +27,7 @@ export default function Footer({
   const rightCategories = sortedCategories.slice(midpoint);
 
   return (
-    <footer className="border-t border-gray-300">
+    <footer className="border-t border-gray-300" style={{ backgroundColor: 'var(--footer-bg, transparent)' }}>
       {/* Row 1: Big Logo */}
       <div className="py-8">
         <div className="max-w-325 mx-auto px-6">

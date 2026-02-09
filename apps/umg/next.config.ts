@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@umg/api", "@umg/config", "@umg/ui"],
   // Enable static export for headless WP hosting
   output: "export",
+  trailingSlash: true,
   images: {
     // Disable image optimization for static export (no Node.js server)
     unoptimized: true,

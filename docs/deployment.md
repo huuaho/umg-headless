@@ -119,47 +119,23 @@ If you used **Option A (Fresh Install)** and WordPress was on the main domain:
 
 **Note**: Don't delete `public_html` itself, just its contents.
 
-### CORS Configuration
+### CORS, Caching & Redirect Configuration
 
-WordPress must allow API requests from the frontend domain. The origin must match **exactly** (including `www` vs non-`www`).
+Each WordPress site needs a headless config plugin that handles CORS headers, cache-control, and frontend redirect. See [headless-config-plugins.md](plugin/headless-config-plugins.md) for full details.
 
-**How to add CORS headers:**
+1. Upload the site's plugin file to `api.yourdomain.com/wp-content/plugins/`
+2. Activate in **WP Admin → Plugins**
 
-1. Go to WordPress admin → **Appearance** → **Theme File Editor**
-2. Select `functions.php` from the right sidebar
-3. Add this code at the end of the file:
+| Site | Plugin File |
+|------|-------------|
+| UMG | `umg-headless-config.php` |
+| Echo Media | `em-headless-config.php` |
+| International Spectrum | `is-headless-config.php` |
 
-```php
-// Allow CORS for REST API
-add_action('rest_api_init', function() {
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    add_filter('rest_pre_serve_request', function($value) {
-        $allowed_origins = [
-            'https://yourdomain.com',
-            'https://www.yourdomain.com',
-            'http://localhost:3000',
-        ];
-
-        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
-
-        if (in_array($origin, $allowed_origins)) {
-            header('Access-Control-Allow-Origin: ' . $origin);
-        }
-
-        header('Access-Control-Allow-Methods: GET, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type');
-        return $value;
-    });
-});
-```
-
-4. Click **Update File**
-
-**Important**: Replace `yourdomain.com` with your actual domain. Include both `www` and non-`www` versions if needed.
-
-**Alternative**: Use a plugin like "WP CORS" for a UI-based configuration.
-
-**Temporary testing**: To quickly test, use `header('Access-Control-Allow-Origin: *');` (allows all origins - not recommended for production).
+The plugin handles:
+- **CORS**: Allows requests from `localhost` and production domains
+- **Cache-Control**: Prevents SiteGround from caching API responses (avoids CORS mismatches)
+- **Redirect**: Sends visitors on `api.yourdomain.com` to the frontend domain (except `/wp-admin` and `/wp-json`)
 
 ## Step 2: Manual Deployment (First Time)
 
@@ -390,7 +366,7 @@ The `Access-Control-Allow-Origin` header must **exactly** match the request orig
 3. Check **Request Headers** → find `Origin:` value
 4. Ensure this exact origin is in your CORS allowed list
 
-**Common fix**: Add both `www` and non-`www` versions to your allowed origins in `functions.php`.
+**Common fix**: Add both `www` and non-`www` versions to your allowed origins in the headless config plugin.
 
 ### Build Failures
 
@@ -438,21 +414,7 @@ This forces WordPress to use the subdomain URL regardless of database settings.
 
 SiteGround caches API responses **including CORS headers**. The cache doesn't vary by `Origin` header, so only one origin works at a time. If production works but localhost fails (or vice versa), the cache is returning a mismatched `Access-Control-Allow-Origin` header.
 
-**Permanent Fix: Exclude REST API from cache**
-
-Add this to your theme's `functions.php`:
-
-```php
-// Prevent caching of REST API responses (fixes CORS with multiple origins)
-add_filter('rest_post_dispatch', function($response) {
-    $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
-    $response->header('Pragma', 'no-cache');
-    $response->header('Expires', '0');
-    return $response;
-});
-```
-
-This ensures each API request gets fresh CORS headers matching its origin, allowing both localhost and production to work simultaneously.
+**Permanent Fix**: The headless config plugins already include `Cache-Control: no-cache, no-store, must-revalidate` headers on all REST API responses. If you're still seeing this issue, ensure the plugin is activated.
 
 **Alternative via SiteGround:**
 
@@ -465,8 +427,6 @@ This ensures each API request gets fresh CORS headers matching its origin, allow
 1. Go to SiteGround **Site Tools** → **Speed** → **Caching**
 2. Click **Flush All Caches**
 3. Retry the request
-
-Note: Without the permanent fix, you'll need to flush cache each time you switch between localhost and production testing.
 
 ### Images/Logos Not Loading After Migration
 

@@ -62,15 +62,27 @@ import { ArticleLink } from "@umg/ui";
 
 The `slug` prop flows through the data pipeline:
 
+**EM/IS (WP mode):**
 ```
 WP API post.slug
   → wpPostToApiArticle() → ApiArticle.slug
   → toFeaturedArticle() / toSecondaryArticle() / toType4Article()
     → slug: article.slug || undefined
   → Section components pass slug to <ArticleLink>
+  → <Link href="/articles/{slug}"> (internal navigation)
 ```
 
-For UMG (custom API mode), `ApiArticle.slug` is `undefined`, so `ArticleLink` renders an external link.
+**UMG (custom mode):**
+```
+Ingestor API → ApiArticle.slug (from um_remote_slug)
+  → normalizeArticleUrls() in client.ts:
+    - Builds correct source_url using slug + SOURCE_FRONTEND map
+    - Clears slug to "" so ArticleLink uses external URL
+  → toFeaturedArticle() → slug: "" || undefined → undefined
+  → <a href={url} target="_blank"> (external link)
+```
+
+The ingestor API returns `slug` (the remote post's slug), but `normalizeArticleUrls()` uses it to build the correct headless URL (e.g., `https://www.internationalspectrum.org/articles/{slug}`) then clears it. This ensures UMG articles always render as external links since UMG has no article detail pages.
 
 ## Client Component
 

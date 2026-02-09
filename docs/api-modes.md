@@ -58,11 +58,13 @@ The `@umg/api` package (`packages/api/`) handles this transparently:
 1. `client.ts` checks `NEXT_PUBLIC_API_MODE` at the top
 2. When `"wp"`, `fetchArticles()` and `searchArticles()` delegate to `wp-client.ts`
 3. `wp-client.ts` fetches from `wp/v2/posts?_embed`, then converts each WP post into the `ApiArticle` format
-4. Downstream code (transformers, hooks, UI components) works identically regardless of mode
+4. When `"custom"`, `normalizeArticleUrls()` post-processes the response to fix `source_url` for headless sites and clear `slug`
+5. Downstream code (transformers, hooks, UI components) works identically regardless of mode
 
 ```
 fetchArticles(category, perPage)
   ├── API_MODE = "custom" → GET /um/v1/articles?category=slug
+  │                        → normalizeArticleUrls() (fix source_url, clear slug)
   └── API_MODE = "wp"     → GET /wp/v2/categories?slug=X → ID
                            → GET /wp/v2/posts?categories=ID&_embed
                            → Convert WpPost[] to ApiArticle[]
@@ -82,10 +84,22 @@ fetchArticles(category, perPage)
 
 ## Key Difference: Article Links
 
-- **UMG**: Articles link externally (`target="_blank"` to `source_url` on the original site) — no `slug`
+- **UMG**: Articles link externally (`target="_blank"` to `source_url`) — `slug` is cleared by `normalizeArticleUrls()` so `ArticleLink` renders external links
 - **EM/IS**: Articles are hosted internally at `/articles/[slug]` — articles have `slug` and `content`
 
 Section components use `<ArticleLink>` which renders `<Link>` for internal articles (slug present) or `<a target="_blank">` for external articles (slug absent). See [ArticleLink.md](components/ArticleLink.md).
+
+### URL Normalization (Custom Mode Only)
+
+When UMG fetches articles from the custom API (`um/v1/articles`), `normalizeArticleUrls()` in `client.ts` rewrites `source_url` for headless sites (EM/IS):
+
+| Source | `slug` available? | Result |
+|--------|-------------------|--------|
+| EM/IS | Yes | `https://www.{domain}/articles/{slug}` (built from `SOURCE_FRONTEND` map + slug) |
+| EM/IS | No (pre-migration) | Regex extracts slug from WP date permalink (`/YYYY/MM/DD/slug/`) |
+| DW | N/A | Original `source_url` unchanged |
+
+All articles have `slug` cleared to `""` so `ArticleLink` always uses the external URL on UMG (which has no article detail pages).
 
 ---
 

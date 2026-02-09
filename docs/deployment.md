@@ -161,19 +161,31 @@ Upload the contents of the app's `out/` directory (e.g., `apps/umg/out/`) to the
 
 ### Workflow Files
 
-Each app has its own deploy workflow. Currently deployed: `.github/workflows/deploy-umg.yml`.
+Each app has its own deploy workflow:
+
+| Workflow | Triggers |
+|----------|----------|
+| `deploy-umg.yml` | Push to main (apps/umg or packages changes), manual |
+| `deploy-echo-media.yml` | Push to main, manual, or WordPress post change (`repository_dispatch`) |
+| `deploy-international-spectrum.yml` | Push to main, manual, or WordPress post change (`repository_dispatch`) |
 
 ```yaml
-# .github/workflows/deploy-umg.yml
-name: Deploy UMG to SiteGround
+# .github/workflows/deploy-echo-media.yml (EM and IS follow same pattern)
+name: Deploy Echo Media to SiteGround
 
 on:
   push:
     branches: [main]
     paths:
-      - "apps/umg/**"
-      - "packages/**"
+      - 'apps/echo-media/**'
+      - 'packages/**'
   workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-echo-media]
+
+concurrency:
+  group: deploy-echo-media
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -195,29 +207,54 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm turbo run build --filter=umg
+        run: pnpm turbo run build --filter=echo-media
         env:
-          NEXT_PUBLIC_WP_API_URL: ${{ secrets.UMG_WP_API_URL }}
+          NEXT_PUBLIC_WP_API_URL: ${{ secrets.EM_WP_API_URL }}
+          NEXT_PUBLIC_API_MODE: wp
 
       - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.UMG_FTP_SERVER }}
-          username: ${{ secrets.UMG_FTP_USERNAME }}
-          password: ${{ secrets.UMG_FTP_PASSWORD }}
+          server: ${{ secrets.EM_FTP_SERVER }}
+          username: ${{ secrets.EM_FTP_USERNAME }}
+          password: ${{ secrets.EM_FTP_PASSWORD }}
           protocol: ftps
-          local-dir: ./apps/umg/out/
-          server-dir: ./unitedmediadc.com/public_html/
+          local-dir: ./apps/echo-media/out/
+          server-dir: ./echo-media.info/public_html/
           dangerous-clean-slate: true
 ```
 
-Key differences from a single-app deploy:
+Key points:
 
 - `pnpm/action-setup@v4` to install pnpm
-- `pnpm install --frozen-lockfile` instead of `npm ci`
 - `pnpm turbo run build --filter=<app>` to build one app with its dependencies
 - `local-dir: ./apps/<app>/out/` — output is inside the app folder
-- `paths` filter: only triggers when app or shared packages change
+- `paths` filter: only triggers on push when app or shared packages change
+- EM and IS set `NEXT_PUBLIC_API_MODE: wp` (UMG uses default `custom` mode)
+- `repository_dispatch` + `concurrency` on EM/IS enables auto-rebuild from WordPress (see below)
+
+### Auto-Rebuild on WordPress Post Changes (EM & IS)
+
+When an admin publishes, updates, or deletes a post on the EM or IS WordPress site, the headless config plugin sends a `repository_dispatch` event to GitHub, which triggers the deploy workflow automatically.
+
+**How it works:**
+
+1. WordPress `transition_post_status` hook detects post publish/update/delete
+2. Plugin calls `POST https://api.github.com/repos/{owner}/{repo}/dispatches`
+3. GitHub Actions runs the matching deploy workflow
+4. `concurrency` + `cancel-in-progress: true` ensures rapid successive saves don't queue up builds
+
+**What triggers a rebuild:**
+- Publish new post (draft → publish)
+- Update published post (publish → publish)
+- Trash/delete published post (publish → trash)
+- Unpublish (publish → draft)
+
+**What does NOT trigger:**
+- Saving a draft (draft → draft)
+- Editing pages, menus, etc. (post_type !== 'post')
+
+**Setup:** Requires a `GH_REBUILD_TOKEN` constant in each site's `wp-config.php`. See [headless-config-plugins.md](plugin/headless-config-plugins.md) for details.
 
 ### Configure GitHub Secrets
 
@@ -332,20 +369,11 @@ Since it uses `NEXT_PUBLIC_` prefix, the value is embedded into the JavaScript b
 
 ## Troubleshooting
 
-### 404 on Page Refresh
+### 404 or 403 on Page Refresh / Direct URL Access
 
-Static hosts need configuration for client-side routing. For SiteGround, add `.htaccess`:
+All apps use `trailingSlash: true` in `next.config.ts`. This makes Next.js static export generate `out/articles/slug/index.html` (directory-based) instead of `out/articles/slug.html` (flat files). Apache serves `index.html` from directories naturally, so no `.htaccess` rewrite rules are needed.
 
-```apache
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
-```
+If you get 403/404 on direct URL access, verify `trailingSlash: true` is set, rebuild, and redeploy.
 
 ### CORS Errors
 
@@ -447,7 +475,10 @@ After moving WordPress to the subdomain, any hardcoded image URLs pointing to th
 | File                               | Purpose                                   |
 | ---------------------------------- | ----------------------------------------- |
 | `.github/workflows/deploy-umg.yml` | GitHub Actions workflow for UMG           |
+| `.github/workflows/deploy-echo-media.yml` | GitHub Actions workflow for Echo Media |
+| `.github/workflows/deploy-international-spectrum.yml` | GitHub Actions workflow for International Spectrum |
 | `apps/*/out/`                      | Build output directory (git-ignored)      |
 | `apps/*/.env.local`                | Local environment variables per app       |
 | `apps/umg/.env.example`            | Environment variable template             |
-| `apps/*/next.config.ts`            | Contains `output: 'export'` configuration |
+| `apps/*/next.config.ts`            | Contains `output: 'export'` and `trailingSlash: true` |
+| `docs/plugin/*-headless-config.php` | WordPress headless config plugins (CORS, cache, redirect, auto-rebuild) |

@@ -56,19 +56,29 @@ NEXT_PUBLIC_API_MODE=wp
 The `@umg/api` package (`packages/api/`) handles this transparently:
 
 1. `client.ts` checks `NEXT_PUBLIC_API_MODE` at the top
-2. When `"wp"`, `fetchArticles()` and `searchArticles()` delegate to `wp-client.ts`
+2. When `"wp"`, `fetchArticles()`, `searchArticles()`, `fetchComments()`, and `postComment()` delegate to `wp-client.ts`
 3. `wp-client.ts` fetches from `wp/v2/posts?_embed`, then converts each WP post into the `ApiArticle` format
 4. When `"custom"`, `normalizeArticleUrls()` post-processes the response to fix `source_url` for headless sites and clear `slug`
 5. Downstream code (transformers, hooks, UI components) works identically regardless of mode
 
 ```
-fetchArticles(category, perPage)
+fetchArticles({ category?, perPage })
   ├── API_MODE = "custom" → GET /um/v1/articles?category=slug
   │                        → normalizeArticleUrls() (fix source_url, clear slug)
-  └── API_MODE = "wp"     → GET /wp/v2/categories?slug=X → ID
+  └── API_MODE = "wp"     → GET /wp/v2/categories?slug=X → ID (if category provided)
                            → GET /wp/v2/posts?categories=ID&_embed
                            → Convert WpPost[] to ApiArticle[]
+
+fetchComments(postId)
+  ├── API_MODE = "custom" → returns [] (not supported)
+  └── API_MODE = "wp"     → GET /wp/v2/comments?post=ID&per_page=100
+
+postComment(payload)
+  ├── API_MODE = "custom" → throws error (not supported)
+  └── API_MODE = "wp"     → POST /wp/v2/comments
 ```
+
+**Note:** `category` is optional in `FetchArticlesOptions`. When omitted, articles are fetched across all categories (used by the MoreArticles carousel for "recent articles").
 
 ---
 
@@ -131,6 +141,49 @@ Featured image (_embedded["wp:featuredmedia"])  → toFullSizeUrl()
 ### Category Name Decoding
 
 WP API returns category names with HTML entities (e.g., `Art &amp; Culture`). The adapter runs `stripHtml()` on `cat.name` to decode these before storing in `ApiArticle.category`.
+
+---
+
+## Comments API
+
+EM and IS support comments via the standard WP REST API. UMG does not (returns empty/throws).
+
+### Types
+
+```typescript
+interface WpComment {
+  id: number;
+  post: number;
+  parent: number;         // 0 = top-level
+  author_name: string;
+  date: string;
+  date_gmt: string;
+  content: { rendered: string };
+  status: "approved" | "hold" | string;
+}
+
+interface CreateCommentPayload {
+  post: number;
+  content: string;
+  author_name: string;
+  author_email: string;
+  parent?: number;        // for replies
+}
+```
+
+### Functions
+
+| Function | WP Mode | Custom Mode |
+|----------|---------|-------------|
+| `fetchComments(postId)` | `GET /wp/v2/comments?post=ID` → `WpComment[]` | Returns `[]` |
+| `postComment(payload)` | `POST /wp/v2/comments` → `WpComment` | Throws error |
+
+### WordPress Requirements
+
+For comments to work, the WordPress site must have:
+- **Discussion Settings**: "Allow people to submit comments on new posts" enabled
+- **REST API**: Comments endpoint accessible (default in WP 4.7+)
+- **Moderation**: Comments may require approval before appearing (status = `"hold"`)
 
 ---
 

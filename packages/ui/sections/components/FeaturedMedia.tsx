@@ -22,14 +22,17 @@ export default function FeaturedMedia({ images, alt }: FeaturedMediaProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxLoading, setLightboxLoading] = useState(true);
+  const [inlineLoading, setInlineLoading] = useState(false);
 
   const goToPrevious = useCallback(() => {
     setLightboxLoading(true);
+    setInlineLoading(true);
     setCurrentIndex((prev) => (prev === 0 ? imageArray.length - 1 : prev - 1));
   }, [imageArray.length]);
 
   const goToNext = useCallback(() => {
     setLightboxLoading(true);
+    setInlineLoading(true);
     setCurrentIndex((prev) => (prev === imageArray.length - 1 ? 0 : prev + 1));
   }, [imageArray.length]);
 
@@ -149,11 +152,17 @@ export default function FeaturedMedia({ images, alt }: FeaturedMediaProps) {
       <div>
         {/* Image */}
         <div className="relative aspect-3/2 w-full cursor-zoom-in" onClick={openLightbox}>
+          {inlineLoading && (
+            <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-100">
+              <div className="w-8 h-8 border-3 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+            </div>
+          )}
           <Image
             src={imageArray[currentIndex]}
             alt={alt}
             fill
-            className="object-cover"
+            className={`object-cover transition-opacity duration-300 ${inlineLoading ? "opacity-0" : "opacity-100"}`}
+            onLoad={() => setInlineLoading(false)}
           />
         </div>
         {/* Bottom bar: pagination left, arrows right */}

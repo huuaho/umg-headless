@@ -7,6 +7,12 @@ on:
       - 'apps/international-spectrum/**'
       - 'packages/**'
   workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-international-spectrum]
+
+concurrency:
+  group: deploy-international-spectrum
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:

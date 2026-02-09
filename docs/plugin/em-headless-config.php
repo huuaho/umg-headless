@@ -30,6 +30,26 @@ add_filter('rest_post_dispatch', function($response) {
     return $response;
 });
 
+// Trigger frontend rebuild on post publish/update/delete
+add_action('transition_post_status', function($new_status, $old_status, $post) {
+    if ($post->post_type !== 'post') return;
+    if ($new_status !== 'publish' && $old_status !== 'publish') return;
+    if ($new_status === $old_status && $new_status !== 'publish') return;
+    if (!defined('GH_REBUILD_TOKEN')) return;
+
+    wp_remote_post('https://api.github.com/repos/huuaho/umg-headless/dispatches', array(
+        'headers' => array(
+            'Authorization' => 'Bearer ' . GH_REBUILD_TOKEN,
+            'Accept'        => 'application/vnd.github+json',
+            'Content-Type'  => 'application/json',
+        ),
+        'body' => json_encode(array(
+            'event_type' => 'deploy-echo-media',
+        )),
+        'timeout' => 10,
+    ));
+}, 10, 3);
+
 // Redirect frontend to main site
 add_action('template_redirect', function() {
     if (!is_admin() && !str_starts_with($_SERVER['REQUEST_URI'], '/wp-json')) {

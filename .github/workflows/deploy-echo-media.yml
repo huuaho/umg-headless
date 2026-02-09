@@ -7,6 +7,12 @@ on:
       - 'apps/echo-media/**'
       - 'packages/**'
   workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-echo-media]
+
+concurrency:
+  group: deploy-echo-media
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:

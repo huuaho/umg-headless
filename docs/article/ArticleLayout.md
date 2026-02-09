@@ -25,6 +25,8 @@ interface ArticleLayoutProps {
   content: string;     // Sanitized HTML body (Divi shortcodes stripped)
   postId?: number;     // WP post ID — enables CommentsSection (EM/IS only)
   currentSlug?: string; // Current article slug — enables MoreArticles carousel (EM/IS only)
+  categoryColor?: string; // Hex color for category label (e.g., "#0281b3")
+  categoryColorMap?: Record<string, string>; // Map of category names to hex colors, passed to MoreArticles
 }
 ```
 
@@ -67,7 +69,7 @@ interface ArticleLayoutProps {
 
 ### Category + Read Time Bar
 - `text-sm text-gray-500`
-- Category name in `font-semibold text-black`
+- Category name in `font-semibold`, colored via `categoryColor` prop (inline style). Falls back to black (`#000`) when not provided.
 - Separated by `·` (middot)
 
 ### Title
@@ -98,7 +100,7 @@ interface ArticleLayoutProps {
 
 ### More Articles Carousel
 - Rendered only when `currentSlug` and `category` are provided (EM/IS only, not UMG)
-- `{currentSlug && category && <MoreArticles currentSlug={currentSlug} category={category} />}`
+- `{currentSlug && category && <MoreArticles currentSlug={currentSlug} category={category} categoryColorMap={categoryColorMap} />}`
 - Horizontal-scroll carousel of 10 articles (alternating same-category and recent)
 - Desktop arrow buttons + mobile swipe
 - See `MoreArticles.md` for full spec
@@ -113,10 +115,14 @@ interface ArticleLayoutProps {
 
 import { fetchArticleBySlug } from "@umg/api";
 import { ArticleLayout } from "@umg/ui";
+import { categories } from "../../../lib/categories";
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params;
   const article = await fetchArticleBySlug(slug);
+
+  const categoryColorMap = Object.fromEntries(categories.map((c) => [c.name, c.color]));
+  const categoryColor = categoryColorMap[article.category];
 
   return (
     <ArticleLayout
@@ -129,6 +135,8 @@ export default async function ArticlePage({ params }) {
       content={article.content}
       postId={article.id}
       currentSlug={article.slug}
+      categoryColor={categoryColor}
+      categoryColorMap={categoryColorMap}
     />
   );
 }

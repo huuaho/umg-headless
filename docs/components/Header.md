@@ -131,11 +131,30 @@ Header
 
 ## Styling Notes
 
+### Per-App Banner Border Color (CSS Variable)
+The banner border lines (top border on header, top border on banner) are customizable per app via the `--banner-border-color` CSS variable set in each app's `globals.css`. If not set, defaults to `#d1d5db` (gray-300).
+
+```css
+/* apps/echo-media/app/globals.css */
+:root {
+  --banner-border-color: #0281b3; /* Blue */
+}
+
+/* apps/international-spectrum/app/globals.css */
+:root {
+  --banner-border-color: #feb70c; /* Yellow */
+}
+```
+
+Applied via inline style on the `<header>` and banner `<div>`: `style={{ borderColor: 'var(--banner-border-color, #d1d5db)' }}`
+
+UMG does not set this variable, so its borders remain the default gray.
+
 ### Colors
 - Text primary: `#212223`
 - Text secondary: `#404040`
 - Text muted: `#5d5d5d`
-- Border: `border-gray-300`
+- Border: `border-gray-300` (overridden by `--banner-border-color` on banner borders)
 - Search button: `#8b8b8b` (hover: `#6b6b6b`)
 
 ### Z-Index Layers

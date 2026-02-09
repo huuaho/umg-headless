@@ -14,6 +14,7 @@ Encourages further reading by displaying 10 article cards — alternating betwee
 interface MoreArticlesProps {
   currentSlug: string;  // Slug of the current article (excluded from results)
   category: string;     // Category name of the current article
+  categoryColorMap?: Record<string, string>; // Map of category names to hex colors for card labels
 }
 ```
 
@@ -75,7 +76,7 @@ Client-side (`"use client"`, `useEffect` on mount). Two parallel API calls:
 Each card:
 - Fixed width: `w-64` (mobile) / `w-72` (md+), `flex-shrink-0`
 - Featured image: `aspect-3/2 object-cover rounded` (placeholder if no image)
-- Category label: `text-xs font-semibold text-gray-500 uppercase tracking-wide`
+- Category label: `text-xs font-semibold uppercase tracking-wide`, colored via `categoryColorMap` lookup (falls back to `#6b7280` gray when no map provided)
 - Title: `text-sm font-semibold leading-snug line-clamp-2` (2-line clamp)
 - Date: `text-xs text-gray-400` (format: "Jan 15, 2025")
 - Entire card wrapped in `ArticleLink` for internal routing
@@ -100,7 +101,7 @@ Each card:
 | Scroll container | `flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4` |
 | Card | `w-64 md:w-72 flex-shrink-0 snap-start hover:opacity-80 transition-opacity` |
 | Image | `w-full aspect-3/2 object-cover rounded bg-gray-100` |
-| Category | `text-xs font-semibold text-gray-500 uppercase tracking-wide mt-2` |
+| Category | `text-xs font-semibold uppercase tracking-wide mt-2` + inline color from `categoryColorMap` (fallback: `#6b7280`) |
 | Title | `text-sm font-semibold leading-snug line-clamp-2 mt-1 text-gray-900` |
 | Date | `text-xs text-gray-400 mt-1` |
 
@@ -111,7 +112,7 @@ Rendered automatically by ArticleLayout when `currentSlug` and `category` are pr
 ```tsx
 // Inside ArticleLayout
 {currentSlug && category && (
-  <MoreArticles currentSlug={currentSlug} category={category} />
+  <MoreArticles currentSlug={currentSlug} category={category} categoryColorMap={categoryColorMap} />
 )}
 ```
 

@@ -99,6 +99,25 @@ Footer
 ### Container Width
 - `max-w-325` (1300px), same as Header
 
+### Per-App Background Color (CSS Variable)
+The footer background is customizable per app via the `--footer-bg` CSS variable set in each app's `globals.css`. If not set, defaults to `transparent`.
+
+```css
+/* apps/echo-media/app/globals.css */
+:root {
+  --footer-bg: #d9ecf3; /* Light blue tint of #0281b3 */
+}
+
+/* apps/international-spectrum/app/globals.css */
+:root {
+  --footer-bg: #e8e6f2; /* Light purple tint of #655aa8 */
+}
+```
+
+Applied via inline style: `style={{ backgroundColor: 'var(--footer-bg, transparent)' }}`
+
+UMG does not set this variable, so its footer background remains transparent.
+
 ### Colors
 - Text primary: `#404040`
 - Text hover: `#212223`

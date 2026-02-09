@@ -37,6 +37,7 @@ interface SectionType4Props extends SectionType4Data {
   slug: string;
   category: string;
   textOnly?: boolean; // Default: false (show images)
+  categoryColor?: string; // Hex color for category label (inline style), defaults to black
 }
 ```
 

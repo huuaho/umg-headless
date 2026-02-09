@@ -46,6 +46,7 @@ export interface SectionData {
 interface SectionType3Props extends SectionData {
   slug: string;
   category: string;
+  categoryColor?: string; // Hex color for category label (inline style), defaults to black
 }
 ```
 

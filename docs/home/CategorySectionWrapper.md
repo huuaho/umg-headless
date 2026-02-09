@@ -20,10 +20,13 @@ interface CategorySectionWrapperProps {
   slug: string;              // Category slug for API query and section ID
   category: string;          // Display name for the category label
   sectionType: SectionType;  // Which section layout to render
+  categoryColor?: string;    // Hex color for the category title label (e.g., "#0281b3")
 }
 
 type SectionType = "type1" | "type2" | "type3" | "type4" | "type4-text";
 ```
+
+The `categoryColor` prop is passed through to `SectionType1-4`, `SectionSkeleton`, and `SectionError` to color the category title. When not provided, category titles default to black.
 
 ## Section Types
 
@@ -96,16 +99,19 @@ export default function HomePage() {
         slug="artculture"
         category="Art & Culture"
         sectionType="type1"
+        categoryColor="#0281b3"
       />
       <CategorySectionWrapper
         slug="education"
         category="Education"
         sectionType="type2"
+        categoryColor="#0281b3"
       />
       <CategorySectionWrapper
         slug="environment"
         category="Environment"
         sectionType="type3"
+        categoryColor="#0281b3"
       />
     </main>
   );

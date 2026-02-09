@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "api.internationalspectrum.org",
+      },
+      {
+        protocol: "https",
         hostname: "api.unitedmediadc.com",
       },
     ],

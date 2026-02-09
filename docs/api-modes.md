@@ -22,14 +22,14 @@ Each app sets its API mode in `.env.local`:
 
 ```bash
 # UMG (default — no NEXT_PUBLIC_API_MODE needed)
-NEXT_PUBLIC_WP_API_URL=https://www.api.unitedmediadc.com/wp-json
+NEXT_PUBLIC_WP_API_URL=https://api.unitedmediadc.com/wp-json
 
 # Echo Media
-NEXT_PUBLIC_WP_API_URL=https://www.echo-media.info/wp-json
+NEXT_PUBLIC_WP_API_URL=https://api.echo-media.info/wp-json
 NEXT_PUBLIC_API_MODE=wp
 
 # International Spectrum
-NEXT_PUBLIC_WP_API_URL=https://www.internationalspectrum.org/wp-json
+NEXT_PUBLIC_WP_API_URL=https://api.internationalspectrum.org/wp-json
 NEXT_PUBLIC_API_MODE=wp
 ```
 

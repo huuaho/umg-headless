@@ -8,11 +8,11 @@ This Turborepo monorepo uses pnpm and static export (`output: 'export'`) for eac
 
 Each app is a separate static site that fetches data from its respective WordPress backend at runtime:
 
-| App | Domain | WordPress API |
-|-----|--------|--------------|
-| UMG | unitedmediadc.com | api.unitedmediadc.com/wp-json |
-| Echo Media | echo-media.info | echo-media.info/wp-json |
-| International Spectrum | internationalspectrum.org | internationalspectrum.org/wp-json |
+| App                    | Domain                    | WordPress API                         |
+| ---------------------- | ------------------------- | ------------------------------------- |
+| UMG                    | unitedmediadc.com         | api.unitedmediadc.com/wp-json         |
+| Echo Media             | echo-media.info           | api.echo-media.info/wp-json           |
+| International Spectrum | internationalspectrum.org | api.internationalspectrum.org/wp-json |
 
 - **Frontend**: Static HTML/CSS/JS files served from each domain
 - **WordPress**: Provides REST API for content (UMG uses custom plugin, EM/IS use standard WP REST API)
@@ -58,15 +58,41 @@ Move WordPress to a subdomain so the main domain serves the static frontend.
 4. Install and configure the United Media Ingestor plugin
 5. Import your content/settings from the old WordPress
 
-### 1.3 Update Environment Variable
+### 1.3 Update Environment Variables
 
-In your Next.js project, update `.env.local`:
+In each app's `.env.local`, point to the `api.` subdomain:
 
+```bash
+# apps/umg/.env.local
+NEXT_PUBLIC_WP_API_URL=https://api.unitedmediadc.com/wp-json
+
+# apps/echo-media/.env.local
+NEXT_PUBLIC_WP_API_URL=https://api.echo-media.info/wp-json
+NEXT_PUBLIC_API_MODE=wp
+
+# apps/international-spectrum/.env.local
+NEXT_PUBLIC_WP_API_URL=https://api.internationalspectrum.org/wp-json
+NEXT_PUBLIC_API_MODE=wp
 ```
-NEXT_PUBLIC_WP_API_URL=https://api.yourdomain.com/wp-json
+
+### 1.4 Update WordPress URL Settings
+
+WordPress may still think it's on the old domain. Force it to use the subdomain by editing `wp-config.php`:
+
+1. Go to SiteGround **Site Tools** → **Site** → **File Manager**
+2. Navigate to `api.yourdomain.com/wp-config.php`
+3. Add these lines near the top (after `<?php`):
+
+```php
+define('WP_HOME', 'https://api.yourdomain.com');
+define('WP_SITEURL', 'https://api.yourdomain.com');
 ```
 
-### 1.4 Verify API Access
+4. Save the file
+
+This ensures the REST API returns correct image URLs (e.g., `https://api.yourdomain.com/wp-content/uploads/...` instead of the old domain). Without this, featured images and gallery images will fail to load on the frontend.
+
+### 1.5 Verify API Access
 
 Test the API is accessible:
 
@@ -80,7 +106,7 @@ https://api.yourdomain.com/wp-json/um/v1/articles?category=world-news-politics
 - REST API: `https://api.yourdomain.com/wp-json/um/v1/...`
 - Main domain (`yourdomain.com`) is now free for static files
 
-### 1.5 Clear Main Domain (if needed)
+### 1.6 Clear Main Domain (if needed)
 
 If you used **Option B (Move)**, SiteGround removes WordPress from the main domain automatically.
 
@@ -169,8 +195,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/umg/**'
-      - 'packages/**'
+      - "apps/umg/**"
+      - "packages/**"
   workflow_dispatch:
 
 jobs:
@@ -210,6 +236,7 @@ jobs:
 ```
 
 Key differences from a single-app deploy:
+
 - `pnpm/action-setup@v4` to install pnpm
 - `pnpm install --frozen-lockfile` instead of `npm ci`
 - `pnpm turbo run build --filter=<app>` to build one app with its dependencies
@@ -328,13 +355,14 @@ Static hosts need configuration for client-side routing. For SiteGround, add `.h
 
 The `Access-Control-Allow-Origin` header must **exactly** match the request origin:
 
-| Request Origin | Allowed Origin | Works? |
-|---------------|----------------|--------|
-| `https://www.example.com` | `https://example.com` | ❌ No |
-| `https://example.com` | `https://www.example.com` | ❌ No |
-| `http://localhost:3000` | `http://localhost:3001` | ❌ No |
+| Request Origin            | Allowed Origin            | Works? |
+| ------------------------- | ------------------------- | ------ |
+| `https://www.example.com` | `https://example.com`     | ❌ No  |
+| `https://example.com`     | `https://www.example.com` | ❌ No  |
+| `http://localhost:3000`   | `http://localhost:3001`   | ❌ No  |
 
 **To debug:**
+
 1. Open browser DevTools → Network tab
 2. Click on a failed API request
 3. Check **Request Headers** → find `Origin:` value
@@ -425,6 +453,7 @@ After moving WordPress to the subdomain, any hardcoded image URLs pointing to th
 **Example:** URLs like `https://www.yourdomain.com/wp-content/uploads/...` need to become `https://api.yourdomain.com/wp-content/uploads/...`
 
 **Files to check:**
+
 - `apps/*/lib/mediaCompanies.ts` - Logo URLs for Header banner and Footer
 - `packages/ui/Header.tsx` - Main site logo
 - `packages/ui/Footer.tsx` - Footer logo
@@ -433,10 +462,10 @@ After moving WordPress to the subdomain, any hardcoded image URLs pointing to th
 
 ## Files
 
-| File                                    | Purpose                                   |
-| --------------------------------------- | ----------------------------------------- |
-| `.github/workflows/deploy-umg.yml`      | GitHub Actions workflow for UMG           |
-| `apps/*/out/`                           | Build output directory (git-ignored)      |
-| `apps/*/.env.local`                     | Local environment variables per app       |
-| `apps/umg/.env.example`                 | Environment variable template             |
-| `apps/*/next.config.ts`                 | Contains `output: 'export'` configuration |
+| File                               | Purpose                                   |
+| ---------------------------------- | ----------------------------------------- |
+| `.github/workflows/deploy-umg.yml` | GitHub Actions workflow for UMG           |
+| `apps/*/out/`                      | Build output directory (git-ignored)      |
+| `apps/*/.env.local`                | Local environment variables per app       |
+| `apps/umg/.env.example`            | Environment variable template             |
+| `apps/*/next.config.ts`            | Contains `output: 'export'` configuration |

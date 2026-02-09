@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "api.echo-media.info",
+      },
+      {
+        protocol: "https",
         hostname: "api.unitedmediadc.com",
       },
     ],

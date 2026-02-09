@@ -1,0 +1,45 @@
+name: Deploy International Spectrum to SiteGround
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/international-spectrum/**'
+      - 'packages/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm turbo run build --filter=international-spectrum
+        env:
+          NEXT_PUBLIC_WP_API_URL: ${{ secrets.IS_WP_API_URL }}
+          NEXT_PUBLIC_API_MODE: wp
+
+      - name: Deploy via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./apps/international-spectrum/out/
+          server-dir: ./internationalspectrum.org/public_html/
+          dangerous-clean-slate: true

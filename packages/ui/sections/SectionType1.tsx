@@ -3,6 +3,7 @@
 import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import type { SectionData, SecondaryArticle } from "@umg/api";
 import FeaturedMedia from "./components/FeaturedMedia";
+import ArticleLink from "../ArticleLink";
 
 // Title font sizes in rem (for 2XL breakpoint): 5xl, 4xl, 3xl, 2xl
 const TITLE_SIZES_REM = [3, 2.25, 1.875, 1.5] as const;
@@ -12,14 +13,9 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
   return (
     <article className="py-3">
       <h3 className="font-semibold text-base leading-tight mb-1">
-        <a
-          href={article.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline"
-        >
+        <ArticleLink slug={article.slug} url={article.url} className="hover:underline">
           {article.title}
-        </a>
+        </ArticleLink>
       </h3>
       <span className="text-sm text-gray-500">{article.time}</span>
     </article>
@@ -131,14 +127,9 @@ export default function SectionType1({
                 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3"
                 style={titleFontSize ? { fontSize: `${titleFontSize}rem` } : undefined}
               >
-                <a
-                  href={featured.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
+                <ArticleLink slug={featured.slug} url={featured.url} className="hover:underline">
                   {featured.title}
-                </a>
+                </ArticleLink>
               </h2>
               <p className="text-base text-gray-600 mb-2">{featured.snippet}</p>
               <span className="text-sm text-gray-500">{featured.time}</span>

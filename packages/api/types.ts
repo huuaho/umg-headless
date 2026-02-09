@@ -15,11 +15,13 @@ export interface ApiCategory {
 export interface ApiArticle {
   id: number;
   title: string;
+  slug: string;
   date: string;
   source: string;
   source_label: string;
   source_url: string;
   excerpt: string;
+  content: string; // Full HTML body (Divi stripped)
   featured_image: string | null;
   images: string[]; // All images (featured + gallery + content images)
   author_name: string;
@@ -85,12 +87,14 @@ export interface FeaturedArticle {
   time: string;
   gallery: string | string[]; // Single image or array for gallery carousel
   url: string; // Link to original source
+  slug?: string; // Present for internal (EM/IS), absent for external (UMG)
 }
 
 export interface SecondaryArticle {
   title: string;
   time: string;
   url: string; // Link to original source
+  slug?: string;
 }
 
 export interface Type4Article {
@@ -98,6 +102,7 @@ export interface Type4Article {
   time: string;
   image?: string; // Optional - only used when textOnly is false
   url: string; // Link to original source
+  slug?: string;
 }
 
 export interface SectionType4Data {

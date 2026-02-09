@@ -1,9 +1,15 @@
 import type {
+  ApiArticle,
   ArticlesResponse,
   FetchArticlesOptions,
   SearchArticlesOptions,
 } from "./types";
-import { fetchArticlesWP, searchArticlesWP } from "./wp-client";
+import {
+  fetchArticlesWP,
+  searchArticlesWP,
+  fetchArticleBySlugWP,
+  fetchAllSlugsWP,
+} from "./wp-client";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
@@ -81,4 +87,28 @@ export async function searchArticles(
   }
 
   return response.json();
+}
+
+/**
+ * Fetch a single article by slug
+ * Only supported in WP mode (EM/IS). Returns null for custom mode (UMG).
+ */
+export async function fetchArticleBySlug(
+  slug: string
+): Promise<ApiArticle | null> {
+  if (API_MODE === "wp") {
+    return fetchArticleBySlugWP(slug);
+  }
+  return null;
+}
+
+/**
+ * Fetch all article slugs for static generation
+ * Only supported in WP mode (EM/IS). Returns [] for custom mode (UMG).
+ */
+export async function fetchAllSlugs(): Promise<string[]> {
+  if (API_MODE === "wp") {
+    return fetchAllSlugsWP();
+  }
+  return [];
 }

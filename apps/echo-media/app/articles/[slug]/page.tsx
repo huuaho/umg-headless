@@ -1,0 +1,51 @@
+import { notFound } from "next/navigation";
+import { fetchArticleBySlug, fetchAllSlugs } from "@umg/api";
+import { ArticleLayout } from "@umg/ui";
+
+export async function generateStaticParams() {
+  const slugs = await fetchAllSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const article = await fetchArticleBySlug(slug);
+
+  if (!article) {
+    return { title: "Article Not Found | Echo Media" };
+  }
+
+  return {
+    title: `${article.title} | Echo Media`,
+    description: article.excerpt,
+  };
+}
+
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const article = await fetchArticleBySlug(slug);
+
+  if (!article) {
+    notFound();
+  }
+
+  return (
+    <ArticleLayout
+      title={article.title}
+      author={article.author_name}
+      date={article.date}
+      category={article.category}
+      readTime={`${article.read_time_minutes} min read`}
+      featuredImage={article.featured_image}
+      content={article.content}
+    />
+  );
+}

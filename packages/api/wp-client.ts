@@ -6,6 +6,7 @@ import type {
   FetchArticlesOptions,
   SearchArticlesOptions,
 } from "./types";
+import { processContent } from "./content";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
@@ -92,16 +93,24 @@ function wpPostToApiArticle(post: WpPost): ApiArticle {
 
   const categoryName = apiCategories[0]?.name || "";
 
+  // Process content: strip Divi shortcodes, extract images
+  const processed = processContent(post.content.rendered);
+  const allImages = featuredImage
+    ? [featuredImage, ...processed.images]
+    : processed.images;
+
   return {
     id: post.id,
     title: stripHtml(post.title.rendered),
+    slug: post.slug,
     date: post.date,
     source: "wp",
     source_label: "WordPress",
     source_url: post.link,
     excerpt: stripHtml(post.excerpt.rendered),
+    content: processed.html,
     featured_image: featuredImage,
-    images: featuredImage ? [featuredImage] : [],
+    images: allImages.length > 0 ? allImages : [],
     author_name: authorName,
     category: categoryName,
     categories: apiCategories,
@@ -202,4 +211,70 @@ export async function searchArticlesWP(
     total_pages: totalPages,
     items: posts.map(wpPostToApiArticle),
   };
+}
+
+/**
+ * Fetch a single article by slug from WP REST API
+ */
+export async function fetchArticleBySlugWP(
+  slug: string
+): Promise<ApiArticle | null> {
+  const params = new URLSearchParams({
+    slug,
+    _embed: "true",
+  });
+
+  const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status} ${response.statusText}`);
+  }
+
+  const posts: WpPost[] = await response.json();
+  if (posts.length === 0) return null;
+
+  return wpPostToApiArticle(posts[0]);
+}
+
+/**
+ * Fetch all post slugs from WP REST API (paginated)
+ */
+export async function fetchAllSlugsWP(): Promise<string[]> {
+  const slugs: string[] = [];
+  let page = 1;
+
+  while (true) {
+    const params = new URLSearchParams({
+      per_page: "100",
+      page: String(page),
+      _fields: "slug",
+    });
+
+    const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
+    const response = await fetch(url, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      if (response.status === 400) break; // Past last page
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+
+    const posts: Array<{ slug: string }> = await response.json();
+    if (posts.length === 0) break;
+
+    slugs.push(...posts.map((p) => p.slug));
+
+    const totalPages = parseInt(
+      response.headers.get("X-WP-TotalPages") || "1",
+      10
+    );
+    if (page >= totalPages) break;
+    page++;
+  }
+
+  return slugs;
 }

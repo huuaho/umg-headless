@@ -97,6 +97,7 @@ export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
     time: formatReadTime(article.read_time_minutes),
     gallery: getGalleryImages(article),
     url: article.source_url,
+    slug: article.slug || undefined,
   };
 }
 
@@ -108,6 +109,7 @@ export function toSecondaryArticle(article: ApiArticle): SecondaryArticle {
     title: decodeHtmlEntities(article.title),
     time: formatReadTime(article.read_time_minutes),
     url: article.source_url,
+    slug: article.slug || undefined,
   };
 }
 
@@ -127,6 +129,7 @@ export function toType4Article(
     time: formatReadTime(article.read_time_minutes),
     image: includeImage ? firstImage : undefined,
     url: article.source_url,
+    slug: article.slug || undefined,
   };
 }
 

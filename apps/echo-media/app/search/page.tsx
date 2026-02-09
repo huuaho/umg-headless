@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
 import { searchArticles, type ApiArticle } from "@umg/api";
+import { ArticleLink } from "@umg/ui";
 
 function decodeHtmlEntities(text: string): string {
   const textarea = document.createElement("textarea");
@@ -43,14 +44,9 @@ function SearchResultCard({ article }: SearchResultCardProps) {
             {article.source_label && <span>{article.source_label}</span>}
           </div>
           <h2 className="font-semibold text-base leading-tight mb-1">
-            <a
-              href={article.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
+            <ArticleLink slug={article.slug} url={article.source_url} className="hover:underline">
               {article.title}
-            </a>
+            </ArticleLink>
           </h2>
           <p className="text-sm text-gray-600 line-clamp-2 mb-1">
             {article.excerpt}

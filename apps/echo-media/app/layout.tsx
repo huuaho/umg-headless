@@ -30,6 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'document.querySelectorAll("link[data-precedence]").forEach(function(l){var c=document.createElement("link");c.rel="stylesheet";c.href=l.href;document.head.appendChild(c)})',
+          }}
+        />
         <Header
           logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2025/12/EM-Logo.svg"
           logoAlt="Echo Media"

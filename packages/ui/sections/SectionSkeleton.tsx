@@ -1,11 +1,13 @@
 interface SectionSkeletonProps {
   slug: string;
   category: string;
+  categoryColor?: string;
 }
 
 export default function SectionSkeleton({
   slug,
   category,
+  categoryColor,
 }: SectionSkeletonProps) {
   return (
     <section
@@ -14,7 +16,7 @@ export default function SectionSkeleton({
     >
       {/* Category Label */}
       <div className="mb-4">
-        <span className="text-sm font-bold text-black">{category} &gt;</span>
+        <span className="text-sm font-bold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category} &gt;</span>
       </div>
 
       {/* Skeleton content */}

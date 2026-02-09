@@ -93,12 +93,14 @@ function ArticleCard({
 interface SectionType4Props extends SectionType4Data {
   slug: string;
   category: string;
+  categoryColor?: string;
   textOnly?: boolean;
 }
 
 export default function SectionType4({
   slug,
   category,
+  categoryColor,
   articles,
   textOnly = false,
 }: SectionType4Props) {
@@ -111,7 +113,8 @@ export default function SectionType4({
       <div className="mb-4">
         <a
           href="#"
-          className="text-sm font-bold text-black hover:text-gray-700"
+          className="text-sm font-bold hover:opacity-70"
+          style={categoryColor ? { color: categoryColor } : { color: '#000' }}
         >
           {category} &gt;
         </a>

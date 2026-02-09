@@ -15,6 +15,7 @@ export default function Home() {
           key={category.slug}
           slug={category.slug}
           category={category.name}
+          categoryColor={category.color}
           sectionType={SECTION_TYPE_MAP[category.slug] || "type1"}
         />
       ))}

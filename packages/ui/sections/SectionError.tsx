@@ -3,6 +3,7 @@
 interface SectionErrorProps {
   slug: string;
   category: string;
+  categoryColor?: string;
   message: string;
   onRetry: () => void;
 }
@@ -10,6 +11,7 @@ interface SectionErrorProps {
 export default function SectionError({
   slug,
   category,
+  categoryColor,
   message,
   onRetry,
 }: SectionErrorProps) {
@@ -20,7 +22,7 @@ export default function SectionError({
     >
       {/* Category Label */}
       <div className="mb-4">
-        <span className="text-sm font-bold text-black">{category} &gt;</span>
+        <span className="text-sm font-bold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category} &gt;</span>
       </div>
 
       {/* Error content */}

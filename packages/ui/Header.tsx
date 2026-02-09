@@ -180,7 +180,7 @@ export default function Header({
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-300">
+    <header className="sticky top-0 z-50 bg-white border-b" style={{ borderColor: 'var(--banner-border-color, #d1d5db)' }}>
       <div className="max-w-325 mx-auto px-6">
         <div className="flex items-center h-14">
           {/* Mobile: Left spacer to balance hamburger button for centering logo */}
@@ -339,7 +339,7 @@ export default function Header({
       </div>
 
       {/* Banner - Below main header */}
-      <div className="border-t border-gray-300">
+      <div className="border-t" style={{ borderColor: 'var(--banner-border-color, #d1d5db)' }}>
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="h-10 flex items-center">
             <div className="animate-marquee flex shrink-0 items-center">

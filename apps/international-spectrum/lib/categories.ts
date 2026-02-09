@@ -5,12 +5,12 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { name: "Community & Public Programs", slug: "communitypublicprograms", color: "bg-blue-100" },
-  { name: "Civic & Cultural Affairs", slug: "civicandculturalaffairs", color: "bg-green-100" },
-  { name: "Arts", slug: "arts", color: "bg-yellow-100" },
-  { name: "History & Legacy", slug: "historylegacy", color: "bg-purple-100" },
-  { name: "Social Impact & Justice", slug: "socialimpactjustice", color: "bg-pink-100" },
-  { name: "Leadership & Youth Engagement", slug: "leadershipyouthengagement", color: "bg-orange-100" },
+  { name: "Community & Public Programs", slug: "communitypublicprograms", color: "#ea1479" },
+  { name: "Civic & Cultural Affairs", slug: "civicandculturalaffairs", color: "#66c2ad" },
+  { name: "Arts", slug: "arts", color: "#655aa8" },
+  { name: "History & Legacy", slug: "historylegacy", color: "#feb70c" },
+  { name: "Social Impact & Justice", slug: "socialimpactjustice", color: "#ea1479" },
+  { name: "Leadership & Youth Engagement", slug: "leadershipyouthengagement", color: "#66c2ad" },
 ];
 
 // Header navigation — with 6 categories, split for responsive display

@@ -19,6 +19,7 @@ interface CategorySectionWrapperProps {
   slug: string;
   category: string;
   sectionType: SectionType;
+  categoryColor?: string;
 }
 
 // Articles needed per section type
@@ -34,6 +35,7 @@ export default function CategorySectionWrapper({
   slug,
   category,
   sectionType,
+  categoryColor,
 }: CategorySectionWrapperProps) {
   const { articles, isLoading, error, refetch } = useArticles({
     category: slug,
@@ -42,7 +44,7 @@ export default function CategorySectionWrapper({
 
   // Loading state
   if (isLoading) {
-    return <SectionSkeleton slug={slug} category={category} />;
+    return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} />;
   }
 
   // Error state
@@ -51,6 +53,7 @@ export default function CategorySectionWrapper({
       <SectionError
         slug={slug}
         category={category}
+        categoryColor={categoryColor}
         message={error?.message || "No articles found"}
         onRetry={refetch}
       />
@@ -65,6 +68,7 @@ export default function CategorySectionWrapper({
         <SectionType1
           slug={slug}
           category={category}
+          categoryColor={categoryColor}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -76,6 +80,7 @@ export default function CategorySectionWrapper({
         <SectionType2
           slug={slug}
           category={category}
+          categoryColor={categoryColor}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -87,6 +92,7 @@ export default function CategorySectionWrapper({
         <SectionType3
           slug={slug}
           category={category}
+          categoryColor={categoryColor}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -98,6 +104,7 @@ export default function CategorySectionWrapper({
         <SectionType4
           slug={slug}
           category={category}
+          categoryColor={categoryColor}
           articles={data.articles}
         />
       );
@@ -108,6 +115,7 @@ export default function CategorySectionWrapper({
         <SectionType4
           slug={slug}
           category={category}
+          categoryColor={categoryColor}
           articles={data.articles}
           textOnly
         />

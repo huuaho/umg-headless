@@ -3,6 +3,10 @@
 @source "../../../packages/ui/";
 @plugin "@tailwindcss/typography";
 
+:root {
+  --banner-border-color: #0281b3;
+}
+
 html {
   scroll-behavior: smooth;
 }

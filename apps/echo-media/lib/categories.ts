@@ -5,9 +5,9 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { name: "Art & Culture", slug: "artculture", color: "bg-pink-100" },
-  { name: "Education", slug: "education", color: "bg-blue-100" },
-  { name: "Environment", slug: "environment", color: "bg-green-100" },
+  { name: "Art & Culture", slug: "artculture", color: "#0281b3" },
+  { name: "Education", slug: "education", color: "#0281b3" },
+  { name: "Environment", slug: "environment", color: "#0281b3" },
 ];
 
 // Header navigation — all 3 categories always visible

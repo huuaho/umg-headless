@@ -25,11 +25,13 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
 interface SectionType3Props extends SectionData {
   slug: string;
   category: string;
+  categoryColor?: string;
 }
 
 export default function SectionType3({
   slug,
   category,
+  categoryColor,
   featured,
   secondary,
 }: SectionType3Props) {
@@ -102,7 +104,8 @@ export default function SectionType3({
       <div className="mb-4">
         <a
           href="#"
-          className="text-sm font-bold text-black hover:text-gray-700"
+          className="text-sm font-bold hover:opacity-70"
+          style={categoryColor ? { color: categoryColor } : { color: '#000' }}
         >
           {category} &gt;
         </a>

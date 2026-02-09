@@ -10,7 +10,7 @@ add_action('rest_api_init', function() {
     add_filter('rest_pre_serve_request', function($value) {
         $origin = get_http_origin();
         $allowed = array(
-            'http://localhost:3002',
+            'http://localhost:3000',
             'https://www.internationalspectrum.org',
             'https://internationalspectrum.org'
         );

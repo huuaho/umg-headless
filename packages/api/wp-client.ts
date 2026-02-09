@@ -136,6 +136,18 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
   if (featuredImage) imageSet.add(featuredImage);
   for (const img of processed.images) imageSet.add(img);
   for (const img of galleryUrls) imageSet.add(img);
+
+  // Use YouTube thumbnail as fallback when no other images exist
+  const videoUrl = post.meta?.video_url || "";
+  if (imageSet.size === 0 && videoUrl) {
+    const ytMatch = videoUrl.match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    );
+    if (ytMatch?.[1]) {
+      imageSet.add(`https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`);
+    }
+  }
+
   const allImages = Array.from(imageSet);
 
   return {

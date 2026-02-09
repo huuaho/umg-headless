@@ -196,9 +196,9 @@ export default function MoreArticles({
               url={article.source_url}
               className="w-64 md:w-72 flex-shrink-0 snap-start hover:opacity-80 transition-opacity"
             >
-              {article.featured_image ? (
+              {(article.featured_image || article.images?.[0]) ? (
                 <Image
-                  src={article.featured_image}
+                  src={(article.featured_image || article.images[0])!}
                   alt={article.title}
                   width={288}
                   height={192}

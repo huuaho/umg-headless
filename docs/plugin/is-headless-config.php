@@ -25,10 +25,39 @@ add_action('rest_api_init', function() {
 // Register video_url custom field for REST API (Video Interviews)
 add_action('init', function() {
     register_post_meta('post', 'video_url', array(
-        'show_in_rest' => true,
-        'single'       => true,
-        'type'         => 'string',
+        'show_in_rest'  => true,
+        'single'        => true,
+        'type'          => 'string',
+        'default'       => '',
     ));
+});
+
+// Add a dedicated "Video URL" meta box (replaces raw Custom Fields panel)
+add_action('add_meta_boxes', function() {
+    add_meta_box(
+        'is_video_url',
+        'Video URL (YouTube)',
+        function($post) {
+            $value = get_post_meta($post->ID, 'video_url', true);
+            wp_nonce_field('is_video_url_nonce', 'is_video_url_nonce');
+            echo '<input type="url" name="video_url" value="' . esc_attr($value) . '" style="width:100%;" placeholder="https://www.youtube.com/watch?v=..." />';
+            echo '<p class="description">Paste a YouTube URL. This will display as an embedded video on the article page.</p>';
+        },
+        'post',
+        'side',
+        'default'
+    );
+});
+
+// Save the video_url meta box value
+add_action('save_post', function($post_id) {
+    if (!isset($_POST['is_video_url_nonce']) || !wp_verify_nonce($_POST['is_video_url_nonce'], 'is_video_url_nonce')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    if (isset($_POST['video_url'])) {
+        update_post_meta($post_id, 'video_url', sanitize_url($_POST['video_url']));
+    }
 });
 
 // Prevent caching of REST API responses

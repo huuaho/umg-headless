@@ -126,17 +126,18 @@ export default function Header({
     }
   }, [searchOpen]);
 
-  // Handle smooth scroll when navigating from another page with a hash
+  // Scroll to top on route change, or to hash target if present
   useEffect(() => {
     if (pathname === "/" && window.location.hash) {
-      const slug = window.location.hash.slice(1); // Remove the #
+      const slug = window.location.hash.slice(1);
       const element = document.getElementById(slug);
       if (element) {
-        // Small delay to ensure page is fully rendered
         setTimeout(() => {
           element.scrollIntoView({ behavior: "smooth" });
         }, 100);
       }
+    } else {
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   }, [pathname]);
 

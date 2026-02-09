@@ -40,7 +40,7 @@ export interface ArticlesResponse {
 }
 
 export interface FetchArticlesOptions {
-  category: string;
+  category?: string;
   perPage?: number;
   page?: number;
 }

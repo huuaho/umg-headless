@@ -2,6 +2,7 @@
 
 import FeaturedMedia from "../sections/components/FeaturedMedia";
 import CommentsSection from "./CommentsSection";
+import MoreArticles from "./MoreArticles";
 
 interface ArticleLayoutProps {
   title: string;
@@ -12,6 +13,7 @@ interface ArticleLayoutProps {
   images: string[]; // All images (featured + gallery)
   content: string; // Sanitized HTML (Divi stripped)
   postId?: number; // WP post ID for comments (EM/IS only)
+  currentSlug?: string; // Current article slug for More Articles carousel
 }
 
 export default function ArticleLayout({
@@ -23,6 +25,7 @@ export default function ArticleLayout({
   images,
   content,
   postId,
+  currentSlug,
 }: ArticleLayoutProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
@@ -70,6 +73,11 @@ export default function ArticleLayout({
 
         {/* Comments Section */}
         {postId != null && <CommentsSection postId={postId} />}
+
+        {/* More Articles Carousel */}
+        {currentSlug && category && (
+          <MoreArticles currentSlug={currentSlug} category={category} />
+        )}
       </article>
     </main>
   );

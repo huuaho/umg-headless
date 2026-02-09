@@ -49,6 +49,7 @@ export default async function ArticlePage({
       images={article.images}
       content={article.content}
       postId={article.id}
+      currentSlug={article.slug}
     />
   );
 }

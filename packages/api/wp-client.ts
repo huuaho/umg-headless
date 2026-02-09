@@ -166,18 +166,20 @@ export async function fetchArticlesWP(
 ): Promise<ArticlesResponse> {
   const { category, perPage = 5, page = 1 } = options;
 
-  // Resolve category slug to WP category ID
-  const categoryId = await getCategoryId(category);
-  if (categoryId === null) {
-    return { page, per_page: perPage, total: 0, total_pages: 0, items: [] };
-  }
-
   const params = new URLSearchParams({
-    categories: String(categoryId),
     per_page: String(perPage),
     page: String(page),
     _embed: "true",
   });
+
+  // Only filter by category when provided
+  if (category) {
+    const categoryId = await getCategoryId(category);
+    if (categoryId === null) {
+      return { page, per_page: perPage, total: 0, total_pages: 0, items: [] };
+    }
+    params.set("categories", String(categoryId));
+  }
 
   const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
   const response = await fetch(url, {

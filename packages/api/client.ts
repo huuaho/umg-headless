@@ -35,10 +35,13 @@ export async function fetchArticles(
   const { category, perPage = 5, page = 1 } = options;
 
   const params = new URLSearchParams({
-    category,
     per_page: String(perPage),
     page: String(page),
   });
+
+  if (category) {
+    params.set("category", category);
+  }
 
   const url = `${API_BASE_URL}/um/v1/articles?${params}`;
 

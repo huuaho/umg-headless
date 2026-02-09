@@ -155,6 +155,7 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
     categories: apiCategories,
     read_time_minutes: estimateReadTime(post.content.rendered),
     is_excluded: false,
+    video_url: post.meta?.video_url || undefined,
   };
 }
 

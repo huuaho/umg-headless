@@ -29,6 +29,7 @@ export interface ApiArticle {
   categories: ApiCategory[];
   read_time_minutes: number;
   is_excluded: boolean;
+  video_url?: string; // YouTube URL from WP custom field (Video Interviews)
 }
 
 export interface ArticlesResponse {
@@ -75,6 +76,7 @@ export interface WpPost {
     }>;
     "wp:term"?: Array<Array<{ id: number; name: string; slug: string }>>;
   };
+  meta?: Record<string, string>;
 }
 
 /**

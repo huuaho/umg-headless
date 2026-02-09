@@ -11,6 +11,7 @@ export const categories: Category[] = [
   { name: "History & Legacy", slug: "historylegacy", color: "#feb70c" },
   { name: "Social Impact & Justice", slug: "socialimpactjustice", color: "#ea1479" },
   { name: "Leadership & Youth Engagement", slug: "leadershipyouthengagement", color: "#66c2ad" },
+  { name: "Video Interviews", slug: "video-interviews", color: "#655aa8" },
 ];
 
 // Header navigation — with 6 categories, split for responsive display

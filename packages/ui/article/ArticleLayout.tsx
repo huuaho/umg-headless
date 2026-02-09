@@ -4,6 +4,19 @@ import FeaturedMedia from "../sections/components/FeaturedMedia";
 import CommentsSection from "./CommentsSection";
 import MoreArticles from "./MoreArticles";
 
+/**
+ * Extract YouTube video ID from various URL formats:
+ * - https://www.youtube.com/watch?v=VIDEO_ID
+ * - https://youtu.be/VIDEO_ID
+ * - https://www.youtube.com/embed/VIDEO_ID
+ */
+function getYouTubeId(url: string): string | null {
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  return match?.[1] ?? null;
+}
+
 interface ArticleLayoutProps {
   title: string;
   author: string;
@@ -16,6 +29,7 @@ interface ArticleLayoutProps {
   currentSlug?: string; // Current article slug for More Articles carousel
   categoryColor?: string; // Hex color for category label
   categoryColorMap?: Record<string, string>; // Map of category names to hex colors for More Articles
+  videoUrl?: string; // YouTube URL for video interviews
 }
 
 export default function ArticleLayout({
@@ -30,6 +44,7 @@ export default function ArticleLayout({
   currentSlug,
   categoryColor,
   categoryColorMap,
+  videoUrl,
 }: ArticleLayoutProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
@@ -59,15 +74,27 @@ export default function ArticleLayout({
           <time dateTime={date}>{formattedDate}</time>
         </div>
 
-        {/* Featured Image / Gallery */}
-        {images.length > 0 && (
+        {/* YouTube Video or Featured Image / Gallery */}
+        {videoUrl && getYouTubeId(videoUrl) ? (
+          <div className="mb-8 -mx-6 md:mx-0">
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                className="absolute inset-0 w-full h-full rounded-none md:rounded-lg"
+                src={`https://www.youtube.com/embed/${getYouTubeId(videoUrl)}`}
+                title={title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        ) : images.length > 0 ? (
           <div className="mb-8 -mx-6 md:mx-0">
             <FeaturedMedia
               images={images.length > 1 ? images : images[0]}
               alt={title}
             />
           </div>
-        )}
+        ) : null}
 
         {/* Article Body */}
         <div

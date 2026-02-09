@@ -8,6 +8,7 @@ const SECTION_TYPE_MAP: Record<string, SectionType> = {
   historylegacy: "type4",
   socialimpactjustice: "type1",
   leadershipyouthengagement: "type4-text",
+  "video-interviews": "type4",
 };
 
 export default function Home() {

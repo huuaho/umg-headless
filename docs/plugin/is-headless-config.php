@@ -22,6 +22,15 @@ add_action('rest_api_init', function() {
     });
 });
 
+// Register video_url custom field for REST API (Video Interviews)
+add_action('init', function() {
+    register_post_meta('post', 'video_url', array(
+        'show_in_rest' => true,
+        'single'       => true,
+        'type'         => 'string',
+    ));
+});
+
 // Prevent caching of REST API responses
 add_filter('rest_post_dispatch', function($response) {
     $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -50,10 +59,10 @@ add_action('transition_post_status', function($new_status, $old_status, $post) {
     ));
 }, 10, 3);
 
-// Redirect frontend to main site
-add_action('template_redirect', function() {
-    if (!is_admin() && !str_starts_with($_SERVER['REQUEST_URI'], '/wp-json')) {
-        wp_redirect('https://www.internationalspectrum.org', 301);
-        exit;
-    }
-});
+// Redirect frontend to main site (TEMPORARILY DISABLED for WP access)
+// add_action('template_redirect', function() {
+//     if (!is_admin() && !str_starts_with($_SERVER['REQUEST_URI'], '/wp-json')) {
+//         wp_redirect('https://www.internationalspectrum.org', 301);
+//         exit;
+//     }
+// });

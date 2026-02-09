@@ -221,14 +221,14 @@ jobs:
       - name: Build
         run: pnpm turbo run build --filter=umg
         env:
-          NEXT_PUBLIC_WP_API_URL: ${{ secrets.WP_API_URL }}
+          NEXT_PUBLIC_WP_API_URL: ${{ secrets.UMG_WP_API_URL }}
 
       - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.UMG_FTP_SERVER }}
+          username: ${{ secrets.UMG_FTP_USERNAME }}
+          password: ${{ secrets.UMG_FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./apps/umg/out/
           server-dir: ./unitedmediadc.com/public_html/
@@ -251,16 +251,38 @@ In your GitHub repository:
 2. Click "New repository secret"
 3. Add the following secrets:
 
-| Secret         | Value                                | Source                               |
-| -------------- | ------------------------------------ | ------------------------------------ |
-| `FTP_SERVER`   | `yourdomain.com` or server IP        | SiteGround Site Tools → FTP Accounts |
-| `FTP_USERNAME` | FTP username                         | SiteGround Site Tools → FTP Accounts |
-| `FTP_PASSWORD` | FTP password                         | SiteGround Site Tools → FTP Accounts |
-| `WP_API_URL`   | `https://api.yourdomain.com/wp-json` | Your WordPress subdomain             |
+Each site needs its own FTP credentials (SiteGround FTP is per-site):
+
+**UMG:**
+
+| Secret | Value |
+|--------|-------|
+| `UMG_FTP_SERVER` | Server hostname |
+| `UMG_FTP_USERNAME` | FTP username |
+| `UMG_FTP_PASSWORD` | FTP password |
+| `UMG_WP_API_URL` | `https://api.unitedmediadc.com/wp-json` |
+
+**Echo Media:**
+
+| Secret | Value |
+|--------|-------|
+| `EM_FTP_SERVER` | Server hostname |
+| `EM_FTP_USERNAME` | FTP username |
+| `EM_FTP_PASSWORD` | FTP password |
+| `EM_WP_API_URL` | `https://api.echo-media.info/wp-json` |
+
+**International Spectrum:**
+
+| Secret | Value |
+|--------|-------|
+| `IS_FTP_SERVER` | Server hostname |
+| `IS_FTP_USERNAME` | FTP username |
+| `IS_FTP_PASSWORD` | FTP password |
+| `IS_WP_API_URL` | `https://api.internationalspectrum.org/wp-json` |
 
 ### Get SiteGround FTP Credentials
 
-1. Log in to SiteGround Site Tools
+1. Log in to SiteGround Site Tools **for each site**
 2. Go to Site → FTP Accounts
 3. Create a new FTP account or use existing
 4. Note the hostname, username, and password

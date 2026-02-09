@@ -36,9 +36,9 @@ jobs:
       - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.EM_FTP_SERVER }}
+          username: ${{ secrets.EM_FTP_USERNAME }}
+          password: ${{ secrets.EM_FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./apps/echo-media/out/
           server-dir: ./echo-media.info/public_html/

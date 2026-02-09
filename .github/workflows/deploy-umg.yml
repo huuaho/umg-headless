@@ -30,14 +30,14 @@ jobs:
       - name: Build
         run: pnpm turbo run build --filter=umg
         env:
-          NEXT_PUBLIC_WP_API_URL: ${{ secrets.WP_API_URL }}
+          NEXT_PUBLIC_WP_API_URL: ${{ secrets.UMG_WP_API_URL }}
 
       - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.UMG_FTP_SERVER }}
+          username: ${{ secrets.UMG_FTP_USERNAME }}
+          password: ${{ secrets.UMG_FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./apps/umg/out/
           server-dir: ./unitedmediadc.com/public_html/

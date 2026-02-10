@@ -6,6 +6,23 @@ import type { ApiArticle } from "@umg/api";
 import { fetchArticles } from "@umg/api";
 import ArticleLink from "../ArticleLink";
 
+function CardImage({ src, alt }: { src: string; alt: string }) {
+  const [isVertical, setIsVertical] = useState(false);
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={288}
+      height={192}
+      className={`w-full aspect-3/2 ${isVertical ? "object-contain" : "object-cover"} rounded bg-black`}
+      onLoad={(e) => {
+        const img = e.target as HTMLImageElement;
+        setIsVertical(img.naturalHeight > img.naturalWidth);
+      }}
+    />
+  );
+}
+
 const CATEGORY_COUNT = 5;
 const TOTAL_COUNT = 10;
 
@@ -197,12 +214,9 @@ export default function MoreArticles({
               className="w-64 md:w-72 flex-shrink-0 snap-start hover:opacity-80 transition-opacity"
             >
               {(article.featured_image || article.images?.[0]) ? (
-                <Image
+                <CardImage
                   src={(article.featured_image || article.images[0])!}
                   alt={article.title}
-                  width={288}
-                  height={192}
-                  className="w-full aspect-3/2 object-cover rounded bg-gray-100"
                 />
               ) : (
                 <div className="w-full aspect-3/2 bg-gray-100 rounded flex items-center justify-center">

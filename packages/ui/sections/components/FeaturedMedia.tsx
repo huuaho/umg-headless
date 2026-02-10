@@ -23,6 +23,7 @@ export default function FeaturedMedia({ images, alt }: FeaturedMediaProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxLoading, setLightboxLoading] = useState(true);
   const [inlineLoading, setInlineLoading] = useState(false);
+  const [isVertical, setIsVertical] = useState(false);
 
   const goToPrevious = useCallback(() => {
     setLightboxLoading(true);
@@ -133,12 +134,16 @@ export default function FeaturedMedia({ images, alt }: FeaturedMediaProps) {
   if (!isGallery) {
     return (
       <>
-        <div className="relative aspect-3/2 w-full cursor-zoom-in" onClick={openLightbox}>
+        <div className="relative aspect-3/2 w-full cursor-zoom-in bg-black" onClick={openLightbox}>
           <Image
             src={imageArray[0]}
             alt={alt}
             fill
-            className="object-cover"
+            className={isVertical ? "object-contain" : "object-cover"}
+            onLoad={(e) => {
+              const img = e.target as HTMLImageElement;
+              setIsVertical(img.naturalHeight > img.naturalWidth);
+            }}
           />
         </div>
         {lightbox}
@@ -151,7 +156,7 @@ export default function FeaturedMedia({ images, alt }: FeaturedMediaProps) {
     <>
       <div>
         {/* Image */}
-        <div className="relative aspect-3/2 w-full cursor-zoom-in" onClick={openLightbox}>
+        <div className="relative aspect-3/2 w-full cursor-zoom-in bg-black" onClick={openLightbox}>
           {inlineLoading && (
             <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-100">
               <div className="w-8 h-8 border-3 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
@@ -161,8 +166,12 @@ export default function FeaturedMedia({ images, alt }: FeaturedMediaProps) {
             src={imageArray[currentIndex]}
             alt={alt}
             fill
-            className={`object-cover transition-opacity duration-300 ${inlineLoading ? "opacity-0" : "opacity-100"}`}
-            onLoad={() => setInlineLoading(false)}
+            className={`${isVertical ? "object-contain" : "object-cover"} transition-opacity duration-300 ${inlineLoading ? "opacity-0" : "opacity-100"}`}
+            onLoad={(e) => {
+              const img = e.target as HTMLImageElement;
+              setIsVertical(img.naturalHeight > img.naturalWidth);
+              setInlineLoading(false);
+            }}
           />
         </div>
         {/* Bottom bar: pagination left, arrows right */}

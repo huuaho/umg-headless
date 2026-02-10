@@ -7,16 +7,21 @@ import ArticleLink from "../ArticleLink";
 
 function ImageContainer({ image, title }: { image?: string; title: string }) {
   const [imageError, setImageError] = useState(false);
+  const [isVertical, setIsVertical] = useState(false);
 
   return (
     <div className="w-1/3 lg:w-full order-2 lg:order-1">
-      <div className="relative aspect-3/2 bg-gray-100">
+      <div className="relative aspect-3/2 bg-black">
         {image && !imageError && (
           <Image
             src={image}
             alt={title}
             fill
-            className="object-cover"
+            className={isVertical ? "object-contain" : "object-cover"}
+            onLoad={(e) => {
+              const img = e.target as HTMLImageElement;
+              setIsVertical(img.naturalHeight > img.naturalWidth);
+            }}
             onError={() => setImageError(true)}
           />
         )}

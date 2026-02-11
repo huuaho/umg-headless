@@ -112,7 +112,11 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
   const featuredMedia = post._embedded?.["wp:featuredmedia"]?.[0];
   const rawFeaturedImage = featuredMedia?.source_url || null;
   const featuredImage = rawFeaturedImage ? toFullSizeUrl(rawFeaturedImage) : null;
-  const authorName = post._embedded?.author?.[0]?.name || "Unknown";
+  const authorName =
+    post.authors?.[0]?.display_name ||
+    post._embedded?.author?.[0]?.name ||
+    post.author_display_name ||
+    "Unknown";
 
   // Get category info from embedded terms
   const wpCategories = post._embedded?.["wp:term"]?.[0] || [];

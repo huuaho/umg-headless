@@ -77,6 +77,8 @@ export interface WpPost {
     "wp:term"?: Array<Array<{ id: number; name: string; slug: string }>>;
   };
   meta?: Record<string, string>;
+  author_display_name?: string; // Custom REST field from IS plugin
+  authors?: Array<{ display_name: string }>; // PublishPress Authors plugin
 }
 
 /**

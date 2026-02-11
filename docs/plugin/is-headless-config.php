@@ -60,6 +60,20 @@ add_action('save_post', function($post_id) {
     }
 });
 
+// Expose author display name directly on post responses
+// (bypasses REST user endpoint permissions that block _embed author data)
+add_action('rest_api_init', function() {
+    register_rest_field('post', 'author_display_name', array(
+        'get_callback' => function($post) {
+            return get_the_author_meta('display_name', $post['author']);
+        },
+        'schema' => array(
+            'type' => 'string',
+            'description' => 'Author display name',
+        ),
+    ));
+});
+
 // Prevent caching of REST API responses
 add_filter('rest_post_dispatch', function($response) {
     $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');

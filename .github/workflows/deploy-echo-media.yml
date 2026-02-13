@@ -48,4 +48,3 @@ jobs:
           protocol: ftps
           local-dir: ./apps/echo-media/out/
           server-dir: ./echo-media.info/public_html/
-          dangerous-clean-slate: true

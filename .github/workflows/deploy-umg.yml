@@ -41,4 +41,3 @@ jobs:
           protocol: ftps
           local-dir: ./apps/umg/out/
           server-dir: ./unitedmediadc.com/public_html/
-          dangerous-clean-slate: true

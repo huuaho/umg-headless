@@ -48,4 +48,3 @@ jobs:
           protocol: ftps
           local-dir: ./apps/international-spectrum/out/
           server-dir: ./internationalspectrum.org/public_html/
-          dangerous-clean-slate: true

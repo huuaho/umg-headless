@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "United Media Group",
-  description: "News aggregator for Diplomatic Watch, Echo Media, and International Spectrum",
+  description:
+    "News aggregator for Diplomatic Watch, Echo Media, and International Spectrum",
 };
 
 export default function RootLayout({
@@ -31,14 +32,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header
-          logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2025/12/UMG-Masthead.svg"
+          logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2026/02/Screenshot-2026-02-14-at-3.20.18-PM.png"
           logoAlt="United Media Group"
           categories={categories}
           bannerCompanies={mediaCompanies}
         />
         {children}
         <Footer
-          logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2026/01/UMG-Masthead-Black.svg"
+          logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2026/02/Screenshot-2026-02-14-at-3.20.18-PM.png"
           logoAlt="United Media Group"
           categories={categories}
           companies={mediaCompanies}

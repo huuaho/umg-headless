@@ -20,6 +20,7 @@ interface CategorySectionWrapperProps {
   category: string;
   sectionType: SectionType;
   categoryColor?: string;
+  categoryIcon?: string;
 }
 
 // Articles needed per section type
@@ -36,6 +37,7 @@ export default function CategorySectionWrapper({
   category,
   sectionType,
   categoryColor,
+  categoryIcon,
 }: CategorySectionWrapperProps) {
   const { articles, isLoading, error, refetch } = useArticles({
     category: slug,
@@ -44,7 +46,7 @@ export default function CategorySectionWrapper({
 
   // Loading state
   if (isLoading) {
-    return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} />;
+    return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />;
   }
 
   // Error state
@@ -54,6 +56,7 @@ export default function CategorySectionWrapper({
         slug={slug}
         category={category}
         categoryColor={categoryColor}
+        categoryIcon={categoryIcon}
         message={error?.message || "No articles found"}
         onRetry={refetch}
       />
@@ -69,6 +72,7 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryIcon={categoryIcon}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -81,6 +85,7 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryIcon={categoryIcon}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -93,6 +98,7 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryIcon={categoryIcon}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -105,6 +111,7 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryIcon={categoryIcon}
           articles={data.articles}
         />
       );
@@ -116,6 +123,7 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryIcon={categoryIcon}
           articles={data.articles}
           textOnly
         />

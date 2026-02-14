@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import type { SectionType4Data, Type4Article } from "@umg/api";
 import ArticleLink from "../ArticleLink";
+import CategoryLabel from "./CategoryLabel";
 
 function ImageContainer({ image, title }: { image?: string; title: string }) {
   const [imageError, setImageError] = useState(false);
@@ -99,6 +100,7 @@ interface SectionType4Props extends SectionType4Data {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryIcon?: string;
   textOnly?: boolean;
 }
 
@@ -106,6 +108,7 @@ export default function SectionType4({
   slug,
   category,
   categoryColor,
+  categoryIcon,
   articles,
   textOnly = false,
 }: SectionType4Props) {
@@ -114,16 +117,7 @@ export default function SectionType4({
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      {/* Category Label */}
-      <div className="mb-4">
-        <a
-          href="#"
-          className="text-sm font-bold hover:opacity-70"
-          style={categoryColor ? { color: categoryColor } : { color: '#000' }}
-        >
-          {category} &gt;
-        </a>
-      </div>
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
 
       {/* Articles - SM: stacked, MD: 2x2 grid, LG: 4 columns */}
       <div className="md:grid md:grid-cols-2 lg:grid-cols-4">

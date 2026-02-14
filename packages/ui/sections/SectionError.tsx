@@ -1,9 +1,12 @@
 "use client";
 
+import CategoryLabel from "./CategoryLabel";
+
 interface SectionErrorProps {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryIcon?: string;
   message: string;
   onRetry: () => void;
 }
@@ -12,6 +15,7 @@ export default function SectionError({
   slug,
   category,
   categoryColor,
+  categoryIcon,
   message,
   onRetry,
 }: SectionErrorProps) {
@@ -20,10 +24,7 @@ export default function SectionError({
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      {/* Category Label */}
-      <div className="mb-4">
-        <span className="text-sm font-bold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category} &gt;</span>
-      </div>
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
 
       {/* Error content */}
       <div className="py-12 text-center">

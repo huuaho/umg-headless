@@ -4,6 +4,7 @@ import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import type { SectionData, SecondaryArticle } from "@umg/api";
 import FeaturedMedia from "./components/FeaturedMedia";
 import ArticleLink from "../ArticleLink";
+import CategoryLabel from "./CategoryLabel";
 
 // Title font sizes in rem (for 2XL breakpoint): 5xl, 4xl, 3xl, 2xl
 const TITLE_SIZES_REM = [3, 2.25, 1.875, 1.5] as const;
@@ -26,12 +27,14 @@ interface SectionType1Props extends SectionData {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryIcon?: string;
 }
 
 export default function SectionType1({
   slug,
   category,
   categoryColor,
+  categoryIcon,
   featured,
   secondary,
 }: SectionType1Props) {
@@ -99,16 +102,7 @@ export default function SectionType1({
 
   return (
     <section id={slug} className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300">
-      {/* Category Label */}
-      <div className="mb-4">
-        <a
-          href="#"
-          className="text-sm font-bold hover:opacity-70"
-          style={categoryColor ? { color: categoryColor } : { color: '#000' }}
-        >
-          {category} &gt;
-        </a>
-      </div>
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
 
       {/* Main content wrapper
           SM/MD: stacked vertically

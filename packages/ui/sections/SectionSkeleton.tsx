@@ -1,23 +1,24 @@
+import CategoryLabel from "./CategoryLabel";
+
 interface SectionSkeletonProps {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryIcon?: string;
 }
 
 export default function SectionSkeleton({
   slug,
   category,
   categoryColor,
+  categoryIcon,
 }: SectionSkeletonProps) {
   return (
     <section
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      {/* Category Label */}
-      <div className="mb-4">
-        <span className="text-sm font-bold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category} &gt;</span>
-      </div>
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
 
       {/* Skeleton content */}
       <div className="animate-pulse">

@@ -100,6 +100,8 @@ interface SectionType4Props extends SectionType4Data {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryTextColor?: string;
+  categoryUnderlineColor?: string;
   categoryIcon?: string;
   textOnly?: boolean;
 }
@@ -108,6 +110,8 @@ export default function SectionType4({
   slug,
   category,
   categoryColor,
+  categoryTextColor,
+  categoryUnderlineColor,
   categoryIcon,
   articles,
   textOnly = false,
@@ -117,7 +121,7 @@ export default function SectionType4({
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Articles - SM: stacked, MD: 2x2 grid, LG: 4 columns */}
       <div className="md:grid md:grid-cols-2 lg:grid-cols-4">

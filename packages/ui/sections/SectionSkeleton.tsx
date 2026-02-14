@@ -4,6 +4,8 @@ interface SectionSkeletonProps {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryTextColor?: string;
+  categoryUnderlineColor?: string;
   categoryIcon?: string;
 }
 
@@ -11,6 +13,8 @@ export default function SectionSkeleton({
   slug,
   category,
   categoryColor,
+  categoryTextColor,
+  categoryUnderlineColor,
   categoryIcon,
 }: SectionSkeletonProps) {
   return (
@@ -18,7 +22,7 @@ export default function SectionSkeleton({
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Skeleton content */}
       <div className="animate-pulse">

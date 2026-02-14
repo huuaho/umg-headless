@@ -20,6 +20,8 @@ interface CategorySectionWrapperProps {
   category: string;
   sectionType: SectionType;
   categoryColor?: string;
+  categoryTextColor?: string;
+  categoryUnderlineColor?: string;
   categoryIcon?: string;
 }
 
@@ -37,6 +39,8 @@ export default function CategorySectionWrapper({
   category,
   sectionType,
   categoryColor,
+  categoryTextColor,
+  categoryUnderlineColor,
   categoryIcon,
 }: CategorySectionWrapperProps) {
   const { articles, isLoading, error, refetch } = useArticles({
@@ -46,7 +50,7 @@ export default function CategorySectionWrapper({
 
   // Loading state
   if (isLoading) {
-    return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />;
+    return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />;
   }
 
   // Error state

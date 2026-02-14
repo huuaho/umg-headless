@@ -27,6 +27,8 @@ interface SectionType2Props extends SectionData {
   slug: string;
   category: string;
   categoryColor?: string;
+  categoryTextColor?: string;
+  categoryUnderlineColor?: string;
   categoryIcon?: string;
 }
 
@@ -34,6 +36,8 @@ export default function SectionType2({
   slug,
   category,
   categoryColor,
+  categoryTextColor,
+  categoryUnderlineColor,
   categoryIcon,
   featured,
   secondary,
@@ -103,7 +107,7 @@ export default function SectionType2({
 
   return (
     <section id={slug} className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300">
-      <CategoryLabel category={category} categoryColor={categoryColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Main content wrapper
             SM/MD/LG: stacked (featured, then secondary)

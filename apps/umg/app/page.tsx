@@ -22,6 +22,7 @@ export default function Home() {
           slug={category.slug}
           category={category.name}
           sectionType={SECTION_TYPE_MAP[category.slug] || "type1"}
+          titleClassName="font-[family-name:var(--font-arizona-sans)]"
         />
       ))}
     </main>

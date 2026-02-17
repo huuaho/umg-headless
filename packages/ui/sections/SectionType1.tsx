@@ -30,6 +30,7 @@ interface SectionType1Props extends SectionData {
   categoryTextColor?: string;
   categoryUnderlineColor?: string;
   categoryIcon?: string;
+  titleClassName?: string;
 }
 
 export default function SectionType1({
@@ -39,6 +40,7 @@ export default function SectionType1({
   categoryTextColor,
   categoryUnderlineColor,
   categoryIcon,
+  titleClassName,
   featured,
   secondary,
 }: SectionType1Props) {
@@ -125,7 +127,7 @@ export default function SectionType1({
             <div ref={textRef} className="2xl:w-1/3">
               <h2
                 ref={titleRef}
-                className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3"
+                className={`text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3 ${titleClassName || ""}`}
                 style={titleFontSize ? { fontSize: `${titleFontSize}rem` } : undefined}
               >
                 <ArticleLink slug={featured.slug} url={featured.url} className="hover:underline">

@@ -36,11 +36,13 @@ function ArticleCard({
   textOnly,
   index,
   total,
+  titleClassName,
 }: {
   article: Type4Article;
   textOnly: boolean;
   index: number;
   total: number;
+  titleClassName?: string;
 }) {
   const isLast = index === total - 1;
   // SM: All except last have bottom borders
@@ -84,7 +86,7 @@ function ArticleCard({
 
         {/* Text content - 2/3 width on SM/MD, full width below image at LG */}
         <div className={!textOnly ? "w-2/3 lg:w-full order-1 lg:order-2" : ""}>
-          <h3 className="font-semibold text-base leading-tight mb-1">
+          <h3 className={`font-semibold text-base leading-tight mb-1 ${titleClassName || ""}`}>
             <ArticleLink slug={article.slug} url={article.url} className="hover:underline">
               {article.title}
             </ArticleLink>
@@ -103,6 +105,7 @@ interface SectionType4Props extends SectionType4Data {
   categoryTextColor?: string;
   categoryUnderlineColor?: string;
   categoryIcon?: string;
+  titleClassName?: string;
   textOnly?: boolean;
 }
 
@@ -113,6 +116,7 @@ export default function SectionType4({
   categoryTextColor,
   categoryUnderlineColor,
   categoryIcon,
+  titleClassName,
   articles,
   textOnly = false,
 }: SectionType4Props) {
@@ -132,6 +136,7 @@ export default function SectionType4({
             textOnly={textOnly}
             index={index}
             total={articles.length}
+            titleClassName={titleClassName}
           />
         ))}
       </div>

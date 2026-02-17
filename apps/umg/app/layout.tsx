@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Header, Footer } from "@umg/ui";
 import { categories } from "@/lib/categories";
@@ -13,6 +14,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const arizonaSans = localFont({
+  src: "../fonts/ABCArizonaSans-Medium-Trial.otf",
+  variable: "--font-arizona-sans",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${arizonaSans.variable} antialiased`}
       >
         <Header
           logoUrl="/umg-logo.svg"

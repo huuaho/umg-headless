@@ -23,6 +23,7 @@ interface CategorySectionWrapperProps {
   categoryTextColor?: string;
   categoryUnderlineColor?: string;
   categoryIcon?: string;
+  titleClassName?: string;
 }
 
 // Articles needed per section type
@@ -42,6 +43,7 @@ export default function CategorySectionWrapper({
   categoryTextColor,
   categoryUnderlineColor,
   categoryIcon,
+  titleClassName,
 }: CategorySectionWrapperProps) {
   const { articles, isLoading, error, refetch } = useArticles({
     category: slug,
@@ -77,6 +79,7 @@ export default function CategorySectionWrapper({
           category={category}
           categoryColor={categoryColor}
           categoryIcon={categoryIcon}
+          titleClassName={titleClassName}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -90,6 +93,7 @@ export default function CategorySectionWrapper({
           category={category}
           categoryColor={categoryColor}
           categoryIcon={categoryIcon}
+          titleClassName={titleClassName}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -103,6 +107,7 @@ export default function CategorySectionWrapper({
           category={category}
           categoryColor={categoryColor}
           categoryIcon={categoryIcon}
+          titleClassName={titleClassName}
           featured={data.featured}
           secondary={data.secondary}
         />
@@ -116,6 +121,7 @@ export default function CategorySectionWrapper({
           category={category}
           categoryColor={categoryColor}
           categoryIcon={categoryIcon}
+          titleClassName={titleClassName}
           articles={data.articles}
         />
       );
@@ -128,6 +134,7 @@ export default function CategorySectionWrapper({
           category={category}
           categoryColor={categoryColor}
           categoryIcon={categoryIcon}
+          titleClassName={titleClassName}
           articles={data.articles}
           textOnly
         />

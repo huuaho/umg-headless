@@ -32,14 +32,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header
-          logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2026/02/Screenshot-2026-02-14-at-3.20.18-PM.png"
+          logoUrl="/umg-logo.svg"
           logoAlt="United Media Group"
           categories={categories}
           bannerCompanies={mediaCompanies}
         />
         {children}
         <Footer
-          logoUrl="https://api.unitedmediadc.com/wp-content/uploads/2026/02/Screenshot-2026-02-14-at-3.20.18-PM.png"
+          logoUrl="/umg-logo.svg"
           logoAlt="United Media Group"
           categories={categories}
           companies={mediaCompanies}

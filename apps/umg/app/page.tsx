@@ -22,8 +22,6 @@ export default function Home() {
           slug={category.slug}
           category={category.name}
           sectionType={SECTION_TYPE_MAP[category.slug] || "type1"}
-          categoryColor={category.color}
-          categoryIcon="/icon.png"
         />
       ))}
     </main>

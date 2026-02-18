@@ -13,32 +13,21 @@ export default function CategoryLabel({
   categoryUnderlineColor,
   categoryIcon,
 }: CategoryLabelProps) {
-  // Enhanced style: icon + text + colored underline
-  if (categoryIcon) {
-    const textColor = categoryTextColor || "#000";
-    const underlineColor = categoryUnderlineColor || categoryColor;
+  const textColor = categoryTextColor || categoryColor || "#000";
+  const showArrow = !categoryUnderlineColor && !categoryIcon && !categoryTextColor;
 
-    return (
-      <div className="mb-4 flex items-center gap-2">
-        <img src={categoryIcon} alt="" className="h-4 w-4" />
-        <span
-          className="text-sm font-bold pb-1 border-b-3"
-          style={{ color: textColor, borderColor: underlineColor }}
-        >
-          {category}
-        </span>
-      </div>
-    );
-  }
-
-  // Default style: colored text with arrow
   return (
-    <div className="mb-4">
+    <div className="mb-4 flex items-center gap-2">
+      {categoryIcon && <img src={categoryIcon} alt="" className="h-4 w-4" />}
       <span
-        className="text-sm font-bold"
-        style={categoryColor ? { color: categoryColor } : { color: "#000" }}
+        className={`text-sm font-bold ${categoryUnderlineColor ? "border-b-3" : ""}`}
+        style={{
+          color: textColor,
+          ...(categoryUnderlineColor ? { borderColor: categoryUnderlineColor } : {}),
+        }}
       >
-        {category} &gt;
+        {category}
+        {showArrow && " >"}
       </span>
     </div>
   );

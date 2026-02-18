@@ -78,6 +78,8 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryTextColor={categoryTextColor}
+          categoryUnderlineColor={categoryUnderlineColor}
           categoryIcon={categoryIcon}
           titleClassName={titleClassName}
           featured={data.featured}
@@ -92,6 +94,8 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryTextColor={categoryTextColor}
+          categoryUnderlineColor={categoryUnderlineColor}
           categoryIcon={categoryIcon}
           titleClassName={titleClassName}
           featured={data.featured}
@@ -106,6 +110,8 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryTextColor={categoryTextColor}
+          categoryUnderlineColor={categoryUnderlineColor}
           categoryIcon={categoryIcon}
           titleClassName={titleClassName}
           featured={data.featured}
@@ -120,6 +126,8 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryTextColor={categoryTextColor}
+          categoryUnderlineColor={categoryUnderlineColor}
           categoryIcon={categoryIcon}
           titleClassName={titleClassName}
           articles={data.articles}
@@ -133,6 +141,8 @@ export default function CategorySectionWrapper({
           slug={slug}
           category={category}
           categoryColor={categoryColor}
+          categoryTextColor={categoryTextColor}
+          categoryUnderlineColor={categoryUnderlineColor}
           categoryIcon={categoryIcon}
           titleClassName={titleClassName}
           articles={data.articles}

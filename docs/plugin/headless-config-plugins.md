@@ -6,19 +6,22 @@ WordPress plugins that configure each backend for headless operation with the Ne
 
 | File | Site | Localhost Port |
 |------|------|---------------|
-| `umg-headless-config.php` | unitedmediadc.com | 3000 |
+| `united-media-ingestor/` | unitedmediadc.com | 3000 |
 | `em-headless-config.php` | echo-media.info | 3000 |
 | `is-headless-config.php` | internationalspectrum.org | 3000 |
+
+**UMG note:** The standalone `umg-headless-config.php` has been merged into the `united-media-ingestor/` plugin. That plugin now handles both article ingestion and headless config (CORS, cache control, redirect).
 
 ## Installation
 
 1. In SiteGround **Site Tools** → **Site** → **File Manager**, navigate to `api.yourdomain.com/public_html/wp-content/plugins/`
-2. Upload the corresponding `.php` file directly (no zip or folder needed)
-3. Go to **Plugins** in wp-admin and activate the plugin
+2. For EM and IS: upload the `.php` file directly (no zip or folder needed)
+3. For UMG: upload the entire `united-media-ingestor/` folder
+4. Go to **Plugins** in wp-admin and activate the plugin
 
 | Site | Upload to | Activate |
 |------|-----------|----------|
-| UMG | `api.unitedmediadc.com/.../plugins/` | UMG Headless Config |
+| UMG | `api.unitedmediadc.com/.../plugins/united-media-ingestor/` | United Media Ingestor |
 | Echo Media | `api.echo-media.info/.../plugins/` | EM Headless Config |
 | International Spectrum | `api.internationalspectrum.org/.../plugins/` | IS Headless Config |
 
@@ -71,3 +74,4 @@ If `GH_REBUILD_TOKEN` is not defined, the webhook is silently skipped — the re
 - Using a plugin ensures the config persists regardless of which WordPress theme is active
 - If adding a new allowed origin, update the `$allowed` array in the CORS section
 - UMG does not have the auto-rebuild webhook (UMG aggregates via the ingestor plugin, rebuilt separately)
+- UMG's headless config (CORS, cache control, redirect) is built into the United Media Ingestor plugin — no separate config plugin needed

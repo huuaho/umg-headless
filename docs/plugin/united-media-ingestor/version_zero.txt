@@ -1,0 +1,519 @@
+<div id="united-media-feed" class="um-feed"></div>
+
+<script>
+(function () {
+
+  /* --------------------------------------------------
+     CONFIG
+  -------------------------------------------------- */
+  var SITES = [
+    { id: "diplomaticwatch", baseUrl: "https://diplomaticwatch.com", label: "Diplomatic Watch" },
+    { id: "echo-media", baseUrl: "https://www.echo-media.info", label: "Echo Media" },
+    { id: "internationalspectrum", baseUrl: "https://www.internationalspectrum.org", label: "International Spectrum" }
+  ];
+
+  var POSTS_QUERY = "/wp-json/wp/v2/posts?per_page=10&orderby=date&order=desc&_embed";
+
+  /* --------------------------------------------------
+     UTILITIES
+  -------------------------------------------------- */
+  function stripHtml(html) {
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html || "";
+    return tmp.textContent || "";
+  }
+
+  function formatDate(dateString) {
+    var d = new Date(dateString);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  function getSiteLabel(sourceId) {
+    for (var i = 0; i < SITES.length; i++) {
+      if (SITES[i].id === sourceId) return SITES[i].label;
+    }
+    return sourceId;
+  }
+
+  /* --------------------------------------------------
+     THUMBNAIL (featured → inline → gallery → Yoast)
+  -------------------------------------------------- */
+function getThumbnail(post) {
+  console.log("=== getThumbnail() START for post:", post.id, post.title && post.title.rendered, "===");
+
+  var embedded = post._embedded;
+
+  console.log("[1] embedded:", embedded);
+
+  // 1) Featured image
+  if (embedded &&
+      embedded["wp:featuredmedia"] &&
+      embedded["wp:featuredmedia"][0]) {
+
+    var media = embedded["wp:featuredmedia"][0];
+
+    console.log("[1A] Featured media found:", media);
+
+    if (media.source_url) {
+      console.log("[1B] Using media.source_url:", media.source_url);
+      return media.source_url;
+    }
+
+    if (media.guid && media.guid.rendered) {
+      console.log("[1C] Using media.guid.rendered:", media.guid.rendered);
+      return media.guid.rendered;
+    }
+  } else {
+    console.log("[1X] No featured media present.");
+  }
+
+  // 2) Inline <img> inside post content
+  if (post.content && post.content.rendered) {
+    console.log("[2] Checking for inline <img> tags in content...");
+
+    var div = document.createElement("div");
+    div.innerHTML = post.content.rendered;
+    var img = div.querySelector("img");
+
+    console.log("[2A] First inline <img> found:", img ? img.src : null);
+
+    if (img && img.src) {
+      console.log("[2B] Using inline content image:", img.src);
+      return img.src;
+    }
+  } else {
+    console.log("[2X] No post.content or no rendered HTML content.");
+  }
+
+  // 3) Gallery image (Divi ET builder)
+  console.log("[3] Checking for Divi gallery via gallery_ids...");
+  var match = post.content.rendered.match(/gallery_ids="([^"]+)"/);
+  console.log("[3A] gallery_ids match:", match ? match[1] : null);
+
+  if (match) {
+    var ids = match[1].split(",");
+    console.log("[3B] Extracted gallery image IDs:", ids);
+
+    if (ids.length > 0) {
+      console.log("[3C] First gallery ID:", ids[0]);
+
+      // We will log what we *would* use
+      var galleryInfo = {
+        gallery_id: ids[0],
+        media_api: post.link.split("/202")[0] + "/wp-json/wp/v2/media/" + ids[0]
+      };
+
+      console.log("[3D] Gallery fallback object:", galleryInfo);
+
+      // NOTE: We are NOT returning this URL because wp-json/media requires another fetch.
+      // We will return null so you can see this log first.
+    }
+  }
+
+  // 4) Yoast OG Image
+  var yoast = post.yoast_head_json;
+  console.log("[4] Checking Yoast OG image…", yoast);
+
+  if (yoast &&
+      yoast.og_image &&
+      yoast.og_image[0] &&
+      yoast.og_image[0].url) {
+
+    console.log("[4A] Using Yoast OG image:", yoast.og_image[0].url);
+    return yoast.og_image[0].url;
+  }
+
+  console.log("[X] No thumbnail found for post:", post.id);
+  return null;
+}
+
+  /* --------------------------------------------------
+     AUTHOR
+  -------------------------------------------------- */
+  function getAuthor(post) {
+    // Custom guest/multi-author plugin
+    if (post.authors && post.authors.length > 0) {
+      var a = post.authors[0];
+      var avatar = null;
+
+      if (typeof a.avatar_url === "string") {
+        avatar = a.avatar_url;
+      } else if (a.avatar_url && a.avatar_url.url) {
+        avatar = a.avatar_url.url;
+      }
+
+      return {
+        name: a.display_name || "Staff Writer",
+        avatar: avatar,
+        isGuest: !!a.is_guest
+      };
+    }
+
+    // WP author
+    var emb = post._embedded;
+    if (emb && emb.author && emb.author[0] && !emb.author[0].code) {
+      var wp = emb.author[0];
+      var avatars = wp.avatar_urls || {};
+      var avatarUrl = avatars["96"] || avatars["48"] || avatars["24"] || null;
+
+      return {
+        name: wp.name || "Staff Writer",
+        avatar: avatarUrl,
+        isGuest: false
+      };
+    }
+
+    return { name: "Staff Writer", avatar: null, isGuest: false };
+  }
+
+  /* --------------------------------------------------
+     CATEGORIES
+  -------------------------------------------------- */
+  function getCategories(post) {
+    var emb = post._embedded;
+    if (!emb || !emb["wp:term"]) return [];
+
+    var termGroups = emb["wp:term"];
+    var catGroup = null;
+
+    for (var i = 0; i < termGroups.length; i++) {
+      var group = termGroups[i];
+      if (group && group[0] && group[0].taxonomy === "category") {
+        catGroup = group;
+        break;
+      }
+    }
+
+    if (!catGroup) return [];
+
+    var arr = [];
+    for (var j = 0; j < catGroup.length; j++) {
+      arr.push({
+        id: catGroup[j].id,
+        name: catGroup[j].name,
+        slug: catGroup[j].slug
+      });
+    }
+    return arr;
+  }
+
+  /* --------------------------------------------------
+     FETCH + NORMALIZE
+  -------------------------------------------------- */
+  function fetchSitePosts(site) {
+    var url = site.baseUrl + POSTS_QUERY;
+    console.log("[UM] Fetching:", url);
+
+    return fetch(url)
+      .then(function (res) {
+        if (!res.ok) return [];
+        return res.json();
+      })
+      .then(function (posts) {
+        if (!posts || !posts.length) return [];
+
+        var out = [];
+
+        for (var i = 0; i < posts.length; i++) {
+          var post = posts[i];
+
+          out.push({
+            source: site.id,
+            sourceLabel: site.label,
+            id: post.id,
+            title: stripHtml(post.title && post.title.rendered),
+            rawTitle: (post.title && post.title.rendered) || "",
+            date: post.date,
+            url: post.link,
+            thumbnail: getThumbnail(post),
+            author: getAuthor(post),
+            categories: getCategories(post),
+            raw: post
+          });
+        }
+
+        return out;
+      })
+      .catch(function () {
+        return [];
+      });
+  }
+
+  function getUnifiedArticles() {
+    var promises = [];
+    for (var i = 0; i < SITES.length; i++) {
+      promises.push(fetchSitePosts(SITES[i]));
+    }
+
+    return Promise.all(promises).then(function (results) {
+      var all = [];
+
+      for (var r = 0; r < results.length; r++) {
+        all = all.concat(results[r]);
+      }
+
+      all.sort(function (a, b) {
+        return new Date(b.date) - new Date(a.date);
+      });
+
+      return all.slice(0, 20);
+    });
+  }
+
+  /* --------------------------------------------------
+     SKELETONS
+  -------------------------------------------------- */
+  function renderSkeletons(container) {
+    var hero =
+      '<article class="um-card um-card--hero um-skeleton">' +
+        '<div class="um-skel-img"></div>' +
+        '<div class="um-skel-body">' +
+          '<div class="um-skel-line short"></div>' +
+          '<div class="um-skel-line long"></div>' +
+          '<div class="um-skel-line mid"></div>' +
+        '</div>' +
+      '</article>';
+
+    var sec =
+      '<article class="um-card um-card--secondary um-skeleton">' +
+        '<div class="um-skel-img"></div>' +
+        '<div class="um-skel-body">' +
+          '<div class="um-skel-line long"></div>' +
+          '<div class="um-skel-line mid"></div>' +
+        '</div>' +
+      '</article>';
+
+    var secGroup = "";
+    for (var i = 0; i < 5; i++) secGroup += sec;
+
+    container.innerHTML =
+      hero +
+      '<div class="um-secondary-grid">' +
+        secGroup +
+      '</div>';
+  }
+
+  /* --------------------------------------------------
+     RENDER CARDS
+  -------------------------------------------------- */
+    function createCard(article, isHero) {
+      var card = document.createElement("article");
+      card.className = "um-card " + (isHero ? "um-card--hero" : "um-card--secondary");
+
+      var cat = article.categories && article.categories[0]
+        ? article.categories[0].name
+        : "";
+
+      var dateStr = formatDate(article.date);
+      var authorName = article.author && article.author.name
+        ? article.author.name
+        : "Staff Writer";
+
+      var site = article.sourceLabel || getSiteLabel(article.source);
+
+      // Escape double quotes so alt="..." is valid HTML
+      var safeTitle = (article.title || "").replace(/"/g, '"');
+
+      /* IMAGE: thumbnail or gray placeholder */
+      var imgHtml = "";
+
+      if (article.thumbnail) {
+        imgHtml =
+          '<a href="' + article.url + '" class="um-card__image-wrapper">' +
+            '<img src="' + article.thumbnail + '" class="um-card__image" loading="lazy" alt="' + safeTitle + '" />' +
+          '</a>';
+      } else {
+        // No thumbnail → gray placeholder with 16:9 space
+        imgHtml =
+          '<div class="um-card__image-wrapper um-card__placeholder"></div>';
+      }
+
+      /* TOPLINE: site + category */
+      var sourceHtml = '<span class="um-card__source">' + site + '</span>';
+      var categoryHtml = cat ? '<span class="um-card__category">' + cat + '</span>' : '';
+
+      /* META: author + date */
+      var metaPieces = [];
+      if (authorName) metaPieces.push('<span class="um-card__meta-author">' + authorName + '</span>');
+      if (dateStr) metaPieces.push('<span class="um-card__meta-date">' + dateStr + '</span>');
+      var metaHtml = metaPieces.join(" • ");
+
+      /* FINAL HTML */
+      card.innerHTML =
+        imgHtml +
+        '<div class="um-card__body">' +
+          '<div class="um-card__topline">' +
+            sourceHtml +
+            categoryHtml +
+          '</div>' +
+          '<h2 class="um-card__title"><a href="' + article.url + '">' +
+            article.title +
+          '</a></h2>' +
+          '<p class="um-card__meta">' + metaHtml + '</p>' +
+        '</div>';
+
+      return card;
+    }
+
+
+  function renderArticles(articles) {
+    var container = document.getElementById("united-media-feed");
+    if (!container) return;
+
+    if (!articles || !articles.length) {
+      container.innerHTML = '<p class="um-empty">No recent articles available.</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    var hero = articles[0];
+    var others = articles.slice(1);
+
+    var heroCard = createCard(hero, true);
+    container.appendChild(heroCard);
+
+    if (others.length) {
+      var grid = document.createElement("div");
+      grid.className = "um-secondary-grid";
+
+      for (var i = 0; i < others.length; i++) {
+        grid.appendChild(createCard(others[i], false));
+      }
+      container.appendChild(grid);
+    }
+  }
+
+  /* --------------------------------------------------
+     INIT
+  -------------------------------------------------- */
+  document.addEventListener("DOMContentLoaded", function () {
+    var container = document.getElementById("united-media-feed");
+    if (!container) return;
+
+    renderSkeletons(container);
+
+    getUnifiedArticles().then(function (articles) {
+      renderArticles(articles);
+    });
+  });
+
+})();
+</script>
+
+// Script to gather all categories
+
+(async () => {
+  const SITES = [
+    { id: "diplomaticwatch", label: "Diplomatic Watch", base: "https://diplomaticwatch.com" },
+    { id: "echo-media", label: "Echo Media", base: "https://www.echo-media.info" },
+    { id: "internationalspectrum", label: "International Spectrum", base: "https://www.internationalspectrum.org" },
+  ];
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  async function fetchAllCategories(site) {
+    const perPage = 100;
+    let page = 1;
+    let all = [];
+
+    while (true) {
+      const url = `${site.base}/wp-json/wp/v2/categories?per_page=${perPage}&page=${page}&orderby=name&order=asc`;
+      let res;
+
+      try {
+        res = await fetch(url);
+      } catch (e) {
+        console.warn(`[${site.label}] Fetch failed on page ${page}`, e);
+        break;
+      }
+
+      if (!res.ok) {
+        console.warn(`[${site.label}] HTTP ${res.status} on page ${page}`);
+        break;
+      }
+
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) break;
+
+      all.push(
+        ...data.map(c => ({
+          site: site.id,
+          siteLabel: site.label,
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          parent: c.parent,
+          count: c.count,
+          link: c.link,
+        }))
+      );
+
+      const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "0", 10);
+      if (totalPages && page >= totalPages) break;
+
+      page++;
+      await sleep(150); // be polite
+    }
+
+    return all;
+  }
+
+  console.log("🔍 Fetching categories from all sites…");
+
+  const results = {};
+  for (const site of SITES) {
+    const cats = await fetchAllCategories(site);
+    results[site.id] = cats;
+    console.log(`✅ ${site.label}: ${cats.length} categories`);
+  }
+
+  // Combined views
+  const allCats = Object.values(results).flat();
+
+  const bySiteNames = Object.fromEntries(
+    Object.entries(results).map(([siteId, cats]) => [
+      siteId,
+      cats.map(c => c.name),
+    ])
+  );
+
+  const combinedUnique = Array.from(
+    new Set(allCats.map(c => `${c.siteLabel}: ${c.name}`))
+  ).sort();
+
+  // Pretty output
+  console.group("=== Categories by site ===");
+  for (const site of SITES) {
+    console.group(site.label);
+    console.table(results[site.id]);
+    console.groupEnd();
+  }
+  console.groupEnd();
+
+  console.group("=== Combined unique categories (site-prefixed) ===");
+  console.log(combinedUnique.join("\n"));
+  console.groupEnd();
+
+  // Final payload for copy/paste
+  const payload = {
+    generatedAt: new Date().toISOString(),
+    sites: SITES,
+    counts: Object.fromEntries(
+      Object.entries(results).map(([k, v]) => [k, v.length])
+    ),
+    bySite: results,
+    bySiteNames,
+  };
+
+  console.log("📋 COPY/PASTE THIS JSON:");
+  console.log(JSON.stringify(payload, null, 2));
+
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+    console.log("✅ JSON copied to clipboard");
+  } catch {
+    console.log("ℹ️ Clipboard copy failed – manually copy from console");
+  }
+})();

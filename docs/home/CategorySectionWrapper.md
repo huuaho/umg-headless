@@ -17,16 +17,22 @@ This component acts as a "smart" wrapper that:
 
 ```typescript
 interface CategorySectionWrapperProps {
-  slug: string;              // Category slug for API query and section ID
-  category: string;          // Display name for the category label
-  sectionType: SectionType;  // Which section layout to render
-  categoryColor?: string;    // Hex color for the category title label (e.g., "#0281b3")
+  slug: string;                    // Category slug for API query and section ID
+  category: string;                // Display name for the category label
+  sectionType: SectionType;        // Which section layout to render
+  categoryColor?: string;          // Hex color for the category title label (e.g., "#0281b3")
+  categoryTextColor?: string;      // Independent text color for the category label
+  categoryUnderlineColor?: string; // Colored underline below the category label (e.g., "#33bbff")
+  categoryIcon?: string;           // Icon URL displayed to the left of the category label
+  titleClassName?: string;         // Custom CSS class for article headlines (e.g., custom font)
 }
 
 type SectionType = "type1" | "type2" | "type3" | "type4" | "type4-text";
 ```
 
-The `categoryColor` prop is passed through to `SectionType1-4`, `SectionSkeleton`, and `SectionError` to color the category title. When not provided, category titles default to black.
+All category label props (`categoryColor`, `categoryTextColor`, `categoryUnderlineColor`, `categoryIcon`) are passed through to `SectionType1-4`, `SectionSkeleton`, and `SectionError`, which render the shared `CategoryLabel` component (see [../components/CategoryLabel.md](../components/CategoryLabel.md)). Each feature is independent — you can use any combination. When no color props are provided, category titles default to black with a `" >"` arrow suffix.
+
+The `titleClassName` prop is passed through to `SectionType1-4` and applied to article headline `<h2>` elements. Use this for custom fonts (e.g., `font-[family-name:var(--font-arizona-sans)]`).
 
 ## Section Types
 
@@ -89,7 +95,7 @@ All transformers are in `packages/api/transformers.ts`:
 ## Usage
 
 ```tsx
-// apps/echo-media/app/page.tsx
+// apps/echo-media/app/page.tsx — colored text, no underline
 import { CategorySectionWrapper } from "@umg/ui";
 
 export default function HomePage() {
@@ -101,21 +107,20 @@ export default function HomePage() {
         sectionType="type1"
         categoryColor="#0281b3"
       />
-      <CategorySectionWrapper
-        slug="education"
-        category="Education"
-        sectionType="type2"
-        categoryColor="#0281b3"
-      />
-      <CategorySectionWrapper
-        slug="environment"
-        category="Environment"
-        sectionType="type3"
-        categoryColor="#0281b3"
-      />
     </main>
   );
 }
+```
+
+```tsx
+// apps/umg/app/page.tsx — black text with colored underline + custom headline font
+<CategorySectionWrapper
+  slug="world-news-politics"
+  category="World News & Politics"
+  sectionType="type1"
+  categoryUnderlineColor="#33bbff"
+  titleClassName="font-[family-name:var(--font-arizona-sans)]"
+/>
 ```
 
 ## Client Component
@@ -125,6 +130,7 @@ Has `"use client"` — uses the `useArticles` hook for client-side data fetching
 ## Dependencies
 
 - `@umg/api` — `useArticles` hook, `toSectionData`, `toSectionType3Data`, `toSectionType4Data` transformers
+- `packages/ui/sections/CategoryLabel` — Shared category label component
 - `packages/ui/sections/SectionType1-4` — Section layout components
 - `packages/ui/sections/SectionSkeleton` — Loading state component
 - `packages/ui/sections/SectionError` — Error state component
@@ -134,6 +140,7 @@ Has `"use client"` — uses the `useArticles` hook for client-side data fetching
 | File | Purpose |
 |------|---------|
 | `packages/ui/sections/CategorySectionWrapper.tsx` | This component |
+| `packages/ui/sections/CategoryLabel.tsx` | Shared category label (icon, text color, underline) |
 | `packages/api/hooks/useArticles.ts` | Data fetching hook |
 | `packages/api/transformers.ts` | API to component data transformers |
 | `packages/ui/sections/SectionSkeleton.tsx` | Loading state |

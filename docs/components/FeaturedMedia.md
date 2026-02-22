@@ -28,6 +28,10 @@ interface FeaturedMediaProps {
 | `["https://example.com/image.jpg"]` | Single image (clickable for lightbox) |
 | `["url1.jpg", "url2.jpg", "url3.jpg"]` | Gallery with navigation + lightbox |
 
+## Vertical Image Detection
+
+Both single image and gallery modes detect vertical (portrait) images on load. When `naturalHeight > naturalWidth`, the image switches from `object-cover` to `object-contain` so the full image is visible with a `bg-black` background (letterboxing). This prevents portrait images from being awkwardly cropped.
+
 ## Single Image Mode
 
 When `images` is a string or single-item array:
@@ -41,8 +45,8 @@ When `images` is a string or single-item array:
 └─────────────────────────────────────────┘
 ```
 
-- Displays image at 3:2 aspect ratio
-- Uses Next.js `Image` component with `fill` and `object-cover`
+- Displays image at 3:2 aspect ratio with `bg-black` background
+- Uses Next.js `Image` component with `fill` and `object-cover` (or `object-contain` for vertical images)
 - `cursor-zoom-in` on hover
 - Click opens lightbox
 - No navigation controls
@@ -120,14 +124,14 @@ Clicking any image (single or gallery) opens a fullscreen lightbox overlay:
 ```
 FeaturedMedia
 ├── [Single Image Mode]
-│   ├── Image container (aspect-3/2, cursor-zoom-in)
-│   │   └── Next.js Image (fill, object-cover)
+│   ├── Image container (aspect-3/2, bg-black, cursor-zoom-in)
+│   │   └── Next.js Image (fill, object-cover or object-contain for vertical)
 │   └── Lightbox (when open)
 │
 └── [Gallery Mode]
-    ├── Image container (aspect-3/2, cursor-zoom-in)
+    ├── Image container (aspect-3/2, bg-black, cursor-zoom-in)
     │   ├── Loading spinner (bg-gray-100, shown while loading)
-    │   └── Next.js Image (fill, object-cover, fade transition)
+    │   └── Next.js Image (fill, object-cover or object-contain, fade transition)
     ├── Navigation bar
     │   ├── Pagination tracker [n/total]
     │   └── Arrow buttons
@@ -151,12 +155,14 @@ const [currentIndex, setCurrentIndex] = useState(0);      // Current gallery ima
 const [lightboxOpen, setLightboxOpen] = useState(false);   // Lightbox visibility
 const [lightboxLoading, setLightboxLoading] = useState(true);  // Lightbox image loading
 const [inlineLoading, setInlineLoading] = useState(false);     // Inline gallery image loading
+const [isVertical, setIsVertical] = useState(false);           // Whether current image is portrait orientation
 ```
 
 ## Styling
 
 ### Image Container
 - Aspect ratio: `aspect-3/2` (3:2)
+- Background: `bg-black` (visible when vertical images use `object-contain`)
 - Width: `w-full`
 - Cursor: `cursor-zoom-in`
 

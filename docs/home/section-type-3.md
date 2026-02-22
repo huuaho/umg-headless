@@ -46,7 +46,11 @@ export interface SectionData {
 interface SectionType3Props extends SectionData {
   slug: string;
   category: string;
-  categoryColor?: string; // Hex color for category label (inline style), defaults to black
+  categoryColor?: string;          // Hex color for category label, defaults to black
+  categoryTextColor?: string;      // Independent text color for category label
+  categoryUnderlineColor?: string; // Colored underline below category label
+  categoryIcon?: string;           // Icon URL to the left of category label
+  titleClassName?: string;         // Custom CSS class for the featured headline
 }
 ```
 
@@ -83,8 +87,13 @@ All article links use `ArticleLink` — renders `<Link>` for internal articles (
 
 ## Component Architecture
 
+### CategoryLabel (Shared Component)
+- Located at `packages/ui/sections/CategoryLabel.tsx`
+- Renders the category name with optional icon, text color, and underline
+- See [../components/CategoryLabel.md](../components/CategoryLabel.md)
+
 ### SectionType3 (Main Component)
-- Renders the full section with category label, featured article, and secondary articles
+- Renders the full section using `CategoryLabel` for the category header, featured article, and secondary articles
 - Has `id={slug}` for anchor navigation from header
 - Uses `scroll-mt-24` to account for sticky header when scrolling
 - Section-level bottom border (`border-b border-gray-300`) for consistent separation

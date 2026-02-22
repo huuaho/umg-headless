@@ -9,7 +9,7 @@ The ArticleLayout component (`packages/ui/article/ArticleLayout.tsx`) renders a 
 Provides a clean, readable article layout with:
 - Category label and read time
 - Title, author, and formatted date
-- Featured image or gallery (via FeaturedMedia)
+- YouTube video embed or featured image/gallery (via FeaturedMedia)
 - Article body HTML rendered with Tailwind Typography (`prose`)
 
 ## Props
@@ -27,6 +27,7 @@ interface ArticleLayoutProps {
   currentSlug?: string; // Current article slug — enables MoreArticles carousel (EM/IS only)
   categoryColor?: string; // Hex color for category label (e.g., "#0281b3")
   categoryColorMap?: Record<string, string>; // Map of category names to hex colors, passed to MoreArticles
+  videoUrl?: string;   // YouTube URL for video interviews — takes priority over images
 }
 ```
 
@@ -43,7 +44,8 @@ interface ArticleLayoutProps {
 │                                              │
 │  ┌──────────────────────────────────────┐    │
 │  │                                      │    │
-│  │   Featured Image / Gallery           │    │
+│  │   YouTube Video (if videoUrl set)    │    │
+│  │   OR Featured Image / Gallery        │    │
 │  │   (FeaturedMedia component)          │    │
 │  │                                      │    │
 │  └──────────────────────────────────────┘    │
@@ -81,9 +83,9 @@ interface ArticleLayoutProps {
 - Date formatted via `toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })`
 - Uses `<time dateTime={date}>` for semantic HTML
 
-### Featured Image / Gallery
-- Only renders when `images.length > 0`
-- Passes to `FeaturedMedia`: single string when 1 image, full array when 2+
+### YouTube Video or Featured Image / Gallery
+- **YouTube video** (`videoUrl` prop): When a valid YouTube URL is provided, renders a responsive 16:9 iframe embed instead of the image/gallery. Supports `youtube.com/watch?v=`, `youtu.be/`, and `youtube.com/embed/` URL formats. Uses a helper function `getYouTubeId()` to extract the video ID.
+- **Featured image/gallery** (fallback): Only renders when `videoUrl` is absent and `images.length > 0`. Passes to `FeaturedMedia`: single string when 1 image, full array when 2+.
 - Container: `mb-8 -mx-6 md:mx-0` (edge-to-edge on mobile, contained on desktop)
 - Supports lightbox (click to expand), gallery navigation, loading spinners
 

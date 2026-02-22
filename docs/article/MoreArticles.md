@@ -75,7 +75,7 @@ Client-side (`"use client"`, `useEffect` on mount). Two parallel API calls:
 
 Each card:
 - Fixed width: `w-64` (mobile) / `w-72` (md+), `flex-shrink-0`
-- Featured image: `aspect-3/2 object-cover rounded` (placeholder if no image)
+- Featured image: `aspect-3/2 rounded` with vertical image detection — uses `object-contain` with `bg-black` for portrait images, `object-cover` for landscape (placeholder if no image)
 - Category label: `text-xs font-semibold uppercase tracking-wide`, colored via `categoryColorMap` lookup (falls back to `#6b7280` gray when no map provided)
 - Title: `text-sm font-semibold leading-snug line-clamp-2` (2-line clamp)
 - Date: `text-xs text-gray-400` (format: "Jan 15, 2025")
@@ -100,7 +100,7 @@ Each card:
 | Arrow buttons | `p-1.5 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30` |
 | Scroll container | `flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4` |
 | Card | `w-64 md:w-72 flex-shrink-0 snap-start hover:opacity-80 transition-opacity` |
-| Image | `w-full aspect-3/2 object-cover rounded bg-gray-100` |
+| Image | `w-full aspect-3/2 rounded bg-black` (object-cover for landscape, object-contain for vertical) |
 | Category | `text-xs font-semibold uppercase tracking-wide mt-2` + inline color from `categoryColorMap` (fallback: `#6b7280`) |
 | Title | `text-sm font-semibold leading-snug line-clamp-2 mt-1 text-gray-900` |
 | Date | `text-xs text-gray-400 mt-1` |

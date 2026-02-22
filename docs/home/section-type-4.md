@@ -36,8 +36,12 @@ export interface SectionType4Data {
 interface SectionType4Props extends SectionType4Data {
   slug: string;
   category: string;
-  textOnly?: boolean; // Default: false (show images)
-  categoryColor?: string; // Hex color for category label (inline style), defaults to black
+  textOnly?: boolean;              // Default: false (show images)
+  categoryColor?: string;          // Hex color for category label, defaults to black
+  categoryTextColor?: string;      // Independent text color for category label
+  categoryUnderlineColor?: string; // Colored underline below category label
+  categoryIcon?: string;           // Icon URL to the left of category label
+  titleClassName?: string;         // Custom CSS class for article headlines
 }
 ```
 
@@ -65,12 +69,23 @@ All article links use `ArticleLink` — renders `<Link>` for internal articles (
 
 ## Component Architecture
 
+### CategoryLabel (Shared Component)
+- Located at `packages/ui/sections/CategoryLabel.tsx`
+- Renders the category name with optional icon, text color, and underline
+- See [../components/CategoryLabel.md](../components/CategoryLabel.md)
+
 ### SectionType4 (Main Component)
-- Renders the full section with category label and 4 articles
+- Renders the full section using `CategoryLabel` for the category header and 4 articles
 - Has `id={slug}` for anchor navigation from header
 - Uses `scroll-mt-24` to account for sticky header when scrolling
 - Section-level bottom border (`border-b border-gray-300`) for consistent separation
 - Accepts `textOnly` prop to toggle between variants
+
+### ImageContainer (Internal Component)
+- Renders article image at 3:2 aspect ratio with `bg-black` background
+- **Vertical image detection**: On load, checks if `naturalHeight > naturalWidth`. Vertical images use `object-contain` (full image visible with black bars), horizontal images use `object-cover` (fills container, may crop)
+- Error handling: `onError` hides the image if it fails to load
+- Width: 1/3 on SM/MD, full width on LG
 
 ### ArticleCard (Internal Component)
 - Wrapper div handles column padding (so borders don't extend into padding)
@@ -78,6 +93,7 @@ All article links use `ArticleLink` — renders `<Link>` for internal articles (
 - Uses `md:h-full` on both wrapper and article to ensure equal row heights at MD+
 - With images: Flex layout switches from row (SM/MD) to column (LG)
 - Text only: Simple stacked title and time
+- Accepts `titleClassName` prop for custom headline font styling
 
 ---
 

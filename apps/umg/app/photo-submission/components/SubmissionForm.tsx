@@ -25,7 +25,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [divisionId, setDivisionId] = useState(competition.divisions[0].id);
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
   const [schoolGrade, setSchoolGrade] = useState("");
@@ -112,7 +113,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const allConsentsChecked =
     consentOriginality && consentSubjects && consentRights;
   const personalInfoValid =
-    fullName.trim() && dob && address.trim() && schoolGrade.trim();
+    firstName.trim() && lastName.trim() && dob && address.trim() && schoolGrade.trim();
 
   const canSubmit =
     personalInfoValid &&
@@ -217,21 +218,39 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           Personal Information
         </legend>
         <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-[#212223] mb-1"
-            >
-              Full Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-[#212223] mb-1"
+              >
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-[#212223] mb-1"
+              >
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

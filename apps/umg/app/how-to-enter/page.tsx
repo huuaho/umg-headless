@@ -1,0 +1,340 @@
+import { currentCompetition } from "@/lib/competitions/current";
+
+const competition = currentCompetition;
+
+export default function HowToEnterPage() {
+  return (
+    <main className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-20">
+        <p className="text-sm font-medium tracking-widest uppercase text-gray-500 text-center mb-4">
+          {competition.year} Competition
+        </p>
+        <h1 className="text-3xl md:text-5xl font-bold text-center text-[#212223] mb-3 font-[family-name:var(--font-arizona-sans)]">
+          {competition.title}
+        </h1>
+        <p className="text-lg md:text-xl text-gray-500 text-center mb-8">
+          {competition.subtitle}
+        </p>
+        <p className="text-gray-600 text-center max-w-3xl mx-auto leading-relaxed text-lg">
+          {competition.themeIntro}
+        </p>
+      </section>
+
+      {/* Theme Description */}
+      <section className="bg-gray-50 border-y border-gray-200">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-8">
+            About the Theme
+          </h2>
+          <div className="max-w-3xl mx-auto space-y-6">
+            {competition.themeDescription.map((paragraph, i) => (
+              <p key={i} className="text-gray-600 leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Timeline
+        </h2>
+        <div className="max-w-3xl mx-auto">
+          <div className="relative">
+            {/* Vertical line */}
+            <div className="absolute left-4 top-2 bottom-2 w-px bg-gray-300 hidden md:block" />
+            <div className="space-y-8">
+              {competition.timeline.map((step, i) => (
+                <div key={i} className="flex gap-6 items-start">
+                  {/* Step number */}
+                  <div className="shrink-0 w-8 h-8 rounded-full bg-[#212223] text-white text-sm font-bold flex items-center justify-center relative z-10">
+                    {i + 1}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                      {step.date}
+                    </p>
+                    <p className="text-lg font-semibold text-[#212223]">
+                      {step.label}
+                    </p>
+                    {step.description && (
+                      <p className="text-gray-600 mt-1">{step.description}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Divisions */}
+      <section className="bg-gray-50 border-y border-gray-200">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+            Divisions
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {competition.divisions.map((division) => (
+              <div
+                key={division.id}
+                className="bg-white border border-gray-200 p-6 md:p-8"
+              >
+                <h3 className="text-xl font-bold text-[#212223] mb-1">
+                  {division.name}
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Ages {division.ageRange}
+                </p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Entry Fee</span>
+                    <span className="font-semibold text-[#212223]">
+                      ${division.entryFee}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Max Photos</span>
+                    <span className="font-semibold text-[#212223]">
+                      {division.maxPhotos}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Description Limit</span>
+                    <span className="font-semibold text-[#212223]">
+                      {division.maxDescriptionWords} words
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Biography</span>
+                    <span className="font-semibold text-[#212223]">
+                      {division.biographyRequired ? "Required" : "Optional"}
+                    </span>
+                  </div>
+                </div>
+
+                <h4 className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+                  Requirements
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  {division.requirements.map((req, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="text-gray-400 mr-2 mt-0.5">&bull;</span>
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Requirements */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Photo Requirements
+        </h2>
+        <div className="max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="text-center p-4">
+              <p className="text-sm text-gray-500 uppercase tracking-wide mb-1">
+                Format
+              </p>
+              <p className="text-lg font-semibold text-[#212223]">
+                {competition.acceptedFormats.join(" / ")}
+              </p>
+            </div>
+            <div className="text-center p-4">
+              <p className="text-sm text-gray-500 uppercase tracking-wide mb-1">
+                Color Mode
+              </p>
+              <p className="text-lg font-semibold text-[#212223]">
+                {competition.colorMode}
+              </p>
+            </div>
+            <div className="text-center p-4">
+              <p className="text-sm text-gray-500 uppercase tracking-wide mb-1">
+                Min Resolution
+              </p>
+              <p className="text-lg font-semibold text-[#212223]">
+                {competition.minResolutionPx.toLocaleString()}px
+              </p>
+              <p className="text-xs text-gray-400">longest side</p>
+            </div>
+            <div className="text-center p-4">
+              <p className="text-sm text-gray-500 uppercase tracking-wide mb-1">
+                Max File Size
+              </p>
+              <p className="text-lg font-semibold text-[#212223]">
+                {competition.maxFileSizeMB} MB
+              </p>
+              <p className="text-xs text-gray-400">per image</p>
+            </div>
+          </div>
+          <p className="text-center text-gray-500 mt-6 text-sm">
+            Allowed devices:{" "}
+            {competition.allowedDevices
+              .map((d) => d.charAt(0).toUpperCase() + d.slice(1))
+              .join(", ")}
+          </p>
+        </div>
+      </section>
+
+      {/* Awards */}
+      <section className="bg-gray-50 border-y border-gray-200">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+            Awards & Recognition
+          </h2>
+          <div className="max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+              {competition.awards.map((award) => (
+                <div key={award.place} className="text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-[#212223]">
+                    ${award.amount.toLocaleString()}
+                  </p>
+                  <p className="text-sm font-semibold text-[#212223] mt-1">
+                    {award.place}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {award.recipientsPerDivision} per division
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <p className="text-gray-600 mb-2">
+                All award recipients will receive official certificates and be
+                invited to featured exhibitions at:
+              </p>
+              <p className="text-sm text-gray-500">
+                {competition.exhibitionVenues.join(" · ")}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Rules */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Rules & Guidelines
+        </h2>
+        <div className="max-w-3xl mx-auto space-y-8">
+          <div>
+            <h3 className="text-lg font-semibold text-[#212223] mb-2">
+              AI Policy & Image Integrity
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              {competition.aiPolicy}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-[#212223] mb-2">
+              Originality & Ethics
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              All submitted work must be original and created solely by the
+              participant; collaborative work is not accepted. Participants are
+              responsible for obtaining consent from individuals who are clearly
+              identifiable in the photographs. All submissions should respect the
+              dignity, safety, and cultural context of the subjects represented.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-[#212223] mb-2">
+              Rights & Usage
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              By submitting works to the competition, participants grant the
+              organizers the non-exclusive right to use selected images for
+              competition-related purposes, including exhibitions, publications,
+              educational programs, and promotional materials, with full credit
+              given to the photographer. Copyright remains with the artist. Once
+              the application is submitted, it is considered final, and the fee
+              is non-refundable under any circumstances.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Evaluation Criteria */}
+      <section className="bg-gray-50 border-y border-gray-200">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+            Evaluation Criteria
+          </h2>
+          <div className="max-w-3xl mx-auto">
+            <div className="space-y-6">
+              {competition.evaluationCriteria.map((criterion, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="shrink-0 w-10 h-10 rounded-full bg-[#212223] text-white text-sm font-bold flex items-center justify-center">
+                    {i + 1}
+                  </div>
+                  <div>
+                    <div className="flex items-baseline gap-2">
+                      <h3 className="font-semibold text-[#212223]">
+                        {criterion.name}
+                      </h3>
+                      <span className="text-xs text-gray-400">
+                        1–{criterion.maxScore} points
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {criterion.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 pt-8 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-[#212223] mb-4">
+                Division-Specific Notes
+              </h3>
+              <div className="space-y-3">
+                {competition.divisions.map((division) => (
+                  <div key={division.id}>
+                    <span className="font-medium text-[#212223]">
+                      {division.name}:
+                    </span>{" "}
+                    <span className="text-gray-600">
+                      {competition.divisionJudgingNotes[division.id]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-[#212223] text-white">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+            Ready to Submit?
+          </h2>
+          <p className="text-gray-300 mb-6 max-w-lg mx-auto">
+            Share your perspective. Show us the places and stories that shaped
+            who you are.
+          </p>
+          <a
+            href="/photo-submission"
+            className="inline-block px-8 py-3 border border-white text-white font-medium hover:bg-white hover:text-[#212223] transition-colors"
+          >
+            Apply Now
+          </a>
+        </div>
+      </section>
+    </main>
+  );
+}

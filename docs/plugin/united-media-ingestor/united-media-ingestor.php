@@ -27,17 +27,12 @@ require_once UMI_PATH . 'includes/search.php';
    Headless config (CORS, caching, redirect)
    ========================================================= */
 
-// CORS headers for REST API
+// CORS headers for REST API (origins defined in config.php → um_allowed_origins())
 add_action('rest_api_init', function() {
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
     add_filter('rest_pre_serve_request', function($value) {
         $origin = get_http_origin();
-        $allowed = array(
-            'http://localhost:3000',
-            'https://www.unitedmediadc.com',
-            'https://unitedmediadc.com'
-        );
-        if (in_array($origin, $allowed)) {
+        if (in_array($origin, um_allowed_origins())) {
             header('Access-Control-Allow-Origin: ' . $origin);
             header('Access-Control-Allow-Credentials: true');
         }
@@ -53,10 +48,10 @@ add_filter('rest_post_dispatch', function($response) {
     return $response;
 });
 
-// Redirect frontend to main site
+// Redirect frontend to main site (URL defined in config.php → UMI_REDIRECT_URL)
 add_action('template_redirect', function() {
     if (!is_admin() && !str_starts_with($_SERVER['REQUEST_URI'], '/wp-json')) {
-        wp_redirect('https://www.unitedmediadc.com', 301);
+        wp_redirect(UMI_REDIRECT_URL, 301);
         exit;
     }
 });
@@ -97,7 +92,7 @@ function um_populate_category_terms() {
             ));
 
             if (is_wp_error($result)) {
-                error_log('[UM] Failed to create parent category: ' . $slug . ' - ' . $result->get_error_message());
+                um_log('Failed to create parent category: ' . $slug . ' - ' . $result->get_error_message(), 'error');
             }
         }
     }
@@ -111,7 +106,7 @@ function um_populate_category_terms() {
             $parent_term = $parent_slug ? get_term_by('slug', $parent_slug, 'um_category') : false;
 
             if (!$parent_term) {
-                error_log('[UM] Parent category not found for child: ' . $child_slug . ' (parent: ' . $parent_slug . ')');
+                um_log('Parent category not found for child: ' . $child_slug . ' (parent: ' . $parent_slug . ')', 'error');
                 continue;
             }
 
@@ -122,7 +117,7 @@ function um_populate_category_terms() {
             ));
 
             if (is_wp_error($result)) {
-                error_log('[UM] Failed to create child category: ' . $child_slug . ' - ' . $result->get_error_message());
+                um_log('Failed to create child category: ' . $child_slug . ' - ' . $result->get_error_message(), 'error');
             }
         }
     }

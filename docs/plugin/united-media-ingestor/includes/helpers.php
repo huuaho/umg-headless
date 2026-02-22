@@ -19,23 +19,33 @@ function um_lock_key() {
 }
 
 /**
- * Acquire a transient lock.
- * Returns true if acquired, false if already locked.
+ * Acquire an atomic lock using wp_options.
+ *
+ * Uses add_option() for atomic INSERT (prevents two processes both
+ * acquiring on first run). Falls back to expiration check + overwrite
+ * for expired locks.
+ *
+ * @param int $ttl_seconds Lock duration in seconds
+ * @return bool True if lock acquired, false if already held
  */
 function um_acquire_lock($ttl_seconds = UMI_INGEST_LOCK_TTL) {
     $now = time();
-    $lock = get_transient(um_lock_key());
+    $key = um_lock_key();
+    $value = array('expires' => $now + intval($ttl_seconds));
 
-    if (is_array($lock) && !empty($lock['expires']) && $lock['expires'] > $now) {
-        return false;
+    // Atomic insert — only succeeds if key doesn't exist yet
+    if (add_option($key, $value, '', 'no')) {
+        return true;
     }
 
-    set_transient(
-        um_lock_key(),
-        array('expires' => $now + intval($ttl_seconds)),
-        intval($ttl_seconds)
-    );
+    // Key exists — check if lock is expired
+    $existing = get_option($key);
+    if (is_array($existing) && !empty($existing['expires']) && $existing['expires'] > $now) {
+        return false; // Lock is still valid
+    }
 
+    // Lock is expired — overwrite it
+    update_option($key, $value, false);
     return true;
 }
 
@@ -43,7 +53,7 @@ function um_acquire_lock($ttl_seconds = UMI_INGEST_LOCK_TTL) {
  * Release the ingest lock.
  */
 function um_release_lock() {
-    delete_transient(um_lock_key());
+    delete_option(um_lock_key());
 }
 
 /* =========================================================
@@ -104,6 +114,64 @@ function um_autorun_is_enabled() {
 
 function um_autorun_set($enabled) {
     update_option(um_autorun_key(), $enabled ? 1 : 0, false);
+}
+
+/* =========================================================
+   Logging
+   ========================================================= */
+
+/**
+ * Log a message to the WordPress debug log.
+ * Only logs when WP_DEBUG and WP_DEBUG_LOG are enabled.
+ *
+ * @param string $message Log message
+ * @param string $level   'info', 'warn', or 'error'
+ */
+function um_log($message, $level = 'info') {
+    if (!defined('WP_DEBUG') || !WP_DEBUG) {
+        return;
+    }
+
+    $prefix = '[UM]';
+    if ($level === 'error') {
+        $prefix = '[UM ERROR]';
+    } else if ($level === 'warn') {
+        $prefix = '[UM WARN]';
+    }
+
+    error_log($prefix . ' ' . $message);
+}
+
+/* =========================================================
+   Upsert result tallying
+   ========================================================= */
+
+/**
+ * Tally an upsert result into counter variables.
+ * Extracts the duplicated counting logic from backfill and incremental.
+ *
+ * @param array $result  Return value from um_upsert_article()
+ * @param int   &$inserted  Counter for inserted articles
+ * @param int   &$updated   Counter for updated articles
+ * @param int   &$skipped   Counter for skipped articles
+ * @param int   &$failed    Counter for failed articles
+ */
+function um_tally_upsert_result($result, &$inserted, &$updated, &$skipped, &$failed) {
+    if (empty($result['ok'])) {
+        $failed++;
+        return;
+    }
+
+    if (!empty($result['skipped'])) {
+        $skipped++;
+        return;
+    }
+
+    if (!empty($result['action']) && $result['action'] === 'inserted') {
+        $inserted++;
+    } else {
+        $updated++;
+    }
 }
 
 /* =========================================================

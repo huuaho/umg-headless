@@ -58,22 +58,7 @@ function um_run_incremental_once() {
 
         foreach ($posts as $p) {
             $res = um_upsert_article($site, $p);
-
-            if (empty($res['ok'])) {
-                $failed++;
-                continue;
-            }
-
-            if (!empty($res['skipped'])) {
-                $skipped++;
-                continue;
-            }
-
-            if (!empty($res['action']) && $res['action'] === 'inserted') {
-                $inserted++;
-            } else {
-                $updated++;
-            }
+            um_tally_upsert_result($res, $inserted, $updated, $skipped, $failed);
 
             // Track newest GMT date for cursor
             if (!empty($p['date_gmt'])) {

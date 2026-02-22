@@ -42,6 +42,27 @@ function um_sites_config() {
 
 
 /* =========================================================
+   Headless config
+   ========================================================= */
+
+/**
+ * Allowed CORS origins for the REST API.
+ * Update this list when adding new frontend domains.
+ */
+function um_allowed_origins() {
+    return array(
+        'http://localhost:3000',
+        'https://www.unitedmediadc.com',
+        'https://unitedmediadc.com',
+    );
+}
+
+/**
+ * URL to redirect frontend visitors to (from the headless API domain).
+ */
+define('UMI_REDIRECT_URL', 'https://www.unitedmediadc.com');
+
+/* =========================================================
    HTTP / ingestion tuning
    ========================================================= */
 

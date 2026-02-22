@@ -254,9 +254,19 @@ function um_upsert_article($site, $remote_post) {
 
         $post_id = intval($post_id);
 
-        // Required identity metas
-        update_post_meta($post_id, UMI_SOURCE_SITE_META_KEY, $site_id);
-        update_post_meta($post_id, UMI_REMOTE_ID_META_KEY, (string)$remote_id);
+        // Required identity metas (verified — these are critical for deduplication)
+        if (!update_post_meta($post_id, UMI_SOURCE_SITE_META_KEY, $site_id)) {
+            $existing = get_post_meta($post_id, UMI_SOURCE_SITE_META_KEY, true);
+            if ($existing !== $site_id) {
+                um_log('Failed to set source_site meta for post ' . $post_id, 'error');
+            }
+        }
+        if (!update_post_meta($post_id, UMI_REMOTE_ID_META_KEY, (string)$remote_id)) {
+            $existing = get_post_meta($post_id, UMI_REMOTE_ID_META_KEY, true);
+            if ($existing !== (string)$remote_id) {
+                um_log('Failed to set remote_post_id meta for post ' . $post_id, 'error');
+            }
+        }
         update_post_meta($post_id, UMI_SOURCE_URL_META_KEY, $source_url);
         if ($remote_slug) update_post_meta($post_id, 'um_remote_slug', $remote_slug);
 
@@ -297,7 +307,10 @@ function um_upsert_article($site, $remote_post) {
 
             // Assign mapped categories to post
             if (!empty($resolution['mapped_slugs'])) {
-                wp_set_object_terms($post_id, $resolution['mapped_slugs'], 'um_category', false);
+                $term_result = wp_set_object_terms($post_id, $resolution['mapped_slugs'], 'um_category', false);
+                if (is_wp_error($term_result)) {
+                    um_log('Failed to assign categories for post ' . $post_id . ': ' . $term_result->get_error_message(), 'error');
+                }
             }
 
             // Track unmapped categories for admin review

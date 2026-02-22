@@ -300,16 +300,7 @@ function um_run_backfill_single_article(array $sites) {
         // Process the single article
         $p = $posts[0]; // Should only be one article
         $res = um_upsert_article($site, $p);
-
-        if (empty($res['ok'])) {
-            $failed++;
-        } else if (!empty($res['skipped'])) {
-            $skipped++;
-        } else if (!empty($res['action']) && $res['action'] === 'inserted') {
-            $inserted++;
-        } else {
-            $updated++;
-        }
+        um_tally_upsert_result($res, $inserted, $updated, $skipped, $failed);
 
         // Move to next offset
         $offset++;
@@ -662,22 +653,7 @@ function um_run_backfill_batch(array $sites) {
 
         foreach ($posts as $p) {
             $res = um_upsert_article($site, $p);
-
-            if (empty($res['ok'])) {
-                $failed++;
-                continue;
-            }
-
-            if (!empty($res['skipped'])) {
-                $skipped++;
-                continue;
-            }
-
-            if (!empty($res['action']) && $res['action'] === 'inserted') {
-                $inserted++;
-            } else {
-                $updated++;
-            }
+            um_tally_upsert_result($res, $inserted, $updated, $skipped, $failed);
 
             // Track oldest date_gmt for cursor mode
             if ($backfill_mode === 'before_cursor' && !empty($p['date_gmt'])) {

@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
 import type { CompetitionDivision } from "@/lib/competitions/types";
 
 interface PhotoEntry {
-  file: File;
-  preview: string;
+  file: File | null; // null when loaded from server draft
+  preview: string; // blob URL (local) or server URL (draft)
+  mediaId: string | null; // WP media ID once uploaded
   title: string;
   description: string;
+  isUploading: boolean;
 }
 
 interface SubmissionFormProps {
@@ -38,14 +40,76 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const [consentSubjects, setConsentSubjects] = useState(false);
   const [consentRights, setConsentRights] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
+    "idle",
+  );
   const [error, setError] = useState("");
 
   const selectedDivision = competition.divisions.find(
     (d) => d.id === divisionId,
   ) as CompetitionDivision;
 
-  const handleAddPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // --- Draft Load ---
+  useEffect(() => {
+    async function loadDraft() {
+      // TODO: Replace with real API call in Phase 4
+      // GET /umg/v1/draft → returns DraftData or null
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Simulated: no existing draft
+      setIsLoadingDraft(false);
+    }
+    loadDraft();
+  }, []);
+
+  // --- Draft Autosave (debounced) ---
+  const saveDraft = useCallback(async () => {
+    if (isSubmitted || isLoadingDraft) return;
+
+    setSaveStatus("saving");
+
+    // TODO: Replace with real API call in Phase 4
+    // PUT /umg/v1/draft { divisionId, firstName, lastName, dob, ... }
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    setSaveStatus("saved");
+  }, [isSubmitted, isLoadingDraft]);
+
+  // Debounce: save 2 seconds after last change
+  useEffect(() => {
+    if (isLoadingDraft || isSubmitted) return;
+
+    // Don't autosave if the form is empty
+    if (!firstName && !lastName && !dob && photos.length === 0) return;
+
+    setSaveStatus("idle");
+    const timer = setTimeout(() => {
+      saveDraft();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    divisionId,
+    firstName,
+    lastName,
+    dob,
+    address,
+    schoolGrade,
+    job,
+    biography,
+    exhibitionOptIn,
+    consentOriginality,
+    consentSubjects,
+    consentRights,
+    // Photo metadata triggers save (not file objects)
+    photos.map((p) => `${p.title}|${p.description}`).join(","),
+  ]);
+
+  // --- Photo Handlers ---
+  const handleAddPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -62,17 +126,50 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
 
     setError("");
     const preview = URL.createObjectURL(file);
-    setPhotos((prev) => [...prev, { file, preview, title: "", description: "" }]);
+    const newPhoto: PhotoEntry = {
+      file,
+      preview,
+      mediaId: null,
+      title: "",
+      description: "",
+      isUploading: true,
+    };
+
+    setPhotos((prev) => [...prev, newPhoto]);
 
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+
+    // TODO: Replace with real API call in Phase 4
+    // POST /umg/v1/draft/photo (multipart with file)
+    // Returns { id: "123", url: "https://..." }
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    // Simulate server response with a fake media ID
+    setPhotos((prev) =>
+      prev.map((p) =>
+        p.preview === preview
+          ? { ...p, mediaId: `media-${Date.now()}`, isUploading: false }
+          : p,
+      ),
+    );
   };
 
-  const handleRemovePhoto = (index: number) => {
+  const handleRemovePhoto = async (index: number) => {
+    const photo = photos[index];
+
+    // TODO: Replace with real API call in Phase 4
+    // DELETE /umg/v1/draft/photo/{mediaId}
+    if (photo.mediaId) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+
     setPhotos((prev) => {
-      URL.revokeObjectURL(prev[index].preview);
+      if (prev[index].file) {
+        URL.revokeObjectURL(prev[index].preview);
+      }
       return prev.filter((_, i) => i !== index);
     });
   };
@@ -87,33 +184,39 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     );
   };
 
+  // --- Submit ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
 
     // TODO: Replace with real API call in Phase 4
-    // POST /umg/v1/submit with FormData
+    // POST /umg/v1/submit (finalizes draft → submitted)
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     setIsSubmitting(false);
-    setSubmitSuccess(true);
+    setIsSubmitted(true);
   };
 
-  // Validate form completeness
+  // --- Validation ---
   const hasRequiredPhotos = photos.length >= 1;
   const photosValid = photos.every(
     (p) =>
       p.title.trim() &&
       p.description.trim() &&
-      wordCount(p.description) <= selectedDivision.maxDescriptionWords,
+      wordCount(p.description) <= selectedDivision.maxDescriptionWords &&
+      !p.isUploading,
   );
   const biographyValid =
     !selectedDivision.biographyRequired || biography.trim().length > 0;
   const allConsentsChecked =
     consentOriginality && consentSubjects && consentRights;
   const personalInfoValid =
-    firstName.trim() && lastName.trim() && dob && address.trim() && schoolGrade.trim();
+    firstName.trim() &&
+    lastName.trim() &&
+    dob &&
+    address.trim() &&
+    schoolGrade.trim();
 
   const canSubmit =
     personalInfoValid &&
@@ -123,31 +226,172 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     allConsentsChecked &&
     !isSubmitting;
 
-  if (submitSuccess) {
+  // --- Loading State ---
+  if (isLoadingDraft) {
     return (
-      <div className="max-w-lg mx-auto text-center py-12">
-        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-          <svg
-            className="w-8 h-8 text-green-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
-          </svg>
+      <div className="max-w-2xl mx-auto py-12">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 w-48" />
+          <div className="h-4 bg-gray-200 w-32" />
+          <div className="h-32 bg-gray-200 w-full mt-8" />
         </div>
-        <h2 className="text-2xl font-bold text-[#212223] mb-2">
-          Submission Received
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Thank you for your submission to {competition.title}. You will receive
-          a confirmation email at {user.email}.
+      </div>
+    );
+  }
+
+  // --- Read-Only Submitted View ---
+  if (isSubmitted) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-[#212223]">
+                Submission Received
+              </h2>
+            </div>
+            <p className="text-sm text-gray-500">
+              Signed in as {user.email}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            className="text-sm text-gray-500 hover:text-[#212223] transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
+
+        <p className="text-gray-600 mb-8">
+          Thank you for your submission to {competition.title}. A confirmation
+          has been sent to {user.email}. Your entry is final and cannot be
+          edited.
         </p>
+
+        {/* Division */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+            Division
+          </p>
+          <p className="text-[#212223] font-medium">
+            {selectedDivision.name}{" "}
+            <span className="text-gray-500 font-normal">
+              (Ages {selectedDivision.ageRange})
+            </span>
+          </p>
+        </div>
+
+        {/* Personal Info */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Personal Information
+          </p>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <div>
+              <span className="text-gray-500">Name:</span>{" "}
+              <span className="text-[#212223]">
+                {firstName} {lastName}
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-500">Date of Birth:</span>{" "}
+              <span className="text-[#212223]">{dob}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Address:</span>{" "}
+              <span className="text-[#212223]">{address}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">School & Grade:</span>{" "}
+              <span className="text-[#212223]">{schoolGrade}</span>
+            </div>
+            {job && (
+              <div>
+                <span className="text-gray-500">Job:</span>{" "}
+                <span className="text-[#212223]">{job}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Photos */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Photos ({photos.length})
+          </p>
+          <div className="space-y-4">
+            {photos.map((photo, i) => (
+              <div key={i} className="border border-gray-200 p-4">
+                <div className="flex gap-4">
+                  <div className="shrink-0 w-24 h-24 bg-gray-100">
+                    <img
+                      src={photo.preview}
+                      alt={photo.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#212223]">{photo.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {photo.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Biography */}
+        {biography && (
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Biography
+            </p>
+            <p className="text-sm text-gray-600">{biography}</p>
+          </div>
+        )}
+
+        {/* Exhibition */}
+        {competition.exhibitionOptIn && (
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Exhibition
+            </p>
+            <p className="text-sm text-gray-600">
+              {exhibitionOptIn ? "Opted in" : "Not opted in"}
+            </p>
+          </div>
+        )}
+
+        {/* Consents */}
+        <div className="mb-8">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Agreements
+          </p>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p>Originality & AI policy: Confirmed</p>
+            <p>Subject consent: Confirmed</p>
+            <p>Rights & usage: Confirmed</p>
+          </div>
+        </div>
+
         <a
           href="/how-to-enter"
           className="text-sm text-gray-500 hover:text-[#212223] transition-colors"
@@ -158,6 +402,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     );
   }
 
+  // --- Editable Form ---
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -165,9 +410,15 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           <h2 className="text-2xl font-bold text-[#212223]">
             Submit Your Entry
           </h2>
-          <p className="text-sm text-gray-500">
-            Signed in as {user.email}
-          </p>
+          <div className="flex items-center gap-3 mt-1">
+            <p className="text-sm text-gray-500">Signed in as {user.email}</p>
+            {saveStatus === "saving" && (
+              <span className="text-xs text-gray-400">Saving...</span>
+            )}
+            {saveStatus === "saved" && (
+              <span className="text-xs text-green-600">Draft saved</span>
+            )}
+          </div>
         </div>
         <button
           type="button"
@@ -331,12 +582,14 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         </legend>
 
         {photos.map((photo, index) => (
-          <div
-            key={index}
-            className="border border-gray-200 p-4 mb-4"
-          >
+          <div key={index} className="border border-gray-200 p-4 mb-4">
             <div className="flex gap-4">
               <div className="shrink-0 w-24 h-24 bg-gray-100 relative">
+                {photo.isUploading && (
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
                 <img
                   src={photo.preview}
                   alt={photo.title || `Photo ${index + 1}`}
@@ -347,6 +600,11 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
                 <div className="flex items-start justify-between">
                   <span className="text-sm font-medium text-gray-500">
                     Photo {index + 1}
+                    {photo.isUploading && (
+                      <span className="text-xs text-gray-400 ml-2">
+                        Uploading...
+                      </span>
+                    )}
                   </span>
                   <button
                     type="button"
@@ -430,7 +688,9 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           {selectedDivision.biographyRequired ? (
             <span className="text-red-500">*</span>
           ) : (
-            <span className="text-gray-400 font-normal normal-case">(optional)</span>
+            <span className="text-gray-400 font-normal normal-case">
+              (optional)
+            </span>
           )}
         </legend>
         <textarea
@@ -508,9 +768,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
       </fieldset>
 
       {/* Error */}
-      {error && (
-        <p className="text-sm text-red-600 mb-4">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
       {/* Submit */}
       <button

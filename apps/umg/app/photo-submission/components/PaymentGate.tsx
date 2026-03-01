@@ -81,7 +81,7 @@ export function PaymentGate({
         disabled={isChecking}
         className="w-full px-4 py-2.5 text-sm font-medium border border-gray-300 text-[#212223] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isChecking ? "Checking..." : "I\u2019ve completed payment \u2014 check status"}
+        {isChecking ? "Checking..." : "I've completed payment - check status"}
       </button>
 
       <p className="text-xs text-gray-400 text-center mt-4">

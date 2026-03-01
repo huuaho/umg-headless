@@ -265,9 +265,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
                 Submission Received
               </h2>
             </div>
-            <p className="text-sm text-gray-500">
-              Signed in as {user.email}
-            </p>
+            <p className="text-sm text-gray-500">Signed in as {user.email}</p>
           </div>
           <button
             type="button"
@@ -526,7 +524,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
                 htmlFor="job"
                 className="block text-sm font-medium text-[#212223] mb-1"
               >
-                Job / Occupation
+                Major / Concentration
               </label>
               <input
                 id="job"

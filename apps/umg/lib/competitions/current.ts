@@ -46,7 +46,7 @@ export const currentCompetition: Competition = {
     {
       id: "youth",
       name: "Youth Division",
-      ageRange: "10–18",
+      ageRange: "10–18 (including 18)",
       ageMin: 10,
       ageMax: 18,
       maxPhotos: 3,
@@ -68,7 +68,7 @@ export const currentCompetition: Competition = {
     {
       id: "young-adults",
       name: "Young Adults Division",
-      ageRange: "19–30",
+      ageRange: "18–30 (excluding 18)",
       ageMin: 19,
       ageMax: 30,
       maxPhotos: 3,

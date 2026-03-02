@@ -1,35 +1,29 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { Suspense } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthForm } from "./components/AuthForm";
 import { PaymentGate } from "./components/PaymentGate";
 import { SubmissionForm } from "./components/SubmissionForm";
 
-type AppState =
-  | { step: "auth" }
-  | { step: "payment"; user: { email: string; name: string } }
-  | { step: "submission"; user: { email: string; name: string } };
-
 function PhotoSubmissionContent() {
   const competition = currentCompetition;
-  const [state, setState] = useState<AppState>({ step: "auth" });
+  const { user, isLoading, logout } = useAuth();
 
-  const handleAuthenticated = (user: { email: string; name: string }) => {
-    // TODO: In Phase 3, check payment_status from JWT user object
-    // For now, go to payment step
-    setState({ step: "payment", user });
-  };
+  const step: "auth" | "payment" | "submission" = !user
+    ? "auth"
+    : user.payment_status === "unpaid"
+      ? "payment"
+      : "submission";
 
-  const handlePaymentConfirmed = () => {
-    if (state.step !== "payment") return;
-    setState({ step: "submission", user: state.user });
-  };
-
-  const handleLogout = () => {
-    // TODO: In Phase 3, clear localStorage JWT
-    setState({ step: "auth" });
-  };
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white">
@@ -47,7 +41,7 @@ function PhotoSubmissionContent() {
         <div className="flex items-center justify-center gap-2 mt-6 mb-8">
           {["Sign In", "Payment", "Submit"].map((label, i) => {
             const stepIndex =
-              state.step === "auth" ? 0 : state.step === "payment" ? 1 : 2;
+              step === "auth" ? 0 : step === "payment" ? 1 : 2;
             const isActive = i === stepIndex;
             const isCompleted = i < stepIndex;
 
@@ -100,18 +94,18 @@ function PhotoSubmissionContent() {
 
       {/* Content */}
       <section className="max-w-280 mx-auto px-6 pb-16">
-        {state.step === "auth" && (
-          <AuthForm onAuthenticated={handleAuthenticated} />
-        )}
-        {state.step === "payment" && (
+        {step === "auth" && <AuthForm />}
+        {step === "payment" && user && (
           <PaymentGate
-            user={state.user}
-            onPaymentConfirmed={handlePaymentConfirmed}
-            onLogout={handleLogout}
+            user={{ email: user.email, name: user.name }}
+            onLogout={logout}
           />
         )}
-        {state.step === "submission" && (
-          <SubmissionForm user={state.user} onLogout={handleLogout} />
+        {step === "submission" && user && (
+          <SubmissionForm
+            user={{ email: user.email, name: user.name }}
+            onLogout={logout}
+          />
         )}
       </section>
     </main>

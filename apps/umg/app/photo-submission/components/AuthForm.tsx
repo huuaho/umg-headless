@@ -1,31 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/lib/auth/AuthContext";
 
-interface AuthFormProps {
-  onAuthenticated: (user: { email: string; name: string }) => void;
-}
-
-export function AuthForm({ onAuthenticated }: AuthFormProps) {
+export function AuthForm() {
+  const { requestCode, verifyCode, error: authError, clearError } = useAuth();
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  const displayError = localError || authError || "";
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
 
     setIsLoading(true);
-    setError("");
+    setLocalError("");
+    clearError();
 
-    // TODO: Replace with real API call in Phase 3
-    // POST /umg/v1/auth/request-code { email }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setIsLoading(false);
-    setStep("code");
+    try {
+      await requestCode(email);
+      setStep("code");
+    } catch {
+      if (!authError) {
+        setLocalError("Failed to send code. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyCode = async (e: React.FormEvent) => {
@@ -33,17 +38,16 @@ export function AuthForm({ onAuthenticated }: AuthFormProps) {
     if (!code.trim()) return;
 
     setIsLoading(true);
-    setError("");
+    setLocalError("");
+    clearError();
 
-    // TODO: Replace with real API call in Phase 3
-    // POST /umg/v1/auth/verify-code { email, code }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Simulate: any 6-digit code works for now
-    if (code.length === 6 && /^\d+$/.test(code)) {
-      onAuthenticated({ email, name: email.split("@")[0] });
-    } else {
-      setError("Please enter a valid 6-digit code.");
+    try {
+      await verifyCode(email, code);
+      // On success, auth context sets user -> parent re-renders -> AuthForm unmounts
+    } catch {
+      if (!authError) {
+        setLocalError("Invalid code. Please try again.");
+      }
       setIsLoading(false);
     }
   };
@@ -80,7 +84,9 @@ export function AuthForm({ onAuthenticated }: AuthFormProps) {
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {displayError && (
+            <p className="text-sm text-red-600">{displayError}</p>
+          )}
 
           <button
             type="submit"
@@ -115,7 +121,9 @@ export function AuthForm({ onAuthenticated }: AuthFormProps) {
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {displayError && (
+            <p className="text-sm text-red-600">{displayError}</p>
+          )}
 
           <button
             type="submit"
@@ -130,7 +138,8 @@ export function AuthForm({ onAuthenticated }: AuthFormProps) {
             onClick={() => {
               setStep("email");
               setCode("");
-              setError("");
+              setLocalError("");
+              clearError();
             }}
             className="w-full text-sm text-gray-500 hover:text-[#212223] transition-colors"
           >

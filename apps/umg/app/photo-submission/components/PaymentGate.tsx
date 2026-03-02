@@ -1,35 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { currentCompetition } from "@/lib/competitions/current";
 
 interface PaymentGateProps {
   user: { email: string; name: string };
-  onPaymentConfirmed: () => void;
   onLogout: () => void;
 }
 
-export function PaymentGate({
-  user,
-  onPaymentConfirmed,
-  onLogout,
-}: PaymentGateProps) {
+export function PaymentGate({ user, onLogout }: PaymentGateProps) {
+  const { refreshUser } = useAuth();
   const [isChecking, setIsChecking] = useState(false);
+  const [pollError, setPollError] = useState("");
   const competition = currentCompetition;
   const entryFee = competition.divisions[0]?.entryFee ?? 50;
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const stripeUrl = `${competition.stripePaymentLink}?prefilled_email=${encodeURIComponent(user.email)}`;
 
+  // Auto-poll payment status every 15 seconds
+  useEffect(() => {
+    pollIntervalRef.current = setInterval(() => {
+      refreshUser().catch(() => {});
+    }, 15_000);
+
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, [refreshUser]);
+
   const handleCheckStatus = async () => {
     setIsChecking(true);
+    setPollError("");
 
-    // TODO: Replace with real API call in Phase 4
-    // GET /umg/v1/me → check payment_status
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Simulate: always confirm for now
-    onPaymentConfirmed();
-    setIsChecking(false);
+    try {
+      await refreshUser();
+      // If payment_status changed to "paid", parent re-renders and this unmounts.
+      // If still mounted after a tick, payment hasn't been confirmed yet.
+      setTimeout(() => {
+        setIsChecking(false);
+        setPollError(
+          "Payment not yet detected. If you just paid, please wait a moment and try again."
+        );
+      }, 100);
+    } catch {
+      setIsChecking(false);
+      setPollError("Could not check payment status. Please try again.");
+    }
   };
 
   return (
@@ -83,6 +103,10 @@ export function PaymentGate({
       >
         {isChecking ? "Checking..." : "I've completed payment - check status"}
       </button>
+
+      {pollError && (
+        <p className="text-sm text-amber-600 text-center mt-2">{pollError}</p>
+      )}
 
       <p className="text-xs text-gray-400 text-center mt-4">
         Payment status updates automatically. You can also click above to check

@@ -1,0 +1,61 @@
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  payment_status: "unpaid" | "paid";
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface DraftPhoto {
+  media_id: number;
+  url: string;
+  title: string;
+  description: string;
+}
+
+export interface DraftData {
+  status: "draft" | "submitted";
+  division: string;
+  first_name: string;
+  last_name: string;
+  dob: string;
+  address: string;
+  school_grade: string;
+  job: string;
+  biography: string;
+  photos: DraftPhoto[];
+  exhibition_opt_in: boolean;
+  consent_originality: boolean;
+  consent_subjects: boolean;
+  consent_rights: boolean;
+  submitted_at: string | null;
+}
+
+export interface SaveDraftPayload {
+  division: string;
+  first_name: string;
+  last_name: string;
+  dob: string;
+  address: string;
+  school_grade: string;
+  job: string;
+  biography: string;
+  photos: Array<{
+    media_id: number;
+    title: string;
+    description: string;
+  }>;
+  exhibition_opt_in: boolean;
+  consent_originality: boolean;
+  consent_subjects: boolean;
+  consent_rights: boolean;
+}
+
+export interface UploadPhotoResponse {
+  id: number;
+  url: string;
+}

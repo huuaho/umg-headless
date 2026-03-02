@@ -54,7 +54,7 @@ export const currentCompetition: Competition = {
       biographyRequired: false,
       entryFee: 50,
       requirements: [
-        "All participants must be actively enrolled students and must be 18 years old or younger at the time of submission.",
+        "All participants must be actively enrolled students.",
         "Participants may submit up to three photographs.",
         "Images must be submitted in JPEG or JPG format, in RGB color mode, with a minimum resolution of 2000 pixels on the longest side and a maximum file size of 20 MB per image.",
         "Photographs may be taken using a camera, tablet, or smartphone.",
@@ -76,7 +76,7 @@ export const currentCompetition: Competition = {
       biographyRequired: true,
       entryFee: 50,
       requirements: [
-        "All participants must be actively enrolled students and must be 30 years old or younger at the time of submission.",
+        "All participants must be actively enrolled students.",
         "Participants may submit up to three photographs.",
         "Images must be submitted in JPEG or JPG format, in RGB color mode, with a minimum resolution of 2000 pixels on the longest side and a maximum file size of 20 MB per image.",
         "Photographs may be taken using a camera, tablet, or smartphone.",

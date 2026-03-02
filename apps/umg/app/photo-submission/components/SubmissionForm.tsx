@@ -3,6 +3,14 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
 import type { CompetitionDivision } from "@/lib/competitions/types";
+import { useAuth } from "@/lib/auth/AuthContext";
+import {
+  loadDraft as apiLoadDraft,
+  saveDraft as apiSaveDraft,
+  uploadPhoto as apiUploadPhoto,
+  removePhoto as apiRemovePhoto,
+  submitEntry as apiSubmitEntry,
+} from "@/lib/auth/api";
 
 interface PhotoEntry {
   file: File | null; // null when loaded from server draft
@@ -24,6 +32,7 @@ function wordCount(text: string): number {
 
 export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const competition = currentCompetition;
+  const { token } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [divisionId, setDivisionId] = useState(competition.divisions[0].id);
@@ -53,29 +62,101 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
 
   // --- Draft Load ---
   useEffect(() => {
-    async function loadDraft() {
-      // TODO: Replace with real API call in Phase 4
-      // GET /umg/v1/draft → returns DraftData or null
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Simulated: no existing draft
-      setIsLoadingDraft(false);
+    async function load() {
+      if (!token) {
+        setIsLoadingDraft(false);
+        return;
+      }
+      try {
+        const draft = await apiLoadDraft(token);
+        if (draft) {
+          if (draft.status === "submitted") {
+            setIsSubmitted(true);
+          }
+          setDivisionId(draft.division || competition.divisions[0].id);
+          setFirstName(draft.first_name || "");
+          setLastName(draft.last_name || "");
+          setDob(draft.dob || "");
+          setAddress(draft.address || "");
+          setSchoolGrade(draft.school_grade || "");
+          setJob(draft.job || "");
+          setBiography(draft.biography || "");
+          setExhibitionOptIn(draft.exhibition_opt_in || false);
+          setConsentOriginality(draft.consent_originality || false);
+          setConsentSubjects(draft.consent_subjects || false);
+          setConsentRights(draft.consent_rights || false);
+          if (draft.photos?.length) {
+            setPhotos(
+              draft.photos.map((p) => ({
+                file: null,
+                preview: p.url,
+                mediaId: String(p.media_id),
+                title: p.title || "",
+                description: p.description || "",
+                isUploading: false,
+              })),
+            );
+          }
+        }
+      } catch {
+        // Draft load failed - start with empty form
+      } finally {
+        setIsLoadingDraft(false);
+      }
     }
-    loadDraft();
-  }, []);
+    load();
+  }, [token, competition.divisions]);
 
   // --- Draft Autosave (debounced) ---
   const saveDraft = useCallback(async () => {
-    if (isSubmitted || isLoadingDraft) return;
+    if (isSubmitted || isLoadingDraft || !token) return;
 
     setSaveStatus("saving");
 
-    // TODO: Replace with real API call in Phase 4
-    // PUT /umg/v1/draft { divisionId, firstName, lastName, dob, ... }
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    setSaveStatus("saved");
-  }, [isSubmitted, isLoadingDraft]);
+    try {
+      await apiSaveDraft(token, {
+        division: divisionId,
+        first_name: firstName,
+        last_name: lastName,
+        dob,
+        address,
+        school_grade: schoolGrade,
+        job,
+        biography,
+        photos: photos
+          .filter((p) => p.mediaId)
+          .map((p) => ({
+            media_id: Number(p.mediaId),
+            title: p.title,
+            description: p.description,
+          })),
+        exhibition_opt_in: exhibitionOptIn,
+        consent_originality: consentOriginality,
+        consent_subjects: consentSubjects,
+        consent_rights: consentRights,
+      });
+      setSaveStatus("saved");
+    } catch {
+      setSaveStatus("idle");
+    }
+  }, [
+    token,
+    isSubmitted,
+    isLoadingDraft,
+    divisionId,
+    firstName,
+    lastName,
+    dob,
+    address,
+    schoolGrade,
+    job,
+    biography,
+    photos,
+    exhibitionOptIn,
+    consentOriginality,
+    consentSubjects,
+    consentRights,
+  ]);
 
   // Debounce: save 2 seconds after last change
   useEffect(() => {
@@ -111,7 +192,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   // --- Photo Handlers ---
   const handleAddPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !token) return;
 
     // Client-side validation
     const validTypes = ["image/jpeg", "image/jpg"];
@@ -142,28 +223,39 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
       fileInputRef.current.value = "";
     }
 
-    // TODO: Replace with real API call in Phase 4
-    // POST /umg/v1/draft/photo (multipart with file)
-    // Returns { id: "123", url: "https://..." }
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Simulate server response with a fake media ID
-    setPhotos((prev) =>
-      prev.map((p) =>
-        p.preview === preview
-          ? { ...p, mediaId: `media-${Date.now()}`, isUploading: false }
-          : p,
-      ),
-    );
+    try {
+      const result = await apiUploadPhoto(token, file);
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.preview === preview
+            ? { ...p, mediaId: String(result.id), isUploading: false }
+            : p,
+        ),
+      );
+    } catch (err) {
+      // Upload failed - remove the photo entry and show error
+      setPhotos((prev) => {
+        const photo = prev.find((p) => p.preview === preview);
+        if (photo?.file) URL.revokeObjectURL(photo.preview);
+        return prev.filter((p) => p.preview !== preview);
+      });
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Photo upload failed. Please try again.",
+      );
+    }
   };
 
   const handleRemovePhoto = async (index: number) => {
     const photo = photos[index];
 
-    // TODO: Replace with real API call in Phase 4
-    // DELETE /umg/v1/draft/photo/{mediaId}
-    if (photo.mediaId) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
+    if (photo.mediaId && token) {
+      try {
+        await apiRemovePhoto(token, Number(photo.mediaId));
+      } catch {
+        // If server delete fails, still remove from UI
+      }
     }
 
     setPhotos((prev) => {
@@ -187,15 +279,47 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   // --- Submit ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) return;
+
     setIsSubmitting(true);
     setError("");
 
-    // TODO: Replace with real API call in Phase 4
-    // POST /umg/v1/submit (finalizes draft → submitted)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Save draft one final time to ensure all data is current
+      await apiSaveDraft(token, {
+        division: divisionId,
+        first_name: firstName,
+        last_name: lastName,
+        dob,
+        address,
+        school_grade: schoolGrade,
+        job,
+        biography,
+        photos: photos
+          .filter((p) => p.mediaId)
+          .map((p) => ({
+            media_id: Number(p.mediaId),
+            title: p.title,
+            description: p.description,
+          })),
+        exhibition_opt_in: exhibitionOptIn,
+        consent_originality: consentOriginality,
+        consent_subjects: consentSubjects,
+        consent_rights: consentRights,
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      // Finalize submission
+      await apiSubmitEntry(token);
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Submission failed. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // --- Validation ---

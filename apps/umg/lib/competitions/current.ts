@@ -176,7 +176,7 @@ export const currentCompetition: Competition = {
   stripePaymentLink: "https://buy.stripe.com/test_9B6eVf4GKeRF6Si1YJ5EY00",
 
   // Submission config
-  personalInfoFields: ["name", "dob", "address", "school_grade", "job"],
+  personalInfoFields: ["name", "dob", "address", "school", "grade", "job"],
   exhibitionOptIn: true,
   exhibitionNote:
     "Do you want to sign up for the exhibition? An extra fee may apply.",

@@ -40,7 +40,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const [lastName, setLastName] = useState("");
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
-  const [schoolGrade, setSchoolGrade] = useState("");
+  const [school, setSchool] = useState("");
+  const [grade, setGrade] = useState("");
   const [job, setJob] = useState("");
   const [biography, setBiography] = useState("");
   const [photos, setPhotos] = useState<PhotoEntry[]>([]);
@@ -78,7 +79,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           setLastName(draft.last_name || "");
           setDob(draft.dob || "");
           setAddress(draft.address || "");
-          setSchoolGrade(draft.school_grade || "");
+          setSchool(draft.school || "");
+          setGrade(draft.grade || "");
           setJob(draft.job || "");
           setBiography(draft.biography || "");
           setExhibitionOptIn(draft.exhibition_opt_in || false);
@@ -120,7 +122,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         last_name: lastName,
         dob,
         address,
-        school_grade: schoolGrade,
+        school,
+        grade,
         job,
         biography,
         photos: photos
@@ -148,7 +151,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     lastName,
     dob,
     address,
-    schoolGrade,
+    school,
+    grade,
     job,
     biography,
     photos,
@@ -157,6 +161,11 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     consentSubjects,
     consentRights,
   ]);
+
+  // Extract photo metadata for dependency tracking
+  const photoMetaKey = photos
+    .map((p) => `${p.title}|${p.description}`)
+    .join(",");
 
   // Debounce: save 2 seconds after last change
   useEffect(() => {
@@ -178,15 +187,15 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     lastName,
     dob,
     address,
-    schoolGrade,
+    school,
+    grade,
     job,
     biography,
     exhibitionOptIn,
     consentOriginality,
     consentSubjects,
     consentRights,
-    // Photo metadata triggers save (not file objects)
-    photos.map((p) => `${p.title}|${p.description}`).join(","),
+    photoMetaKey,
   ]);
 
   // --- Photo Handlers ---
@@ -292,7 +301,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         last_name: lastName,
         dob,
         address,
-        school_grade: schoolGrade,
+        school,
+        grade,
         job,
         biography,
         photos: photos
@@ -340,7 +350,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     lastName.trim() &&
     dob &&
     address.trim() &&
-    schoolGrade.trim();
+    school.trim() &&
+    grade;
 
   const canSubmit =
     personalInfoValid &&
@@ -440,8 +451,12 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
               <span className="text-[#212223]">{address}</span>
             </div>
             <div>
-              <span className="text-gray-500">School & Grade:</span>{" "}
-              <span className="text-[#212223]">{schoolGrade}</span>
+              <span className="text-gray-500">School:</span>{" "}
+              <span className="text-[#212223]">{school}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Grade:</span>{" "}
+              <span className="text-[#212223]">{grade}</span>
             </div>
             {job && (
               <div>
@@ -677,22 +692,53 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="schoolGrade"
-              className="block text-sm font-medium text-[#212223] mb-1"
-            >
-              School & Grade <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="schoolGrade"
-              type="text"
-              value={schoolGrade}
-              onChange={(e) => setSchoolGrade(e.target.value)}
-              required
-              placeholder="e.g. Lincoln High School, 11th Grade"
-              className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="school"
+                className="block text-sm font-medium text-[#212223] mb-1"
+              >
+                School <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="school"
+                type="text"
+                value={school}
+                onChange={(e) => setSchool(e.target.value)}
+                required
+                placeholder="e.g. Lincoln High School"
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="grade"
+                className="block text-sm font-medium text-[#212223] mb-1"
+              >
+                Grade <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="grade"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] bg-white"
+              >
+                <option value="" disabled>
+                  Select grade
+                </option>
+                <option value="5th Grade">5th Grade</option>
+                <option value="6th Grade">6th Grade</option>
+                <option value="7th Grade">7th Grade</option>
+                <option value="8th Grade">8th Grade</option>
+                <option value="9th Grade">9th Grade</option>
+                <option value="10th Grade">10th Grade</option>
+                <option value="11th Grade">11th Grade</option>
+                <option value="12th Grade">12th Grade</option>
+                <option value="Undergraduate Student">Undergraduate Student</option>
+                <option value="Graduate Student">Graduate Student</option>
+              </select>
+            </div>
           </div>
         </div>
       </fieldset>

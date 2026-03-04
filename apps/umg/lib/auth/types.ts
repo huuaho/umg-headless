@@ -24,7 +24,8 @@ export interface DraftData {
   last_name: string;
   dob: string;
   address: string;
-  school_grade: string;
+  school: string;
+  grade: string;
   job: string;
   biography: string;
   photos: DraftPhoto[];
@@ -41,7 +42,8 @@ export interface SaveDraftPayload {
   last_name: string;
   dob: string;
   address: string;
-  school_grade: string;
+  school: string;
+  grade: string;
   job: string;
   biography: string;
   photos: Array<{

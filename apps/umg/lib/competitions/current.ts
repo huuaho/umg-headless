@@ -179,5 +179,5 @@ export const currentCompetition: Competition = {
   personalInfoFields: ["name", "dob", "address", "school", "grade", "job"],
   exhibitionOptIn: true,
   exhibitionNote:
-    "Do you want to sign up for the exhibition? An extra fee may apply.",
+    "Would you like to be featured in the upcoming exhibitions? There is an additional fee to participate, and artists will receive a payment link via email at a future date.",
 };

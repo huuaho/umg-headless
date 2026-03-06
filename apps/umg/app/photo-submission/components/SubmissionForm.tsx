@@ -32,8 +32,9 @@ function wordCount(text: string): number {
 
 export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const competition = currentCompetition;
-  const { token } = useAuth();
+  const { token, user: authUser, refreshUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [divisionId, setDivisionId] = useState(competition.divisions[0].id);
   const [firstName, setFirstName] = useState("");
@@ -56,6 +57,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     "idle",
   );
   const [error, setError] = useState("");
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentPollError, setPaymentPollError] = useState("");
 
   const selectedDivision = competition.divisions.find(
     (d) => d.id === divisionId,
@@ -361,6 +364,45 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     allConsentsChecked &&
     !isSubmitting;
 
+  // --- Payment polling (only when submitted + unpaid) ---
+  const paymentStatus = authUser?.payment_status ?? "unpaid";
+  const entryFee = selectedDivision.entryFee;
+  const stripeUrl = `${competition.stripePaymentLink}?prefilled_email=${encodeURIComponent(user.email)}`;
+
+  useEffect(() => {
+    if (!isSubmitted || paymentStatus === "paid") return;
+
+    pollIntervalRef.current = setInterval(() => {
+      refreshUser().catch(() => {});
+    }, 15_000);
+
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, [isSubmitted, paymentStatus, refreshUser]);
+
+  const handleCheckPayment = async () => {
+    setIsCheckingPayment(true);
+    setPaymentPollError("");
+
+    try {
+      await refreshUser();
+      setTimeout(() => {
+        setIsCheckingPayment(false);
+        if (authUser?.payment_status !== "paid") {
+          setPaymentPollError(
+            "Payment not yet detected. If you just paid, please wait a moment and try again.",
+          );
+        }
+      }, 100);
+    } catch {
+      setIsCheckingPayment(false);
+      setPaymentPollError("Could not check payment status. Please try again.");
+    }
+  };
+
   // --- Loading State ---
   if (isLoadingDraft) {
     return (
@@ -412,10 +454,93 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         </div>
 
         <p className="text-gray-600 mb-8">
-          Thank you for your submission to {competition.title}. A confirmation
-          has been sent to {user.email}. Your entry is final and cannot be
-          edited.
+          Thank you for your submission to {competition.title}. Your entry is
+          final and cannot be edited.
+          {paymentStatus === "unpaid" &&
+            " Please complete payment below to finalize your entry."}
         </p>
+
+        {/* Payment Section */}
+        {paymentStatus === "unpaid" ? (
+          <div className="border border-amber-200 bg-amber-50 p-6 mb-8">
+            <p className="text-xs font-semibold text-amber-800 uppercase tracking-wide mb-4">
+              Payment Required
+            </p>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-gray-700">Entry Fee</span>
+              <span className="text-2xl font-bold text-[#212223]">
+                ${entryFee}
+              </span>
+            </div>
+
+            <div className="text-sm text-gray-600 space-y-2 mb-6">
+              <p className="flex items-start">
+                <span className="text-gray-400 mr-2">&bull;</span>
+                Submission for official judging
+              </p>
+              <p className="flex items-start">
+                <span className="text-gray-400 mr-2">&bull;</span>
+                Eligibility for prizes up to $
+                {competition.awards[0]?.amount.toLocaleString()}
+              </p>
+              <p className="flex items-start">
+                <span className="text-gray-400 mr-2">&bull;</span>
+                Exhibition eligibility at partner venues
+              </p>
+            </div>
+
+            <a
+              href={stripeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full px-4 py-2.5 text-sm font-medium text-white bg-[#212223] hover:bg-[#3a3a3a] transition-colors text-center mb-3"
+            >
+              Pay ${entryFee} with Stripe
+            </a>
+
+            <button
+              onClick={handleCheckPayment}
+              disabled={isCheckingPayment}
+              className="w-full px-4 py-2.5 text-sm font-medium border border-gray-300 text-[#212223] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isCheckingPayment
+                ? "Checking..."
+                : "I've completed payment - check status"}
+            </button>
+
+            {paymentPollError && (
+              <p className="text-sm text-amber-600 text-center mt-2">
+                {paymentPollError}
+              </p>
+            )}
+
+            <p className="text-xs text-gray-400 text-center mt-3">
+              Payment status updates automatically. You can also click above to
+              check manually.
+            </p>
+          </div>
+        ) : (
+          <div className="border border-green-200 bg-green-50 p-4 mb-8 flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+              <svg
+                className="w-3.5 h-3.5 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 12.75l6 6 9-13.5"
+                />
+              </svg>
+            </div>
+            <p className="text-sm text-green-800 font-medium">
+              Payment confirmed — your entry is complete.
+            </p>
+          </div>
+        )}
 
         {/* Division */}
         <div className="mb-6">
@@ -948,8 +1073,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
       </button>
 
       <p className="text-xs text-gray-400 text-center mt-3">
-        Once submitted, your entry is final and the ${selectedDivision.entryFee}{" "}
-        fee is non-refundable.
+        Once submitted, your entry is final and cannot be edited. You will be
+        prompted to complete the ${entryFee} entry fee after submission.
       </p>
     </form>
   );

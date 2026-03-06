@@ -4,18 +4,13 @@ import { Suspense } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthForm } from "./components/AuthForm";
-import { PaymentGate } from "./components/PaymentGate";
 import { SubmissionForm } from "./components/SubmissionForm";
 
 function PhotoSubmissionContent() {
   const competition = currentCompetition;
   const { user, isLoading, logout } = useAuth();
 
-  const step: "auth" | "payment" | "submission" = !user
-    ? "auth"
-    : user.payment_status === "unpaid"
-      ? "payment"
-      : "submission";
+  const step: "auth" | "submission" = !user ? "auth" : "submission";
 
   if (isLoading) {
     return (
@@ -39,9 +34,8 @@ function PhotoSubmissionContent() {
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mt-6 mb-8">
-          {["Sign In", "Payment", "Submit"].map((label, i) => {
-            const stepIndex =
-              step === "auth" ? 0 : step === "payment" ? 1 : 2;
+          {["Sign In", "Submit"].map((label, i) => {
+            const stepIndex = step === "auth" ? 0 : 1;
             const isActive = i === stepIndex;
             const isCompleted = i < stepIndex;
 
@@ -95,12 +89,6 @@ function PhotoSubmissionContent() {
       {/* Content */}
       <section className="max-w-280 mx-auto px-6 pb-16">
         {step === "auth" && <AuthForm />}
-        {step === "payment" && user && (
-          <PaymentGate
-            user={{ email: user.email, name: user.name }}
-            onLogout={logout}
-          />
-        )}
         {step === "submission" && user && (
           <SubmissionForm
             user={{ email: user.email, name: user.name }}

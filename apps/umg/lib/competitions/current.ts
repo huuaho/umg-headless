@@ -173,7 +173,7 @@ export const currentCompetition: Competition = {
   },
 
   // Payment
-  stripePaymentLink: "https://buy.stripe.com/test_9B6eVf4GKeRF6Si1YJ5EY00",
+  stripePaymentLink: "https://buy.stripe.com/test_00w3cxb58eRFa4uavf5EY01",
 
   // Submission config
   personalInfoFields: ["name", "dob", "address", "school", "grade", "job"],

@@ -221,51 +221,6 @@ export default function HowToEnterPage() {
         </div>
       </section>
 
-      {/* Rules */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Rules & Guidelines
-        </h2>
-        <div className="max-w-3xl mx-auto space-y-8">
-          <div>
-            <h3 className="text-lg font-semibold text-[#212223] mb-2">
-              AI Policy & Image Integrity
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              {competition.aiPolicy}
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold text-[#212223] mb-2">
-              Originality & Ethics
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              All submitted work must be original and created solely by the
-              participant; collaborative work is not accepted. Participants are
-              responsible for obtaining consent from individuals who are clearly
-              identifiable in the photographs. All submissions should respect the
-              dignity, safety, and cultural context of the subjects represented.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold text-[#212223] mb-2">
-              Rights & Usage
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              By submitting works to the competition, participants grant the
-              organizers the non-exclusive right to use selected images for
-              competition-related purposes, including exhibitions, publications,
-              educational programs, and promotional materials, with full credit
-              given to the photographer. Copyright remains with the artist. Once
-              the application is submitted, it is considered final, and the fee
-              is non-refundable under any circumstances.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Evaluation Criteria */}
       <section className="bg-gray-50 border-y border-gray-200">
         <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
@@ -333,6 +288,51 @@ export default function HowToEnterPage() {
           >
             Apply Now
           </a>
+        </div>
+      </section>
+
+      {/* Rules & Guidelines */}
+      <section className="max-w-280 mx-auto px-6 py-8 md:py-10">
+        <h2 className="text-lg font-medium text-center text-gray-400 mb-6">
+          Rules & Guidelines
+        </h2>
+        <div className="max-w-3xl mx-auto space-y-4">
+          <div>
+            <h3 className="text-sm font-medium text-gray-400 mb-1">
+              AI Policy & Image Integrity
+            </h3>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              {competition.aiPolicy}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-gray-400 mb-1">
+              Originality & Ethics
+            </h3>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              All submitted work must be original and created solely by the
+              participant; collaborative work is not accepted. Participants are
+              responsible for obtaining consent from individuals who are clearly
+              identifiable in the photographs. All submissions should respect the
+              dignity, safety, and cultural context of the subjects represented.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-gray-400 mb-1">
+              Rights & Usage
+            </h3>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              By submitting works to the competition, participants grant the
+              organizers the non-exclusive right to use selected images for
+              competition-related purposes, including exhibitions, publications,
+              educational programs, and promotional materials, with full credit
+              given to the photographer. Copyright remains with the artist. Once
+              the application is submitted, it is considered final, and the fee
+              is non-refundable under any circumstances.
+            </p>
+          </div>
         </div>
       </section>
     </main>

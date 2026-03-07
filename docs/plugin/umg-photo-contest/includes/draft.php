@@ -2,10 +2,12 @@
 /**
  * UMG Photo Contest - Draft Endpoints
  *
- * 1. GET    /umg/v1/draft          — load draft or submitted entry
- * 2. PUT    /umg/v1/draft          — save/update draft text fields (upsert)
- * 3. POST   /umg/v1/draft/photo    — upload a photo to draft
+ * 1. GET    /umg/v1/draft                — load draft or submitted entry
+ * 2. PUT    /umg/v1/draft                — save/update draft text fields (upsert)
+ * 3. POST   /umg/v1/draft/photo          — upload a photo to draft
  * 4. DELETE /umg/v1/draft/photo/(?P<id>\d+) — remove photo from draft
+ * 5. POST   /umg/v1/draft/student-proof  — upload student proof document
+ * 6. DELETE /umg/v1/draft/student-proof  — remove student proof document
  */
 
 if (!defined('ABSPATH')) exit;
@@ -37,6 +39,20 @@ add_action('rest_api_init', function () {
     register_rest_route('umg/v1', '/draft/photo/(?P<id>\d+)', array(
         'methods'             => 'DELETE',
         'callback'            => 'umgpc_remove_photo',
+        'permission_callback' => '__return_true',
+    ));
+
+    // POST /umg/v1/draft/student-proof
+    register_rest_route('umg/v1', '/draft/student-proof', array(
+        'methods'             => 'POST',
+        'callback'            => 'umgpc_upload_student_proof',
+        'permission_callback' => '__return_true',
+    ));
+
+    // DELETE /umg/v1/draft/student-proof
+    register_rest_route('umg/v1', '/draft/student-proof', array(
+        'methods'             => 'DELETE',
+        'callback'            => 'umgpc_remove_student_proof',
         'permission_callback' => '__return_true',
     ));
 });
@@ -120,6 +136,29 @@ function umgpc_build_photos_array($post_id) {
     return $photos;
 }
 
+/**
+ * Build the student proof object from post meta.
+ *
+ * @param int $post_id Draft post ID
+ * @return array|null Student proof object or null if not uploaded
+ */
+function umgpc_build_student_proof($post_id) {
+    $media_id = (int) get_post_meta($post_id, 'umgpc_student_proof_id', true);
+    if (!$media_id) return null;
+
+    $url = wp_get_attachment_url($media_id);
+    if (!$url) return null;
+
+    $filepath = get_attached_file($media_id);
+    $filename = $filepath ? basename($filepath) : 'document';
+
+    return array(
+        'media_id' => $media_id,
+        'url'      => $url,
+        'filename' => $filename,
+    );
+}
+
 /* =========================================================
    Endpoint Callbacks
    ========================================================= */
@@ -153,6 +192,7 @@ function umgpc_get_draft(WP_REST_Request $request) {
         'job'                 => get_post_meta($post_id, 'umgpc_job', true) ?: '',
         'biography'           => get_post_meta($post_id, 'umgpc_biography', true) ?: '',
         'photos'              => umgpc_build_photos_array($post_id),
+        'student_proof'       => umgpc_build_student_proof($post_id),
         'exhibition_opt_in'   => (bool) get_post_meta($post_id, 'umgpc_exhibition_signup', true),
         'consent_originality' => (bool) get_post_meta($post_id, 'umgpc_consent_originality', true),
         'consent_subjects'    => (bool) get_post_meta($post_id, 'umgpc_consent_subjects', true),
@@ -394,6 +434,134 @@ function umgpc_remove_photo(WP_REST_Request $request) {
 
     // Delete from Media Library
     wp_delete_attachment($media_id, true);
+
+    return rest_ensure_response(array('success' => true));
+}
+
+/**
+ * POST /umg/v1/draft/student-proof
+ *
+ * Upload a student proof document (transcript or student ID).
+ * Accepts FormData with 'student_proof' field.
+ * Only one proof is allowed; uploading again replaces the existing one.
+ */
+function umgpc_upload_student_proof(WP_REST_Request $request) {
+    $user_id = umgpc_get_user_from_request($request);
+    if (is_wp_error($user_id)) return $user_id;
+
+    $post_id = umgpc_find_draft_id($user_id);
+
+    if (!$post_id) {
+        $post_id = umgpc_create_draft($user_id);
+        if (is_wp_error($post_id)) {
+            return new WP_Error('draft_create_failed', 'Could not create draft.', array('status' => 500));
+        }
+    }
+
+    // Check if already submitted
+    $current_status = get_post_meta($post_id, 'umgpc_status', true);
+    if ($current_status === 'submitted') {
+        return new WP_Error('already_submitted', 'Cannot modify a submitted entry.', array('status' => 400));
+    }
+
+    // Check for uploaded file
+    $files = $request->get_file_params();
+    if (empty($files['student_proof'])) {
+        return new WP_Error('no_file', 'No student proof file provided.', array('status' => 400));
+    }
+
+    $file = $files['student_proof'];
+
+    // Validate file type (JPEG, PNG, or PDF)
+    $allowed_types = array('image/jpeg', 'image/jpg', 'image/png', 'application/pdf');
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    if (!in_array($mime, $allowed_types)) {
+        return new WP_Error('invalid_type', 'Only JPEG, PNG, or PDF files are accepted.', array('status' => 400));
+    }
+
+    // Validate file size (max 10MB)
+    if ($file['size'] > 10 * 1024 * 1024) {
+        return new WP_Error('file_too_large', 'File size must not exceed 10MB.', array('status' => 400));
+    }
+
+    // If a proof already exists, delete the old one first
+    $existing_id = (int) get_post_meta($post_id, 'umgpc_student_proof_id', true);
+    if ($existing_id) {
+        wp_delete_attachment($existing_id, true);
+        delete_post_meta($post_id, 'umgpc_student_proof_id');
+    }
+
+    // Upload to Media Library
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+
+    $upload = wp_handle_upload($file, array('test_form' => false));
+
+    if (isset($upload['error'])) {
+        return new WP_Error('upload_failed', $upload['error'], array('status' => 500));
+    }
+
+    // Create attachment
+    $original_filename = sanitize_file_name($file['name']);
+    $attachment = array(
+        'post_mime_type' => $upload['type'],
+        'post_title'     => sanitize_file_name(pathinfo($upload['file'], PATHINFO_FILENAME)),
+        'post_content'   => '',
+        'post_status'    => 'inherit',
+    );
+
+    $media_id = wp_insert_attachment($attachment, $upload['file'], $post_id);
+
+    if (is_wp_error($media_id)) {
+        return new WP_Error('attachment_failed', 'Could not create attachment.', array('status' => 500));
+    }
+
+    // Generate attachment metadata (thumbnails for images, PDF preview if available)
+    $metadata = wp_generate_attachment_metadata($media_id, $upload['file']);
+    wp_update_attachment_metadata($media_id, $metadata);
+
+    // Store in post meta
+    update_post_meta($post_id, 'umgpc_student_proof_id', (string) $media_id);
+
+    return rest_ensure_response(array(
+        'id'       => $media_id,
+        'url'      => wp_get_attachment_url($media_id),
+        'filename' => $original_filename,
+    ));
+}
+
+/**
+ * DELETE /umg/v1/draft/student-proof
+ *
+ * Remove the student proof document from the user's draft.
+ */
+function umgpc_remove_student_proof(WP_REST_Request $request) {
+    $user_id = umgpc_get_user_from_request($request);
+    if (is_wp_error($user_id)) return $user_id;
+
+    $post_id = umgpc_find_draft_id($user_id);
+    if (!$post_id) {
+        return new WP_Error('no_draft', 'No draft found.', array('status' => 404));
+    }
+
+    // Check if already submitted
+    $current_status = get_post_meta($post_id, 'umgpc_status', true);
+    if ($current_status === 'submitted') {
+        return new WP_Error('already_submitted', 'Cannot modify a submitted entry.', array('status' => 400));
+    }
+
+    $media_id = (int) get_post_meta($post_id, 'umgpc_student_proof_id', true);
+    if (!$media_id) {
+        return new WP_Error('no_proof', 'No student proof found in your draft.', array('status' => 404));
+    }
+
+    // Delete from Media Library
+    wp_delete_attachment($media_id, true);
+    delete_post_meta($post_id, 'umgpc_student_proof_id');
 
     return rest_ensure_response(array('success' => true));
 }

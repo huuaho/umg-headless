@@ -3,6 +3,7 @@ import type {
   DraftData,
   SaveDraftPayload,
   UploadPhotoResponse,
+  UploadStudentProofResponse,
   User,
 } from "./types";
 
@@ -122,6 +123,31 @@ export async function removePhoto(
   mediaId: number
 ): Promise<void> {
   const response = await fetch(`${API_BASE}/draft/photo/${mediaId}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+  await handleResponse<{ success: boolean }>(response);
+}
+
+// --- Student Proof ---
+
+export async function uploadStudentProof(
+  token: string,
+  file: File
+): Promise<UploadStudentProofResponse> {
+  const formData = new FormData();
+  formData.append("student_proof", file);
+
+  const response = await fetch(`${API_BASE}/draft/student-proof`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    body: formData,
+  });
+  return handleResponse<UploadStudentProofResponse>(response);
+}
+
+export async function removeStudentProof(token: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/draft/student-proof`, {
     method: "DELETE",
     headers: authHeaders(token),
   });

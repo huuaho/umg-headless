@@ -17,6 +17,12 @@ export interface DraftPhoto {
   description: string;
 }
 
+export interface DraftStudentProof {
+  media_id: number;
+  url: string;
+  filename: string;
+}
+
 export interface DraftData {
   status: "draft" | "submitted";
   division: string;
@@ -29,6 +35,7 @@ export interface DraftData {
   job: string;
   biography: string;
   photos: DraftPhoto[];
+  student_proof: DraftStudentProof | null;
   exhibition_opt_in: boolean;
   consent_originality: boolean;
   consent_subjects: boolean;
@@ -60,4 +67,10 @@ export interface SaveDraftPayload {
 export interface UploadPhotoResponse {
   id: number;
   url: string;
+}
+
+export interface UploadStudentProofResponse {
+  id: number;
+  url: string;
+  filename: string;
 }

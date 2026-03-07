@@ -9,6 +9,8 @@ import {
   saveDraft as apiSaveDraft,
   uploadPhoto as apiUploadPhoto,
   removePhoto as apiRemovePhoto,
+  uploadStudentProof as apiUploadStudentProof,
+  removeStudentProof as apiRemoveStudentProof,
   submitEntry as apiSubmitEntry,
 } from "@/lib/auth/api";
 
@@ -18,6 +20,13 @@ interface PhotoEntry {
   mediaId: string | null; // WP media ID once uploaded
   title: string;
   description: string;
+  isUploading: boolean;
+}
+
+interface StudentProofEntry {
+  file: File | null;
+  filename: string;
+  mediaId: string | null;
   isUploading: boolean;
 }
 
@@ -46,6 +55,10 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const [job, setJob] = useState("");
   const [biography, setBiography] = useState("");
   const [photos, setPhotos] = useState<PhotoEntry[]>([]);
+  const [studentProof, setStudentProof] = useState<StudentProofEntry | null>(
+    null,
+  );
+  const studentProofInputRef = useRef<HTMLInputElement>(null);
   const [exhibitionOptIn, setExhibitionOptIn] = useState(false);
   const [consentOriginality, setConsentOriginality] = useState(false);
   const [consentSubjects, setConsentSubjects] = useState(false);
@@ -101,6 +114,14 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
                 isUploading: false,
               })),
             );
+          }
+          if (draft.student_proof) {
+            setStudentProof({
+              file: null,
+              filename: draft.student_proof.filename,
+              mediaId: String(draft.student_proof.media_id),
+              isUploading: false,
+            });
           }
         }
       } catch {
@@ -288,6 +309,67 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     );
   };
 
+  // --- Student Proof Handlers ---
+  const handleAddStudentProof = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file || !token) return;
+
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+    if (!validTypes.includes(file.type)) {
+      setError("Only JPEG, PNG, or PDF files are accepted for student proof.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Student proof file exceeds 10MB limit.");
+      return;
+    }
+
+    setError("");
+    setStudentProof({
+      file,
+      filename: file.name,
+      mediaId: null,
+      isUploading: true,
+    });
+
+    if (studentProofInputRef.current) {
+      studentProofInputRef.current.value = "";
+    }
+
+    try {
+      const result = await apiUploadStudentProof(token, file);
+      setStudentProof({
+        file,
+        filename: result.filename,
+        mediaId: String(result.id),
+        isUploading: false,
+      });
+    } catch (err) {
+      setStudentProof(null);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Student proof upload failed. Please try again.",
+      );
+    }
+  };
+
+  const handleRemoveStudentProof = async () => {
+    if (!studentProof || !token) return;
+
+    if (studentProof.mediaId) {
+      try {
+        await apiRemoveStudentProof(token);
+      } catch {
+        // If server delete fails, still remove from UI
+      }
+    }
+
+    setStudentProof(null);
+  };
+
   // --- Submit ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -356,11 +438,14 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     school.trim() &&
     grade;
 
+  const studentProofValid = !!(studentProof?.mediaId && !studentProof.isUploading);
+
   const canSubmit =
     personalInfoValid &&
     hasRequiredPhotos &&
     photosValid &&
     biographyValid &&
+    studentProofValid &&
     allConsentsChecked &&
     !isSubmitting;
 
@@ -591,6 +676,16 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             )}
           </div>
         </div>
+
+        {/* Student Proof */}
+        {studentProof && (
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Proof of Student Status
+            </p>
+            <p className="text-sm text-[#212223]">{studentProof.filename}</p>
+          </div>
+        )}
 
         {/* Photos */}
         <div className="mb-6">
@@ -866,6 +961,86 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             </div>
           </div>
         </div>
+      </fieldset>
+
+      {/* Student Proof Upload */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Proof of Student Status <span className="text-red-500">*</span>
+        </legend>
+        <p className="text-sm text-gray-500 mb-3">
+          Upload a photo or PDF of your transcript or student ID.
+        </p>
+
+        {studentProof ? (
+          <div className="border border-gray-200 p-4">
+            <div className="flex items-center gap-3">
+              <div className="shrink-0 w-10 h-10 bg-gray-100 flex items-center justify-center relative">
+                {studentProof.isUploading && (
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-[#212223] truncate">
+                  {studentProof.filename}
+                </p>
+                {studentProof.isUploading && (
+                  <p className="text-xs text-gray-400">Uploading...</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveStudentProof}
+                className="text-xs text-red-500 hover:text-red-700 transition-colors shrink-0"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ) : (
+          <label className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors cursor-pointer">
+            <div className="text-center">
+              <svg
+                className="w-6 h-6 text-gray-400 mx-auto mb-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              <span className="text-sm text-gray-500">
+                Upload file (JPEG, PNG, or PDF, max 10MB)
+              </span>
+            </div>
+            <input
+              ref={studentProofInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              onChange={handleAddStudentProof}
+              className="sr-only"
+            />
+          </label>
+        )}
       </fieldset>
 
       {/* Photo Uploads */}

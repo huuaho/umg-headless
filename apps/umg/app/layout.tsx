@@ -51,6 +51,10 @@ export default function RootLayout({
           companies={mediaCompanies}
           email="unitedmediagroup196@gmail.com"
           copyright={"\u00A9 2026 United Media Group"}
+          socials={[
+            { platform: "x", url: "https://x.com/unitedmedia_dc" },
+            { platform: "instagram", url: "https://www.instagram.com/unitedmediagroupdc/" },
+          ]}
         />
       </body>
     </html>

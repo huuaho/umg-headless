@@ -131,37 +131,37 @@ export const currentCompetition: Competition = {
       name: "Relevance to the Theme",
       description:
         "The extent to which the work responds thoughtfully to the theme My Hometown, My Lens, and reflects a meaningful engagement with the idea of hometown.",
-      maxScore: 10,
+
     },
     {
       name: "Authenticity and Sincerity of Expression",
       description:
         "The honesty of the participant's perspective and the degree to which the work feels personal, grounded, and true to lived experience.",
-      maxScore: 10,
+
     },
     {
       name: "Clarity of Personal Perspective",
       description:
         "How clearly the participant's point of view, intention, or relationship to the subject is communicated through the image.",
-      maxScore: 10,
+
     },
     {
       name: "Visual Storytelling and Composition",
       description:
         "The effectiveness of composition, framing, timing, and visual structure in conveying meaning and narrative.",
-      maxScore: 10,
+
     },
     {
       name: "Humanistic Insight and Cultural Value",
       description:
         "The work's ability to reflect cultural context, human relationships, or shared experiences, and to contribute to understanding across differences.",
-      maxScore: 10,
+
     },
     {
       name: "Technical Execution",
       description:
         "Technical quality evaluated relative to the participant's age, educational level, and artistic intent, rather than as an absolute standard.",
-      maxScore: 10,
+
     },
   ],
 

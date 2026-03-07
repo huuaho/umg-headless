@@ -27,7 +27,6 @@ export interface CompetitionTimeline {
 export interface EvaluationCriterion {
   name: string;
   description: string;
-  maxScore: number;
 }
 
 export interface Competition {

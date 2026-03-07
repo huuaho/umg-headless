@@ -246,14 +246,9 @@ export default function HowToEnterPage() {
                     {i + 1}
                   </div>
                   <div>
-                    <div className="flex items-baseline gap-2">
-                      <h3 className="font-semibold text-[#212223]">
-                        {criterion.name}
-                      </h3>
-                      <span className="text-xs text-gray-400">
-                        1–{criterion.maxScore} points
-                      </span>
-                    </div>
+                    <h3 className="font-semibold text-[#212223]">
+                      {criterion.name}
+                    </h3>
                     <p className="text-sm text-gray-600 mt-1">
                       {criterion.description}
                     </p>

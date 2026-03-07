@@ -128,6 +128,17 @@ export default function HowToEnterPage() {
                     </li>
                   ))}
                 </ul>
+
+                {competition.divisionJudgingNotes[division.id] && (
+                  <>
+                    <h4 className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-2 mt-6">
+                      Division-Specific Notes
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {competition.divisionJudgingNotes[division.id]}
+                    </p>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -251,23 +262,6 @@ export default function HowToEnterPage() {
               ))}
             </div>
 
-            <div className="mt-10 pt-8 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-[#212223] mb-4">
-                Division-Specific Notes
-              </h3>
-              <div className="space-y-3">
-                {competition.divisions.map((division) => (
-                  <div key={division.id}>
-                    <span className="font-medium text-[#212223]">
-                      {division.name}:
-                    </span>{" "}
-                    <span className="text-gray-600">
-                      {competition.divisionJudgingNotes[division.id]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>

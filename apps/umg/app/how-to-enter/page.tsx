@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { currentCompetition } from "@/lib/competitions/current";
+import { judges } from "@/lib/competitions/judges";
 
 const competition = currentCompetition;
 
@@ -323,6 +324,36 @@ export default function HowToEnterPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Meet the Judges */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Meet the Judges
+        </h2>
+        <div className="flex flex-wrap justify-center gap-8 md:gap-10 max-w-4xl mx-auto">
+          {judges.map((judge) => (
+            <div key={judge.name} className="text-center w-40 md:w-48">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-gray-100 border border-gray-200 mx-auto relative">
+                <Image
+                  src={judge.image}
+                  alt={judge.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 128px, 160px"
+                />
+              </div>
+              <div className="mt-3 space-y-0.5">
+                <p className="text-sm md:text-base font-semibold text-[#212223]">
+                  {judge.name}
+                </p>
+                <p className="text-xs md:text-sm text-gray-500">
+                  {judge.title}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

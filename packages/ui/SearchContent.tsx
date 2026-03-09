@@ -106,7 +106,7 @@ function SearchInner({ externalOnly }: { externalOnly?: boolean }) {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     performSearch(query, newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   return (

@@ -58,7 +58,7 @@ export default function CategoryContent({
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     loadArticles(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   return (

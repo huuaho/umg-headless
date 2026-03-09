@@ -101,7 +101,7 @@ export const judges: Judge[] = [
   {
     id: "terry-lierman",
     name: "Terry Lierman",
-    title: "Founding Partner, Summit Global Ventures",
+    title: "Former Chief of Staff to House Majority Leader & Senate Appropriations Staff Director",
     bio: "Terry Lierman is a founding partner of Summit Global Ventures, LLC, and a senior advisor with more than 35 years of experience in communications, public affairs, and government relations. He previously served as Chief of Staff to U.S. House Majority Leader Steny Hoyer and as Staff Director of the U.S. Senate Appropriations Committee. Throughout his career, he has advised businesses, universities, and public institutions and has held leadership roles on numerous nonprofit and healthcare boards, contributing to national initiatives in public policy, health, and research.",
     image: "/images/judges/lierman-terry.png",
   },

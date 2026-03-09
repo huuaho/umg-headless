@@ -62,7 +62,7 @@ export default function HowToEnterPage() {
       {/* Timeline */}
       <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Timeline
+          Competition Timeline
         </h2>
         <div className="max-w-3xl mx-auto">
           <div className="relative">

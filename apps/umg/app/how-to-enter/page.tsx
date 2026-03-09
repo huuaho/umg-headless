@@ -18,7 +18,7 @@ export default function HowToEnterPage() {
       {/* Hero Banner */}
       <section className="w-full bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
         <div className="max-w-280 mx-auto flex justify-center">
-          <h1 className="font-[--font-libre-franklin] font-semibold uppercase leading-[0.95] inline-grid">
+          <h1 className="font-[family-name:var(--font-libre-franklin)] font-semibold uppercase leading-[0.95] inline-grid">
             <span className="block text-4xl md:text-7xl lg:text-8xl text-[#1565A0]">
               My Hometown
             </span>

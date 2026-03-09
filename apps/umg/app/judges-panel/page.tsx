@@ -33,8 +33,9 @@ export default function JudgesPanelPage() {
         <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
           {judges.map((judge) => (
             <div
-              key={judge.name}
-              className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)] rounded-xl shadow-md border border-gray-100 p-6 md:p-8 text-center"
+              key={judge.id}
+              id={judge.id}
+              className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)] rounded-xl shadow-md border border-gray-100 p-6 md:p-8 text-center scroll-mt-24"
             >
               <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-gray-100 border border-gray-200 mx-auto relative">
                 <Image

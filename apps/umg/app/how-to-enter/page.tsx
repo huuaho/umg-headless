@@ -334,8 +334,12 @@ export default function HowToEnterPage() {
         </h2>
         <div className="flex flex-wrap justify-center gap-8 md:gap-10 max-w-4xl mx-auto">
           {judges.map((judge) => (
-            <div key={judge.name} className="text-center w-40 md:w-48">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-gray-100 border border-gray-200 mx-auto relative">
+            <a
+              key={judge.id}
+              href={`/judges-panel#${judge.id}`}
+              className="text-center w-40 md:w-48 group"
+            >
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-gray-100 border border-gray-200 mx-auto relative group-hover:shadow-md transition-shadow">
                 <Image
                   src={judge.image}
                   alt={judge.name}
@@ -345,14 +349,14 @@ export default function HowToEnterPage() {
                 />
               </div>
               <div className="mt-3 space-y-0.5">
-                <p className="text-sm md:text-base font-semibold text-[#212223]">
+                <p className="text-sm md:text-base font-semibold text-[#212223] group-hover:text-[#1565A0] transition-colors">
                   {judge.name}
                 </p>
                 <p className="text-xs md:text-sm text-gray-500">
                   {judge.title}
                 </p>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>

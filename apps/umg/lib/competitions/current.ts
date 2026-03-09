@@ -100,9 +100,10 @@ export const currentCompetition: Competition = {
 
   exhibitionVenues: [
     "Library of Congress",
-    "Smithsonian National Gallery of Art",
-    "CNN Headquarters",
+    "Smithsonian Museum",
+    "Press Club",
     "Georgetown University",
+    "Johns Hopkins University",
   ],
 
   // Photo rules

@@ -86,9 +86,7 @@ export default function HowToEnterPage() {
                 <h3 className="text-xl font-bold text-[#212223] mb-1">
                   {division.name}
                 </h3>
-                <p className="text-gray-500 mb-4">
-                  Ages {division.ageRange}
-                </p>
+                <p className="text-gray-500 mb-4">Ages {division.ageRange}</p>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
@@ -232,6 +230,45 @@ export default function HowToEnterPage() {
         </div>
       </section>
 
+      {/* Exhibition Locations */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Exhibition Locations
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {competition.exhibitionVenues.map((venue, i) => (
+            <div
+              key={i}
+              className={
+                i === competition.exhibitionVenues.length - 1 &&
+                competition.exhibitionVenues.length % 2 !== 0
+                  ? "md:col-span-2 md:flex md:justify-center"
+                  : ""
+              }
+            >
+              <div
+                className={
+                  i === competition.exhibitionVenues.length - 1 &&
+                  competition.exhibitionVenues.length % 2 !== 0
+                    ? "md:w-1/2 w-full"
+                    : ""
+                }
+              >
+                <div className="aspect-3/2 bg-gray-200" />
+                <p className="text-sm font-medium text-[#212223] mt-2 text-center">
+                  {venue}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-gray-600 text-center mt-8 max-w-2xl mx-auto">
+          Would you like your photography to be featured in the upcoming
+          exhibitions? There is an additional fee to participate, and artists
+          will receive a payment link via email at a future date.
+        </p>
+      </section>
+
       {/* Evaluation Criteria */}
       <section className="bg-gray-50 border-y border-gray-200">
         <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
@@ -256,7 +293,6 @@ export default function HowToEnterPage() {
                 </div>
               ))}
             </div>
-
           </div>
         </div>
       </section>
@@ -303,8 +339,9 @@ export default function HowToEnterPage() {
               All submitted work must be original and created solely by the
               participant; collaborative work is not accepted. Participants are
               responsible for obtaining consent from individuals who are clearly
-              identifiable in the photographs. All submissions should respect the
-              dignity, safety, and cultural context of the subjects represented.
+              identifiable in the photographs. All submissions should respect
+              the dignity, safety, and cultural context of the subjects
+              represented.
             </p>
           </div>
 

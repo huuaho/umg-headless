@@ -16,9 +16,9 @@ export default function HowToEnterPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Banner */}
-      <section className="w-full bg-gradient-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
+      <section className="w-full bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
         <div className="max-w-280 mx-auto flex justify-center">
-          <h1 className="font-[family-name:var(--font-libre-franklin)] font-semibold uppercase leading-[0.95] inline-grid">
+          <h1 className="font-[--font-libre-franklin] font-semibold uppercase leading-[0.95] inline-grid">
             <span className="block text-4xl md:text-7xl lg:text-8xl text-[#1565A0]">
               My Hometown
             </span>
@@ -362,18 +362,18 @@ export default function HowToEnterPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#212223] text-white">
+      <section className="bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9]">
         <div className="max-w-280 mx-auto px-6 py-12 md:py-16 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+          <h2 className="text-2xl md:text-3xl font-bold mb-3 text-[#212223]">
             Ready to Submit?
           </h2>
-          <p className="text-gray-300 mb-6 max-w-lg mx-auto">
+          <p className="text-gray-700 mb-6 max-w-lg mx-auto">
             Share your perspective. Show us the places and stories that shaped
             who you are.
           </p>
           <a
             href="/photo-submission"
-            className="inline-block px-8 py-3 border border-white text-white font-medium hover:bg-white hover:text-[#212223] transition-colors"
+            className="inline-block px-8 py-3 border border-[#212223] text-[#212223] font-medium hover:bg-[#212223] hover:text-white transition-colors"
           >
             Apply Now
           </a>

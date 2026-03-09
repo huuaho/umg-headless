@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { judges } from "@/lib/competitions/judges";
+import { HashScroller } from "./HashScroller";
 
 export default function JudgesPanelPage() {
   return (
     <main className="min-h-screen bg-white">
+      <HashScroller />
       {/* Hero Banner */}
       <section className="w-full bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
         <div className="max-w-280 mx-auto flex justify-center">

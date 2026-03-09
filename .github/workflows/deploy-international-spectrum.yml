@@ -38,6 +38,7 @@ jobs:
         env:
           NEXT_PUBLIC_WP_API_URL: ${{ secrets.IS_WP_API_URL }}
           NEXT_PUBLIC_API_MODE: wp
+          NEXT_PUBLIC_ARTICLE_META: author
 
       - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

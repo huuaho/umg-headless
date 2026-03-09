@@ -35,6 +35,20 @@ function formatReadTime(minutes: number): string {
 }
 
 /**
+ * Return the article metadata string shown beneath titles.
+ * Controlled by the NEXT_PUBLIC_ARTICLE_META env var:
+ *   "author"   → author name
+ *   "readtime"  → "X min read" (default)
+ */
+function formatArticleMeta(article: ApiArticle): string {
+  const mode = process.env.NEXT_PUBLIC_ARTICLE_META || "readtime";
+  if (mode === "author") {
+    return article.author_name || "Unknown";
+  }
+  return formatReadTime(article.read_time_minutes);
+}
+
+/**
  * Check if an article has at least one image
  */
 function hasImages(article: ApiArticle): boolean {
@@ -94,7 +108,7 @@ export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
   return {
     title: decodeHtmlEntities(article.title),
     snippet: decodeHtmlEntities(article.excerpt),
-    time: formatReadTime(article.read_time_minutes),
+    time: formatArticleMeta(article),
     gallery: getGalleryImages(article),
     url: article.source_url,
     slug: article.slug || undefined,
@@ -107,7 +121,7 @@ export function toFeaturedArticle(article: ApiArticle): FeaturedArticle {
 export function toSecondaryArticle(article: ApiArticle): SecondaryArticle {
   return {
     title: decodeHtmlEntities(article.title),
-    time: formatReadTime(article.read_time_minutes),
+    time: formatArticleMeta(article),
     url: article.source_url,
     slug: article.slug || undefined,
   };
@@ -126,7 +140,7 @@ export function toType4Article(
 
   return {
     title: decodeHtmlEntities(article.title),
-    time: formatReadTime(article.read_time_minutes),
+    time: formatArticleMeta(article),
     image: includeImage ? firstImage : undefined,
     url: article.source_url,
     slug: article.slug || undefined,

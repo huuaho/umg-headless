@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import {
   useArticles,
   toSectionData,
@@ -12,6 +13,7 @@ import SectionType3 from "./SectionType3";
 import SectionType4 from "./SectionType4";
 import SectionSkeleton from "./SectionSkeleton";
 import SectionError from "./SectionError";
+import { useSeenArticles } from "../SeenArticlesContext";
 
 export type SectionType = "type1" | "type2" | "type3" | "type4" | "type4-text";
 
@@ -24,6 +26,7 @@ interface CategorySectionWrapperProps {
   categoryUnderlineColor?: string;
   categoryIcon?: string;
   titleClassName?: string;
+  priority?: number;
 }
 
 // Articles needed per section type
@@ -44,11 +47,31 @@ export default function CategorySectionWrapper({
   categoryUnderlineColor,
   categoryIcon,
   titleClassName,
+  priority,
 }: CategorySectionWrapperProps) {
   const { articles, isLoading, error, refetch } = useArticles({
     category: slug,
     count: ARTICLES_NEEDED[sectionType],
   });
+
+  const seen = useSeenArticles();
+
+  // Claim articles for this section's priority
+  useEffect(() => {
+    if (seen && priority !== undefined && articles.length > 0) {
+      seen.claim(
+        articles.map((a) => a.id),
+        priority
+      );
+    }
+  }, [seen, articles, priority]);
+
+  // Filter out articles claimed by higher-priority sections
+  const filteredArticles = useMemo(() => {
+    if (!seen || priority === undefined) return articles;
+    return seen.filter(articles, priority);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seen?.version, articles, priority]);
 
   // Loading state
   if (isLoading) {
@@ -69,10 +92,15 @@ export default function CategorySectionWrapper({
     );
   }
 
+  // All articles deduped into earlier sections
+  if (filteredArticles.length === 0) {
+    return null;
+  }
+
   // Render appropriate section type
   switch (sectionType) {
     case "type1": {
-      const data = toSectionData(articles);
+      const data = toSectionData(filteredArticles);
       return (
         <SectionType1
           slug={slug}
@@ -88,7 +116,7 @@ export default function CategorySectionWrapper({
       );
     }
     case "type2": {
-      const data = toSectionData(articles);
+      const data = toSectionData(filteredArticles);
       return (
         <SectionType2
           slug={slug}
@@ -104,7 +132,7 @@ export default function CategorySectionWrapper({
       );
     }
     case "type3": {
-      const data = toSectionType3Data(articles);
+      const data = toSectionType3Data(filteredArticles);
       return (
         <SectionType3
           slug={slug}
@@ -120,7 +148,7 @@ export default function CategorySectionWrapper({
       );
     }
     case "type4": {
-      const data = toSectionType4Data(articles, false);
+      const data = toSectionType4Data(filteredArticles, false);
       return (
         <SectionType4
           slug={slug}
@@ -135,7 +163,7 @@ export default function CategorySectionWrapper({
       );
     }
     case "type4-text": {
-      const data = toSectionType4Data(articles, true);
+      const data = toSectionType4Data(filteredArticles, true);
       return (
         <SectionType4
           slug={slug}

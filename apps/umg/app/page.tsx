@@ -1,5 +1,9 @@
 import { categories } from "@/lib/categories";
-import { CategorySectionWrapper, type SectionType } from "@umg/ui";
+import {
+  CategorySectionWrapper,
+  SeenArticlesProvider,
+  type SectionType,
+} from "@umg/ui";
 
 // Category slug to section type mapping
 const SECTION_TYPE_MAP: Record<string, SectionType> = {
@@ -16,16 +20,19 @@ const SECTION_TYPE_MAP: Record<string, SectionType> = {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white max-w-280 mx-auto px-6 [&>section:last-child]:border-b-0">
-      {categories.map((category) => (
-        <CategorySectionWrapper
-          key={category.slug}
-          slug={category.slug}
-          category={category.name}
-          sectionType={SECTION_TYPE_MAP[category.slug] || "type1"}
-          categoryUnderlineColor="#33bbff"
-          titleClassName="font-[family-name:var(--font-arizona-sans)]"
-        />
-      ))}
+      <SeenArticlesProvider>
+        {categories.map((category, index) => (
+          <CategorySectionWrapper
+            key={category.slug}
+            slug={category.slug}
+            category={category.name}
+            sectionType={SECTION_TYPE_MAP[category.slug] || "type1"}
+            categoryUnderlineColor="#33bbff"
+            titleClassName="font-[family-name:var(--font-arizona-sans)]"
+            priority={index}
+          />
+        ))}
+      </SeenArticlesProvider>
     </main>
   );
 }

@@ -18,3 +18,4 @@ export { default as ResultCard } from "./ResultCard";
 export { default as ResultsSkeleton } from "./ResultsSkeleton";
 export { default as CategoryContent } from "./CategoryContent";
 export { default as SearchContent } from "./SearchContent";
+export { SeenArticlesProvider } from "./SeenArticlesContext";

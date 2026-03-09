@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useArticles,
   toSectionData,
@@ -49,32 +49,50 @@ export default function CategorySectionWrapper({
   titleClassName,
   priority,
 }: CategorySectionWrapperProps) {
+  const needed = ARTICLES_NEEDED[sectionType];
+  const [fetchCount, setFetchCount] = useState(() =>
+    priority !== undefined ? needed * 2 : needed
+  );
+
   const { articles, isLoading, error, refetch } = useArticles({
     category: slug,
-    count: ARTICLES_NEEDED[sectionType],
+    count: fetchCount,
   });
 
   const seen = useSeenArticles();
 
-  // Claim articles for this section's priority
+  // Filter out articles claimed by higher-priority sections, then trim to needed count
+  const filteredArticles = useMemo(() => {
+    if (!seen || priority === undefined) return articles.slice(0, needed);
+    return seen.filter(articles, priority).slice(0, needed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seen?.version, articles, priority, needed]);
+
+  // Claim only the articles we're actually showing
   useEffect(() => {
-    if (seen && priority !== undefined && articles.length > 0) {
+    if (seen && priority !== undefined && filteredArticles.length > 0) {
       seen.claim(
-        articles.map((a) => a.id),
+        filteredArticles.map((a) => a.id),
         priority
       );
     }
-  }, [seen, articles, priority]);
+  }, [seen, filteredArticles, priority]);
 
-  // Filter out articles claimed by higher-priority sections
-  const filteredArticles = useMemo(() => {
-    if (!seen || priority === undefined) return articles;
-    return seen.filter(articles, priority);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seen?.version, articles, priority]);
+  // If we don't have enough after dedup, fetch more (if the category has more)
+  useEffect(() => {
+    if (
+      seen &&
+      priority !== undefined &&
+      !isLoading &&
+      filteredArticles.length < needed &&
+      articles.length >= fetchCount
+    ) {
+      setFetchCount((prev) => prev + needed);
+    }
+  }, [seen, priority, isLoading, filteredArticles.length, needed, articles.length, fetchCount]);
 
-  // Loading state
-  if (isLoading) {
+  // Loading state (only on initial load, not re-fetches for backfill)
+  if (isLoading && articles.length === 0) {
     return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />;
   }
 

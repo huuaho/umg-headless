@@ -125,7 +125,7 @@ export default function SectionType4({
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      <CategoryLabel category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} slug={slug} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Articles - SM: stacked, MD: 2x2 grid, LG: 4 columns */}
       <div className="md:grid md:grid-cols-2 lg:grid-cols-4">

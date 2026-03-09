@@ -108,7 +108,7 @@ export default function SectionType1({
 
   return (
     <section id={slug} className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300">
-      <CategoryLabel category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} slug={slug} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Main content wrapper
           SM/MD: stacked vertically

@@ -1,6 +1,15 @@
+import Image from "next/image";
 import { currentCompetition } from "@/lib/competitions/current";
 
 const competition = currentCompetition;
+
+const venueImages: Record<string, string> = {
+  "Library of Congress": "/images/venues/library-of-congress.jpg",
+  "Smithsonian Museum": "/images/venues/smithsonian-museum.webp",
+  "Press Club": "/images/venues/press-club.jpg",
+  "Georgetown University": "/images/venues/georgetown-university.jpg",
+  "Johns Hopkins University": "/images/venues/johns-hopkins-university.jpg",
+};
 
 export default function HowToEnterPage() {
   return (
@@ -254,7 +263,15 @@ export default function HowToEnterPage() {
                     : ""
                 }
               >
-                <div className="aspect-3/2 bg-gray-200" />
+                <div className="relative aspect-3/2 bg-gray-200 overflow-hidden">
+                  <Image
+                    src={venueImages[venue] || ""}
+                    alt={venue}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
                 <p className="text-sm font-medium text-[#212223] mt-2 text-center">
                   {venue}
                 </p>

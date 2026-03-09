@@ -1,91 +1,23 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { fetchArticles, type ApiArticle } from "@umg/api";
-import { ArticleLink } from "@umg/ui";
-
-function decodeHtmlEntities(text: string): string {
-  const textarea = document.createElement("textarea");
-  textarea.innerHTML = text;
-  return textarea.value;
-}
-
-function ResultCard({ article }: { article: ApiArticle }) {
-  const firstImage = article.images?.[0] || article.featured_image;
-  const readTime = article.read_time_minutes
-    ? `${article.read_time_minutes} min read`
-    : "";
-  const [imageError, setImageError] = useState(false);
-
-  return (
-    <article className="py-4 border-b border-gray-200 last:border-b-0">
-      <div className="flex gap-4">
-        <div className="shrink-0 w-24 h-16 md:w-32 md:h-20 relative bg-gray-100">
-          {firstImage && !imageError && (
-            <Image
-              src={firstImage}
-              alt={article.title}
-              fill
-              className="object-cover"
-              onError={() => setImageError(true)}
-            />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
-            {article.category && <span>{decodeHtmlEntities(article.category)}</span>}
-            {article.category && article.source_label && <span>&middot;</span>}
-            {article.source_label && <span>{article.source_label}</span>}
-          </div>
-          <h2 className="font-semibold text-base leading-tight mb-1">
-            <ArticleLink slug={article.slug} url={article.source_url} className="hover:underline">
-              {article.title}
-            </ArticleLink>
-          </h2>
-          <p className="text-sm text-gray-600 line-clamp-2 mb-1">
-            {article.excerpt}
-          </p>
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            {article.author_name && <span>By {article.author_name}</span>}
-            {article.author_name && readTime && <span>&middot;</span>}
-            {readTime && <span>{readTime}</span>}
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function ResultsSkeleton() {
-  return (
-    <div className="space-y-4">
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="py-4 border-b border-gray-200 animate-pulse">
-          <div className="flex gap-4">
-            <div className="shrink-0 w-24 h-16 md:w-32 md:h-20 bg-gray-200" />
-            <div className="flex-1">
-              <div className="h-3 bg-gray-200 w-24 mb-2" />
-              <div className="h-5 bg-gray-200 w-full mb-2" />
-              <div className="h-4 bg-gray-200 w-3/4 mb-2" />
-              <div className="h-3 bg-gray-200 w-32" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+import ResultCard from "./ResultCard";
+import ResultsSkeleton from "./ResultsSkeleton";
 
 const PER_PAGE = 20;
+
+interface CategoryContentProps {
+  slug: string;
+  categoryName: string;
+  externalOnly?: boolean;
+}
 
 export default function CategoryContent({
   slug,
   categoryName,
-}: {
-  slug: string;
-  categoryName: string;
-}) {
+  externalOnly,
+}: CategoryContentProps) {
   const [results, setResults] = useState<ApiArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -108,7 +40,9 @@ export default function CategoryContent({
         setTotal(response.total);
         setTotalPages(response.total_pages);
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to load articles"));
+        setError(
+          err instanceof Error ? err : new Error("Failed to load articles"),
+        );
         setResults([]);
       } finally {
         setIsLoading(false);
@@ -133,7 +67,8 @@ export default function CategoryContent({
         <h1 className="text-2xl font-bold mb-2">{categoryName}</h1>
         {!isLoading && !error && total > 0 && (
           <p className="text-sm text-gray-500 mb-6">
-            Showing {(page - 1) * PER_PAGE + 1}-{Math.min(page * PER_PAGE, total)} of {total}{" "}
+            Showing {(page - 1) * PER_PAGE + 1}-
+            {Math.min(page * PER_PAGE, total)} of {total}{" "}
             {total === 1 ? "article" : "articles"}
           </p>
         )}
@@ -166,7 +101,11 @@ export default function CategoryContent({
           <>
             <div className="divide-y divide-gray-200">
               {results.map((article) => (
-                <ResultCard key={article.id} article={article} />
+                <ResultCard
+                  key={article.id}
+                  article={article}
+                  externalOnly={externalOnly}
+                />
               ))}
             </div>
 

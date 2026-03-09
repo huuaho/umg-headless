@@ -1,5 +1,5 @@
 import { categories } from "../../../lib/categories";
-import CategoryContent from "./CategoryContent";
+import { CategoryContent } from "@umg/ui";
 
 export const dynamicParams = false;
 

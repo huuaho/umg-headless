@@ -1,5 +1,5 @@
 import { categories } from "../../../lib/categories";
-import CategoryContent from "./CategoryContent";
+import { CategoryContent } from "@umg/ui";
 
 export const dynamicParams = false;
 
@@ -26,5 +26,11 @@ export default async function CategoryPage({
 }) {
   const { slug } = await params;
   const category = categories.find((c) => c.slug === slug);
-  return <CategoryContent slug={slug} categoryName={category?.name || slug} />;
+  return (
+    <CategoryContent
+      slug={slug}
+      categoryName={category?.name || slug}
+      externalOnly
+    />
+  );
 }

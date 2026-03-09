@@ -7,6 +7,7 @@ WordPress plugins that configure each backend for headless operation with the Ne
 | File | Site | Localhost Port |
 |------|------|---------------|
 | `united-media-ingestor/` | unitedmediadc.com | 3000 |
+| `umg-photo-contest/` | unitedmediadc.com | 3000 |
 | `em-headless-config.php` | echo-media.info | 3000 |
 | `is-headless-config.php` | internationalspectrum.org | 3000 |
 
@@ -75,3 +76,4 @@ If `GH_REBUILD_TOKEN` is not defined, the webhook is silently skipped — the re
 - If adding a new allowed origin, update the `$allowed` array in the CORS section
 - UMG does not have the auto-rebuild webhook (UMG aggregates via the ingestor plugin, rebuilt separately)
 - UMG's headless config (CORS, cache control, redirect) is built into the United Media Ingestor plugin — no separate config plugin needed
+- UMG also uses the **UMG Photo Contest** plugin (`umg-photo-contest/`) for the photography competition — see [umg-photo-contest.md](./umg-photo-contest.md) for full documentation

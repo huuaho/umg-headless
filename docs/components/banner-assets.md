@@ -1,0 +1,68 @@
+# Banner Assets (Localized)
+
+## Overview
+
+Marquee banner logos were moved from remote WordPress uploads to local assets in each app's `public/images/banner/` directory. This eliminates cross-origin image loading failures and removes the dependency on the WordPress media library for banner display.
+
+## Asset Structure
+
+Each app contains a full copy of all banner images:
+
+```
+apps/{app}/public/images/banner/
+├── umg-masthead.svg          # UMG color logo (marquee)
+├── umg-masthead-black.svg    # UMG B&W logo (footer)
+├── em-logo.svg               # Echo Media color logo
+├── em-logo-black.png         # Echo Media B&W logo (PNG)
+├── is-logo.svg               # International Spectrum color logo
+├── is-logo-black.svg         # International Spectrum B&W logo
+├── dw-logo.svg               # Diplomatic Watch color logo
+└── dw-logo-black.svg         # Diplomatic Watch B&W logo
+```
+
+This structure exists in all three apps:
+- `apps/umg/public/images/banner/`
+- `apps/echo-media/public/images/banner/`
+- `apps/international-spectrum/public/images/banner/`
+
+## How It Works
+
+Each app's `lib/mediaCompanies.ts` references logos via local paths:
+
+```typescript
+export const mediaCompanies: BannerCompany[] = [
+  {
+    name: "United Media Group",
+    url: "https://www.unitedmediadc.com",
+    logo: "/images/banner/umg-masthead.svg",        // Color (marquee)
+    logoBW: "/images/banner/umg-masthead-black.svg", // B&W (footer)
+  },
+  // ... other companies
+];
+```
+
+The Header marquee uses `logo` (color version), and the Footer uses `logoBW` (B&W version).
+
+## Previous Approach
+
+Before this change, logos were loaded from the WordPress uploads directory (`api.unitedmediadc.com/wp-content/uploads/...`). This required:
+- `next.config.ts` to whitelist the remote image domain
+- The WordPress server to be available for banner images to load
+
+The local approach removes both dependencies. The `remotePatterns` config for the banner domain was removed from `next.config.ts` for Echo Media and International Spectrum.
+
+## File Formats
+
+| Logo | Format | Notes |
+|------|--------|-------|
+| UMG Masthead | SVG | Horizontal wordmark |
+| Echo Media | SVG (color), PNG (B&W) | B&W is PNG due to original format |
+| International Spectrum | SVG | Both color and B&W |
+| Diplomatic Watch | SVG | Both color and B&W |
+
+## Updating Logos
+
+To update a banner logo:
+1. Replace the file in all three app directories
+2. Keep the same filename to avoid breaking references
+3. Ensure both color and B&W variants are updated if the brand changes

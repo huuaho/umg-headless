@@ -14,10 +14,19 @@ interface FooterProps {
   companies: BannerCompany[];   // Sibling media companies
   email: string;                // Contact email address
   copyright: string;            // Copyright text (e.g., "© 2025 Echo Media")
+  socials?: { platform: string; url: string }[]; // Social media links (optional)
 }
 ```
 
 `NavCategory` and `BannerCompany` types are imported from `Header.tsx`.
+
+### Social Media Icons
+
+The `socials` prop accepts an array of platform/url pairs. Built-in icons are provided for:
+- `x` — X (formerly Twitter) icon
+- `instagram` — Instagram icon
+
+Icons are rendered as inline SVGs (24x24 viewBox, `w-5 h-5`). They appear in the meta column (desktop: right-aligned, mobile: centered) between the Contact Us link and copyright text.
 
 ## Layout
 
@@ -36,7 +45,7 @@ interface FooterProps {
 | 1 | Media company logos (B&W) | Left |
 | 2 | Categories (left half, alphabetical) | Left |
 | 3 | Categories (right half, alphabetical) | Right |
-| 4 | About Us, Contact Us, Copyright | Right |
+| 4 | About Us, Contact Us, Social icons, Copyright | Right |
 
 #### Mobile/Tablet Layout (Below LG)
 3 stacked rows, centered:
@@ -45,7 +54,7 @@ interface FooterProps {
 |-----|---------|
 | 1 | Media company logos (B&W, vertical stack) |
 | 2 | Categories (two columns, centered) |
-| 3 | About Us, Contact Us, Copyright |
+| 3 | About Us, Contact Us, Social icons, Copyright |
 
 ## Category Sorting
 
@@ -86,12 +95,12 @@ Footer
         │   ├── Col 2: Left categories
         │   ├── Col 3: Right categories (ml-auto text-right)
         │   ├── Divider (border-l mx-8)
-        │   └── Col 4: About Us + Contact Us + copyright
+        │   └── Col 4: About Us + Contact Us + Social icons + copyright
         │
         └── Mobile/Tablet (lg:hidden)
             ├── Row 1: Media logos (centered stack)
             ├── Row 2: Categories (justify-center gap-24 md:gap-40)
-            └── Row 3: About Us + Contact Us + copyright (centered)
+            └── Row 3: About Us + Contact Us + Social icons + copyright (centered)
 ```
 
 ## Styling Notes
@@ -149,6 +158,22 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
   companies={mediaCompanies}
   email="info@echo-media.info"
   copyright="© 2025 Echo Media"
+/>
+```
+
+```tsx
+// apps/umg/app/layout.tsx — with social media icons
+<Footer
+  logoUrl="/umg-masthead.svg"
+  logoAlt="United Media Group"
+  categories={navCategories}
+  companies={mediaCompanies}
+  email="info@unitedmediadc.com"
+  copyright="© 2026 United Media Group"
+  socials={[
+    { platform: "x", url: "https://x.com/unitedmediadc" },
+    { platform: "instagram", url: "https://instagram.com/unitedmediadc" },
+  ]}
 />
 ```
 

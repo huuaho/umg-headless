@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Libre_Franklin } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Header, Footer } from "@umg/ui";
@@ -21,6 +21,12 @@ const arizonaSans = localFont({
   variable: "--font-arizona-sans",
 });
 
+const libreFranklin = Libre_Franklin({
+  variable: "--font-libre-franklin",
+  subsets: ["latin"],
+  weight: "600",
+});
+
 export const metadata: Metadata = {
   title: "United Media Group",
   description:
@@ -35,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${arizonaSans.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${arizonaSans.variable} ${libreFranklin.variable} antialiased`}
       >
         <Header
           logoUrl="/umg-logo.svg"

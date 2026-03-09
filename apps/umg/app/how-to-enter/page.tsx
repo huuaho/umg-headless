@@ -14,17 +14,29 @@ const venueImages: Record<string, string> = {
 export default function HowToEnterPage() {
   return (
     <main className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-20">
-        <p className="text-sm font-medium tracking-widest uppercase text-gray-500 text-center mb-4">
-          {competition.year} Competition
-        </p>
-        <h1 className="text-3xl md:text-5xl font-bold text-center text-[#212223] mb-3 font-[family-name:var(--font-arizona-sans)]">
-          {competition.title}
-        </h1>
-        <p className="text-lg md:text-xl text-gray-500 text-center mb-8">
-          {competition.subtitle}
-        </p>
+      {/* Hero Banner */}
+      <section className="w-full bg-gradient-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
+        <div className="max-w-280 mx-auto flex justify-center">
+          <h1 className="font-[family-name:var(--font-libre-franklin)] font-semibold uppercase leading-[0.95] inline-grid">
+            <span className="block text-4xl md:text-7xl lg:text-8xl text-[#1565A0]">
+              My Hometown
+            </span>
+            <span className="flex items-end justify-between mt-1">
+              <span className="text-4xl md:text-7xl lg:text-8xl text-white">
+                My Lens
+              </span>
+              <span className="text-[8px] md:text-base lg:text-2xl normal-case font-normal leading-tight text-right mb-2">
+                <span className="text-[#1565A0]">International Youth</span>
+                <br />
+                <span className="text-white">Photography Competition</span>
+              </span>
+            </span>
+          </h1>
+        </div>
+      </section>
+
+      {/* Theme Intro */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <p className="text-gray-600 text-center max-w-3xl mx-auto leading-relaxed text-lg">
           {competition.themeIntro}
         </p>

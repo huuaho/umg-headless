@@ -25,31 +25,35 @@ export default function JudgesPanelPage() {
         </div>
       </section>
 
-      {/* Judges Grid */}
+      {/* Judges Bios */}
       <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
           Meet the Judges
         </h2>
-        <div className="flex flex-wrap justify-center gap-8 md:gap-10 max-w-4xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
           {judges.map((judge) => (
-            <div key={judge.name} className="text-center w-40 md:w-48">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-gray-100 border border-gray-200 mx-auto relative">
+            <div
+              key={judge.name}
+              className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)] rounded-xl shadow-md border border-gray-100 p-6 md:p-8 text-center"
+            >
+              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-gray-100 border border-gray-200 mx-auto relative">
                 <Image
                   src={judge.image}
                   alt={judge.name}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 128px, 160px"
+                  sizes="(max-width: 768px) 96px, 112px"
                 />
               </div>
-              <div className="mt-3 space-y-0.5">
-                <p className="text-sm md:text-base font-semibold text-[#212223]">
-                  {judge.name}
-                </p>
-                <p className="text-xs md:text-sm text-gray-500">
-                  {judge.title}
-                </p>
-              </div>
+              <h3 className="text-lg font-bold text-[#212223] mt-4">
+                {judge.name}
+              </h3>
+              <p className="text-sm font-medium text-[#1565A0] mt-1">
+                {judge.title}
+              </p>
+              <p className="text-sm text-gray-600 leading-relaxed mt-4">
+                {judge.bio}
+              </p>
             </div>
           ))}
         </div>

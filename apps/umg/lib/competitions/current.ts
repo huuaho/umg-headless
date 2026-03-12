@@ -93,9 +93,9 @@ export const currentCompetition: Competition = {
 
   awards: [
     { place: "First Prize", recipientsPerDivision: 1, amount: 5000 },
-    { place: "Second Prize", recipientsPerDivision: 2, amount: 3000 },
+    { place: "Second Prize", recipientsPerDivision: 2, amount: 4000 },
     { place: "Third Prize", recipientsPerDivision: 3, amount: 2000 },
-    { place: "Honorable Mention", recipientsPerDivision: 10, amount: 800 },
+    { place: "Honorable Mention", recipientsPerDivision: 20, amount: 500 },
   ],
 
   exhibitionVenues: [

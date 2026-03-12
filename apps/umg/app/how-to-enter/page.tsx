@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { currentCompetition } from "@/lib/competitions/current";
 import { judges } from "@/lib/competitions/judges";
 
@@ -330,7 +331,9 @@ export default function HowToEnterPage() {
       {/* Meet the Judges */}
       <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Meet the Judges
+          <Link href="/judges-panel" className="hover:text-[#1565A0] transition-colors">
+            Meet the Judges
+          </Link>
         </h2>
         <div className="flex flex-wrap justify-center gap-8 md:gap-10 max-w-4xl mx-auto">
           {judges.map((judge) => (

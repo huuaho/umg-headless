@@ -14,7 +14,7 @@ const SECTION_TYPE_MAP: Record<string, SectionType> = {
   "art-culture": "type4",
   "education-youth": "type1",
   "local-community": "type2",
-  "wellbeing-env-tech": "type4-text",
+  "wellbeing-env-tech": "type4",
 };
 
 export default function Home() {

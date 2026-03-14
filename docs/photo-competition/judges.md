@@ -32,7 +32,7 @@ type Judge = {
 | `austin-amy` | Amy Austin | President & CEO, Theatre Washington |
 | `bain-raymone` | Raymone Bain | PR & Crisis Management Expert |
 | `chanault-nell` | Nell Chanault | Community Leader |
-| `djoken-guy` | Guy Djoken | Exec. Director, UNA-NCA |
+| `djoken-guy` | Guy Djoken | Executive Director of the UNESCO Center for Peace |
 | `du-plain-jan` | Jan Du Plain | Author & Commentator |
 | `herd-stan` | Stan Herd | Crop Artist |
 | `ishii-lisa` | Lisa Ishii | SVP Operations, Johns Hopkins |

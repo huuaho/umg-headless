@@ -66,7 +66,7 @@ export const judges: Judge[] = [
   {
     id: "guy-djoken",
     name: "Guy Djoken",
-    title: "Chairman, U.S. National Commission for UNESCO",
+    title: "Executive Director of the UNESCO Center for Peace",
     bio: "Guy Djoken is the Chairman of the U.S. National Commission for UNESCO Clubs, Centers and Associations and Executive Director of the UNESCO Center for Peace in Washington, D.C. A social entrepreneur and civil rights advocate, he is internationally recognized for his leadership in promoting human rights, cultural understanding, and global dialogue. His work has earned numerous honors, including the Gandhi Peace Award, the Nikola Tesla Global Forum White Dove Award, the Citibank Community Partner Award, and the Justice Thurgood Marshall Award.",
     image: "/images/judges/djoken-guy.png",
   },

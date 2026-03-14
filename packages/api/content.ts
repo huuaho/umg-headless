@@ -70,6 +70,46 @@ export function stripDiviShortcodes(html: string): string {
 }
 
 /**
+ * Strip WordPress block editor image/gallery markup from HTML content.
+ * Images are already extracted and displayed via FeaturedMedia gallery,
+ * so we remove them from the body to prevent duplication.
+ * Handles nested <figure> tags (galleries contain nested image figures).
+ */
+function stripWpBlockImages(html: string): string {
+  let result = html;
+
+  // Remove wp-block-gallery figures (which contain nested wp-block-image figures)
+  const galleryPattern =
+    /<figure\b[^>]*class="[^"]*wp-block-gallery[^"]*"[^>]*>/;
+  let galleryMatch;
+  while ((galleryMatch = galleryPattern.exec(result)) !== null) {
+    let depth = 1;
+    let pos = galleryMatch.index + galleryMatch[0].length;
+    while (depth > 0 && pos < result.length) {
+      const nextOpen = result.indexOf("<figure", pos);
+      const nextClose = result.indexOf("</figure>", pos);
+      if (nextClose === -1) break;
+      if (nextOpen !== -1 && nextOpen < nextClose) {
+        depth++;
+        pos = nextOpen + 7;
+      } else {
+        depth--;
+        pos = nextClose + "</figure>".length;
+      }
+    }
+    result = result.slice(0, galleryMatch.index) + result.slice(pos);
+  }
+
+  // Remove standalone wp-block-image figures (not inside a gallery)
+  result = result.replace(
+    /<figure\b[^>]*class="[^"]*wp-block-image[^"]*"[^>]*>[\s\S]*?<\/figure>/g,
+    ""
+  );
+
+  return result;
+}
+
+/**
  * Extract gallery media IDs from [et_pb_gallery gallery_ids="1,2,3"] shortcodes.
  * Handles HTML-encoded quotes (&#8221; etc.) in WP content.rendered.
  */
@@ -126,7 +166,7 @@ export function processContent(rawHtml: string): {
   // Extract gallery IDs for async resolution
   const galleryIds = extractGalleryIds(rawHtml);
 
-  const html = stripDiviShortcodes(rawHtml);
+  const html = stripWpBlockImages(stripDiviShortcodes(rawHtml));
 
   return { html, images: Array.from(imageSet), galleryIds };
 }

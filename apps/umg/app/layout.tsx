@@ -44,14 +44,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${arizonaSans.variable} ${libreFranklin.variable} antialiased`}
       >
         <Header
-          logoUrl="/umg-logo.svg"
+          logoUrl="/umg-logo.png"
           logoAlt="United Media Group"
           categories={categories}
           bannerCompanies={mediaCompanies}
         />
         {children}
         <Footer
-          logoUrl="/umg-logo.svg"
+          logoUrl="/umg-logo-black.png"
           logoAlt="United Media Group"
           categories={categories}
           companies={mediaCompanies}

@@ -22,7 +22,7 @@ interface ArticleLayoutProps {
   category: string;    // Category name (e.g., "Art & Culture")
   readTime: string;    // Pre-formatted (e.g., "3 min read")
   images: string[];    // All images (featured + gallery), deduplicated, full-size URLs
-  content: string;     // Sanitized HTML body (Divi shortcodes stripped)
+  content: string;     // Sanitized HTML body (Divi shortcodes + WP block images stripped)
   postId?: number;     // WP post ID — enables CommentsSection (EM/IS only)
   currentSlug?: string; // Current article slug — enables MoreArticles carousel (EM/IS only)
   categoryColor?: string; // Hex color for category label (e.g., "#0281b3")
@@ -149,14 +149,16 @@ export default async function ArticlePage({ params }) {
 The `content` prop comes from this processing pipeline:
 
 ```
-WP content.rendered (raw Divi HTML)
+WP content.rendered (raw Divi HTML / block editor HTML)
   → decodeShortcodeEntities() — fix &#8221; etc. in shortcode attrs
-  → processContent() — extract images, gallery IDs, strip shortcodes
+  → processContent() — extract images, gallery IDs, strip shortcodes + WP block images
   → resolveMediaIds() — batch-fetch gallery image URLs from WP media API
   → toFullSizeUrl() — strip -WxH thumbnail suffixes from all image URLs
   → stripHtml() on category names — decode &amp; etc.
   → ArticleLayout receives clean HTML + deduplicated full-size image URLs
 ```
+
+Images from both Divi shortcodes (`[et_pb_image]`, `[et_pb_gallery]`) and native WordPress block editor markup (`<figure class="wp-block-gallery">`, `<figure class="wp-block-image">`) are extracted for the FeaturedMedia gallery and stripped from the body HTML to prevent duplicate rendering.
 
 ## Styling
 

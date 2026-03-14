@@ -15,6 +15,7 @@ Replaces inline category label markup that was previously duplicated across all 
 ```typescript
 interface CategoryLabelProps {
   category: string;                // Display name (e.g., "World News & Politics")
+  slug?: string;                   // Category slug — wraps label in <Link> to /category/[slug]
   categoryColor?: string;          // Hex color for text (fallback when categoryTextColor not set)
   categoryTextColor?: string;      // Independent text color (takes priority over categoryColor)
   categoryUnderlineColor?: string; // Colored underline below the text (e.g., "#33bbff")
@@ -50,10 +51,22 @@ Each feature is independent — you can use any combination:
 
 | Feature | Prop | Effect |
 |---------|------|--------|
+| Link | `slug` | Wraps label in `<Link href="/category/{slug}">` with hover effects |
 | Icon | `categoryIcon` | Small image to the left of the text |
 | Text color | `categoryTextColor` or `categoryColor` | Custom text color (inline style) |
 | Underline | `categoryUnderlineColor` | Colored bottom border on the text |
 | Arrow | (none — automatic) | `" >"` suffix when no customization props are set |
+
+### Link Behavior
+
+When `slug` is provided, the entire label is wrapped in a `<Link href="/category/{slug}">`. The hover styles depend on the label style:
+
+| Label Style | Hover Effect |
+|-------------|-------------|
+| With underline (`categoryUnderlineColor` set) | `opacity-70` transition |
+| Without underline (arrow case) | Shows underline in text color (`textDecorationColor` matches text) |
+
+When `slug` is omitted, the label renders as plain text (no link), preserving backward compatibility.
 
 ## Usage
 
@@ -65,6 +78,7 @@ import CategoryLabel from "./CategoryLabel";
 
 <CategoryLabel
   category={category}
+  slug={slug}
   categoryColor={categoryColor}
   categoryTextColor={categoryTextColor}
   categoryUnderlineColor={categoryUnderlineColor}

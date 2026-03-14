@@ -9,9 +9,9 @@ Marquee banner logos were moved from remote WordPress uploads to local assets in
 Each app contains a full copy of all banner images:
 
 ```
-apps/{app}/public/images/banner/
-├── umg-masthead.svg          # UMG color logo (marquee)
-├── umg-masthead-black.svg    # UMG B&W logo (footer)
+apps/{echo-media,international-spectrum}/public/images/banner/
+├── umg-masthead.png          # UMG color logo (PNG)
+├── umg-masthead-black.png    # UMG B&W logo (PNG)
 ├── em-logo.svg               # Echo Media color logo
 ├── em-logo-black.png         # Echo Media B&W logo (PNG)
 ├── is-logo.svg               # International Spectrum color logo
@@ -20,8 +20,11 @@ apps/{app}/public/images/banner/
 └── dw-logo-black.svg         # Diplomatic Watch B&W logo
 ```
 
-This structure exists in all three apps:
-- `apps/umg/public/images/banner/`
+The UMG app uses its own logos directly from `apps/umg/public/`:
+- `umg-logo.png` (color, referenced in `layout.tsx`)
+- `umg-logo-black.png` (B&W, referenced in `layout.tsx`)
+
+Banner directory exists in:
 - `apps/echo-media/public/images/banner/`
 - `apps/international-spectrum/public/images/banner/`
 
@@ -34,8 +37,8 @@ export const mediaCompanies: BannerCompany[] = [
   {
     name: "United Media Group",
     url: "https://www.unitedmediadc.com",
-    logo: "/images/banner/umg-masthead.svg",        // Color (marquee)
-    logoBW: "/images/banner/umg-masthead-black.svg", // B&W (footer)
+    logo: "/images/banner/umg-masthead.png",        // Color (marquee)
+    logoBW: "/images/banner/umg-masthead-black.png", // B&W (footer)
   },
   // ... other companies
 ];
@@ -55,7 +58,7 @@ The local approach removes both dependencies. The `remotePatterns` config for th
 
 | Logo | Format | Notes |
 |------|--------|-------|
-| UMG Masthead | SVG | Horizontal wordmark |
+| UMG Masthead | PNG | Horizontal wordmark |
 | Echo Media | SVG (color), PNG (B&W) | B&W is PNG due to original format |
 | International Spectrum | SVG | Both color and B&W |
 | Diplomatic Watch | SVG | Both color and B&W |

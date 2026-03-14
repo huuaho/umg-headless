@@ -115,15 +115,16 @@ All articles have `slug` cleared to `""` so `ArticleLink` always uses the extern
 
 ## WP Content Processing (`packages/api/content.ts`)
 
-WP `content.rendered` contains Divi builder shortcodes with HTML-encoded quotes. The API package processes this before delivering content to the frontend:
+WP `content.rendered` may contain Divi builder shortcodes (older articles) or native block editor markup (newer articles). The API package processes both formats before delivering content to the frontend:
 
 | Function | Purpose |
 |----------|---------|
 | `toFullSizeUrl(url)` | Strips WP thumbnail suffixes (`-150x150.jpg` → `.jpg`) from image URLs |
 | `decodeShortcodeEntities(text)` | Decodes `&#8221;`, `&#8243;`, `&amp;` etc. within shortcode brackets |
 | `stripDiviShortcodes(html)` | Converts `[et_pb_image src="URL"]` → `<img>`, strips `[et_pb_gallery]` and all `[et_pb_*]` tags, preserves inner HTML |
+| `stripWpBlockImages(html)` | Strips `<figure class="wp-block-gallery">` and `<figure class="wp-block-image">` from content to prevent duplicate images (already shown in FeaturedMedia gallery) |
 | `extractGalleryIds(rawHtml)` | Extracts media IDs from `[et_pb_gallery gallery_ids="1,2,3"]` |
-| `processContent(rawHtml)` | Returns `{ html, images: string[], galleryIds: number[] }` |
+| `processContent(rawHtml)` | Chains `stripWpBlockImages(stripDiviShortcodes(rawHtml))`. Returns `{ html, images: string[], galleryIds: number[] }` |
 
 ### Image Pipeline
 

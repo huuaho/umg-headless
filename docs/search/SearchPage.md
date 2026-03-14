@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Search page (`apps/*/app/search/page.tsx`) provides full-text search across all articles. It displays paginated results with article cards showing thumbnails, metadata, and excerpts. Used by all three apps (UMG, Echo Media, International Spectrum) — each app has its own copy in `app/search/page.tsx`.
+The Search page (`apps/*/app/search/page.tsx`) provides full-text search across all articles. Each app's search page is a thin wrapper that imports the shared `SearchContent` component from `@umg/ui` (`packages/ui/SearchContent.tsx`). Results are displayed as paginated article cards with thumbnails, metadata, and excerpts.
 
 ## URL Structure
 
@@ -31,7 +31,7 @@ The Search page (`apps/*/app/search/page.tsx`) provides full-text search across 
 ### 3. Pagination
 - Previous/Next buttons
 - Current page indicator
-- Smooth scroll to top on page change
+- Instant scroll to top on page change
 - Hidden when only 1 page of results
 
 ### 4. States
@@ -47,24 +47,33 @@ The Search page (`apps/*/app/search/page.tsx`) provides full-text search across 
 ## Component Structure
 
 ```
-SearchPage
-└── Suspense (fallback: SearchResultsSkeleton)
-    └── SearchContent
-        ├── SearchBar (auto-focus, max-w-2xl)
-        ├── Heading + result count
-        ├── [Loading] SearchResultsSkeleton
-        ├── [Error] Error message + Retry button
-        ├── [No results] Empty state message
-        ├── [Results] SearchResultCard list
-        │   └── SearchResultCard
-        │       ├── Thumbnail (left)
-        │       └── Content (right)
-        │           ├── Category · Source
-        │           ├── Title (ArticleLink)
-        │           ├── Excerpt (2 lines)
-        │           └── Author · Read time
-        └── [Multiple pages] Pagination
+SearchPage (per-app, thin wrapper)
+└── SearchContent (packages/ui/SearchContent.tsx)
+    └── Suspense (fallback: ResultsSkeleton)
+        └── SearchInner
+            ├── SearchBar (auto-focus, max-w-2xl)
+            ├── Heading + result count
+            ├── [Loading] ResultsSkeleton
+            ├── [Error] Error message + Retry button
+            ├── [No results] Empty state message
+            ├── [Results] ResultCard list
+            │   └── ResultCard (packages/ui/ResultCard.tsx)
+            │       ├── Thumbnail (left, black bg, object-cover/contain)
+            │       └── Content (right)
+            │           ├── Category · Source
+            │           ├── Title (ArticleLink or <a> when externalOnly)
+            │           ├── Excerpt (2 lines)
+            │           └── Author · Read time
+            └── [Multiple pages] Pagination
 ```
+
+### Props
+
+`SearchContent` accepts:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `externalOnly` | `boolean?` | When true, all result links use `<a target="_blank">` instead of `ArticleLink`. Used by UMG (no internal article pages). |
 
 ## API Integration
 
@@ -126,10 +135,11 @@ Has `"use client"` — uses `useSearchParams`, `useRouter`, `useState`, `useEffe
 
 | File | Purpose |
 |------|---------|
-| `apps/echo-media/app/search/page.tsx` | EM search page |
-| `apps/international-spectrum/app/search/page.tsx` | IS search page |
-| `apps/umg/app/search/page.tsx` | UMG search page |
+| `apps/*/app/search/page.tsx` | Per-app search page (thin wrapper importing SearchContent) |
+| `packages/ui/SearchContent.tsx` | Shared search content component (search bar, results, pagination) |
+| `packages/ui/ResultCard.tsx` | Individual search/category result card |
+| `packages/ui/ResultsSkeleton.tsx` | Loading skeleton (5 placeholder items) |
 | `packages/api/client.ts` | `searchArticles()` function |
 | `packages/api/types.ts` | `SearchArticlesOptions`, `ApiArticle` types |
-| `packages/ui/ArticleLink.tsx` | Smart link component used in search results |
+| `packages/ui/ArticleLink.tsx` | Smart link component used in result cards |
 | `packages/ui/Header.tsx` | Hides search icon on search page |

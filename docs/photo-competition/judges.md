@@ -37,7 +37,7 @@ type Judge = {
 | `herd-stan` | Stan Herd | Crop Artist |
 | `ishii-lisa` | Lisa Ishii | SVP Operations, Johns Hopkins |
 | `lawson-madeline` | Madeline Lawson | Education Advocate |
-| `lierman-terry` | Terry Lierman | Healthcare Policy Leader |
+| `lierman-terry` | Terry Lierman | Former Chief of Staff to House Majority Leader & Senate Appropriations Staff Director |
 | `mcphatter-renee` | Renee McPhatter | Community Organizer |
 | `qiu-philip` | Philip Qiu | Photographer |
 | `rutledge-derrick` | Derrick Rutledge | Celebrity Makeup Artist |
@@ -52,7 +52,6 @@ public/images/judges/
 ├── antoine-denis.png
 ├── austin-amy.png
 ├── bain-raymone.jpg
-├── chanault-nell.png
 ├── djoken-guy.png
 ├── du-plain-jan.png
 ├── herd-stan.png
@@ -64,6 +63,8 @@ public/images/judges/
 ├── rutledge-derrick.png
 └── whatley-annie.png
 ```
+
+Note: `chanault-nell.png` was removed. The judge entry still exists in the data but has no image file.
 
 ## Pages
 

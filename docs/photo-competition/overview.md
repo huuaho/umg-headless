@@ -50,7 +50,7 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 
 | Route | File | Description |
 |-------|------|-------------|
-| `/how-to-enter` | `app/how-to-enter/page.tsx` | Competition details, rules, timeline, awards, venues, judges |
+| `/how-to-enter` | `app/how-to-enter/page.tsx` | Competition details, rules, competition timeline, awards, venues, judges ("Meet the Judges" heading links to `/judges-panel`) |
 | `/photo-submission` | `app/photo-submission/page.tsx` | Auth gate → submission form → payment |
 | `/judges-panel` | `app/judges-panel/page.tsx` | Full judge bios with anchor-scrollable cards |
 
@@ -94,7 +94,7 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
   - Youth (ages 10–18): up to 3 photos, 100-word description, $50 entry
   - Young Adults (ages 19–30): up to 3 photos, 200-word description + biography, $50 entry
 - **Timeline**: March 2026 (open) → August 2026 (deadline) → Sept–Oct (jury review) → October (winners)
-- **Awards**: $5,000 (1st), $3,000 (2nd), $2,000 (3rd), $800 (Honorable Mention)
+- **Awards**: $5,000 (1st), $4,000 (2nd), $2,000 (3rd), $500 (Honorable Mention, 20 per division)
 - **Photo requirements**: JPEG/JPG only, RGB color, min 2000px on longest side, max 20MB, taken after 2025
 - **Exhibition venues**: Library of Congress, Smithsonian, National Press Club, Georgetown University, Johns Hopkins University
 

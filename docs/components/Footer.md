@@ -164,7 +164,7 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
 ```tsx
 // apps/umg/app/layout.tsx — with social media icons
 <Footer
-  logoUrl="/umg-masthead.svg"
+  logoUrl="/umg-logo-black.png"
   logoAlt="United Media Group"
   categories={navCategories}
   companies={mediaCompanies}

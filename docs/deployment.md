@@ -364,8 +364,12 @@ npx serve apps/umg/out/
 | Variable                 | Purpose                     | Required At |
 | ------------------------ | --------------------------- | ----------- |
 | `NEXT_PUBLIC_WP_API_URL` | WordPress REST API base URL | Build time  |
+| `NEXT_PUBLIC_API_MODE` | `"wp"` for EM/IS, omit for UMG (defaults to `"custom"`) | Build time |
+| `NEXT_PUBLIC_ARTICLE_META` | Controls article meta display: `"author"` shows author name, `"readtime"` (default) shows read time | Build time |
 
-Since it uses `NEXT_PUBLIC_` prefix, the value is embedded into the JavaScript bundle at build time.
+Since they use `NEXT_PUBLIC_` prefix, the values are embedded into the JavaScript bundle at build time.
+
+**Note**: The IS deployment workflow (`deploy-international-spectrum.yml`) sets `NEXT_PUBLIC_ARTICLE_META: author` to display author names instead of read times on the homepage.
 
 ## Troubleshooting
 

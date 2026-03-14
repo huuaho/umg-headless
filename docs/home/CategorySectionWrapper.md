@@ -25,6 +25,7 @@ interface CategorySectionWrapperProps {
   categoryUnderlineColor?: string; // Colored underline below the category label (e.g., "#33bbff")
   categoryIcon?: string;           // Icon URL displayed to the left of the category label
   titleClassName?: string;         // Custom CSS class for article headlines (e.g., custom font)
+  priority?: number;               // Dedup priority (lower = higher priority, claims articles first)
 }
 
 type SectionType = "type1" | "type2" | "type3" | "type4" | "type4-text";
@@ -44,22 +45,53 @@ The `titleClassName` prop is passed through to `SectionType1-4` and applied to a
 | `type4` | SectionType4 | 4 | 4 equal articles with images |
 | `type4-text` | SectionType4 | 4 | 4 equal articles, text only |
 
+## Article Deduplication
+
+When `priority` is set and the component is wrapped in `<SeenArticlesProvider>`, sections participate in cross-section article deduplication:
+
+1. Each section "claims" the articles it displays at its priority level (lower number = higher priority)
+2. Lower-priority sections (higher number) filter out articles already claimed by higher-priority sections
+3. If dedup leaves fewer articles than needed, the component automatically fetches more (up to `needed * 2` initially, incrementing by `needed` each round)
+4. If all fetched articles are claimed by higher-priority sections, the section renders nothing (`null`)
+5. Loading skeleton only shows on initial load, not during backfill fetches
+
+### Usage
+
+Home pages wrap all sections in `<SeenArticlesProvider>` and assign ascending priority values:
+
+```tsx
+import { SeenArticlesProvider, CategorySectionWrapper } from "@umg/ui";
+
+<SeenArticlesProvider>
+  <CategorySectionWrapper slug="world-news" category="World News" sectionType="type1" priority={0} />
+  <CategorySectionWrapper slug="environment" category="Environment" sectionType="type2" priority={1} />
+  <CategorySectionWrapper slug="education" category="Education" sectionType="type3" priority={2} />
+</SeenArticlesProvider>
+```
+
+When `priority` is omitted (or no `SeenArticlesProvider` wraps the component), dedup is disabled and the component behaves as before.
+
 ## Data Flow
 
 ```
 CategorySectionWrapper
   │
   1. useArticles({ category: slug, count: N })
+  │   (N = needed * 2 when priority set, otherwise just needed)
   │
-  ├── isLoading → <SectionSkeleton />
+  ├── isLoading (initial) → <SectionSkeleton />
   ├── error or empty → <SectionError onRetry={refetch} />
   │
-  2. Transform data with appropriate transformer
+  2. Filter out articles claimed by higher-priority sections (if priority set)
+  3. Claim displayed articles at this priority level
+  4. If too few after dedup, fetch more (increment fetchCount)
+  │
+  5. Transform data with appropriate transformer
   │   - toSectionData() for type1, type2
   │   - toSectionType3Data() for type3
   │   - toSectionType4Data() for type4, type4-text
   │
-  3. Render <SectionTypeN {...transformedData} />
+  6. Render <SectionTypeN {...transformedData} />
 ```
 
 ## Articles Per Section Type
@@ -91,6 +123,7 @@ All transformers are in `packages/api/transformers.ts`:
 | `toSectionData(articles)` | type1, type2 | `{ featured, secondary[] }` |
 | `toSectionType3Data(articles)` | type3 | `{ featured, secondary[] }` (3 items) |
 | `toSectionType4Data(articles, textOnly)` | type4, type4-text | `{ articles[] }` |
+| `formatArticleMeta(article)` | All section types (via above transformers) | Read time string, or author name when `NEXT_PUBLIC_ARTICLE_META=author` |
 
 ## Usage
 
@@ -130,6 +163,7 @@ Has `"use client"` — uses the `useArticles` hook for client-side data fetching
 ## Dependencies
 
 - `@umg/api` — `useArticles` hook, `toSectionData`, `toSectionType3Data`, `toSectionType4Data` transformers
+- `packages/ui/SeenArticlesContext` — Article dedup context (`SeenArticlesProvider`, `useSeenArticles`)
 - `packages/ui/sections/CategoryLabel` — Shared category label component
 - `packages/ui/sections/SectionType1-4` — Section layout components
 - `packages/ui/sections/SectionSkeleton` — Loading state component
@@ -140,7 +174,8 @@ Has `"use client"` — uses the `useArticles` hook for client-side data fetching
 | File | Purpose |
 |------|---------|
 | `packages/ui/sections/CategorySectionWrapper.tsx` | This component |
-| `packages/ui/sections/CategoryLabel.tsx` | Shared category label (icon, text color, underline) |
+| `packages/ui/SeenArticlesContext.tsx` | Article dedup context (`SeenArticlesProvider`, `useSeenArticles`) |
+| `packages/ui/sections/CategoryLabel.tsx` | Shared category label (icon, text color, underline, link) |
 | `packages/api/hooks/useArticles.ts` | Data fetching hook |
 | `packages/api/transformers.ts` | API to component data transformers |
 | `packages/ui/sections/SectionSkeleton.tsx` | Loading state |

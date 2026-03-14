@@ -83,8 +83,9 @@ Note: The `maxScore` field was removed — criteria are descriptive only, not nu
 
 ```typescript
 interface CompetitionAward {
-  place: string;           // "1st Prize", "2nd Prize", etc.
-  amount: string;          // "$5,000", "$3,000", etc.
+  place: string;                  // "First Prize", "Second Prize", etc.
+  recipientsPerDivision: number;  // e.g. 1, 2, 3, 20
+  amount: number;                 // Dollar amount (e.g. 5000)
 }
 ```
 
@@ -117,9 +118,9 @@ import { currentCompetition } from "@/lib/competitions/current";
 | Entry fee | $50 per division |
 | Deadline | August 2026 |
 | 1st Prize | $5,000 |
-| 2nd Prize | $3,000 |
-| 3rd Prize | $2,000 |
-| Honorable Mention | $800 |
+| 2nd Prize | $4,000 (2 per division) |
+| 3rd Prize | $2,000 (3 per division) |
+| Honorable Mention | $500 (20 per division) |
 | Payment | Stripe Checkout (pre-configured link) |
 
 ### Evaluation Criteria

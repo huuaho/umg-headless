@@ -383,36 +383,6 @@ export default function HowToEnterPage() {
         </div>
       </section>
 
-      {/* Our Sponsors */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Our Sponsors
-        </h2>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 max-w-3xl mx-auto">
-          <Image
-            src="/images/sponsors/international-salute.png"
-            alt="International Salute"
-            width={180}
-            height={80}
-            className="object-contain h-16 md:h-20 w-auto"
-          />
-          <Image
-            src="/images/sponsors/chennault-foundation.png"
-            alt="Chennault Foundation"
-            width={180}
-            height={80}
-            className="object-contain h-16 md:h-20 w-auto"
-          />
-          <Image
-            src="/images/sponsors/unesco-center-for-peace.jpg"
-            alt="UNESCO Center for Peace"
-            width={180}
-            height={80}
-            className="object-contain h-16 md:h-20 w-auto"
-          />
-        </div>
-      </section>
-
       {/* Official Competition Rules */}
       <section className="max-w-280 mx-auto px-6 py-8 md:py-10">
         <div className="max-w-3xl mx-auto">
@@ -527,6 +497,36 @@ export default function HowToEnterPage() {
               <p>The information provided regarding exhibition locations, schedules, and featured artworks is accurate at the time of publication. However, all elements are subject to change. The organizers reserve the right to make alterations without prior notification. We recommend checking our official website and social media channels for the most current information.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Our Sponsors */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Our Sponsors
+        </h2>
+        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 max-w-3xl mx-auto">
+          <Image
+            src="/images/sponsors/international-salute.png"
+            alt="International Salute"
+            width={180}
+            height={80}
+            className="object-contain h-16 md:h-20 w-auto"
+          />
+          <Image
+            src="/images/sponsors/chennault-foundation.png"
+            alt="Chennault Foundation"
+            width={180}
+            height={80}
+            className="object-contain h-16 md:h-20 w-auto"
+          />
+          <Image
+            src="/images/sponsors/unesco-center-for-peace.jpg"
+            alt="UNESCO Center for Peace"
+            width={180}
+            height={80}
+            className="object-contain h-16 md:h-20 w-auto"
+          />
         </div>
       </section>
     </main>

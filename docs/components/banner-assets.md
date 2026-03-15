@@ -16,7 +16,7 @@ apps/{echo-media,international-spectrum}/public/images/banner/
 ├── em-logo-black.png         # Echo Media B&W logo (PNG)
 ├── is-logo.svg               # International Spectrum color logo
 ├── is-logo-black.svg         # International Spectrum B&W logo
-├── dw-logo.svg               # Diplomatic Watch color logo
+├── dw-logo.png               # Diplomatic Watch color logo (PNG)
 └── dw-logo-black.svg         # Diplomatic Watch B&W logo
 ```
 
@@ -61,7 +61,7 @@ The local approach removes both dependencies. The `remotePatterns` config for th
 | UMG Masthead | PNG | Horizontal wordmark |
 | Echo Media | SVG (color), PNG (B&W) | B&W is PNG due to original format |
 | International Spectrum | SVG | Both color and B&W |
-| Diplomatic Watch | SVG | Both color and B&W |
+| Diplomatic Watch | PNG (color), SVG (B&W) | Color updated to PNG |
 
 ## Updating Logos
 

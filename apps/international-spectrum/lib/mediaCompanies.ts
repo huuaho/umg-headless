@@ -28,7 +28,7 @@ export const mediaCompanies: MediaCompany[] = [
     description:
       "Delivers insightful analysis and in-depth reporting on international relations, building dialogue and understanding between countries.",
     url: "https://diplomaticwatch.com/",
-    logo: "/images/banner/dw-logo.svg",
+    logo: "/images/banner/dw-logo.png",
     logoBW: "/images/banner/dw-logo-black.svg",
   },
 ];

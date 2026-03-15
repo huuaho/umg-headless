@@ -69,6 +69,14 @@ function stripHtml(html: string): string {
 }
 
 /**
+ * Strip WordPress auto-generated "Continue reading 'Title'" suffix from excerpts.
+ * WP adds this when no manual excerpt is set; stripHtml() preserves the text.
+ */
+function stripContinueReading(text: string): string {
+  return text.replace(/\s*\u2026?\s*Continue reading\s*.+$/i, "").trim();
+}
+
+/**
  * Estimate read time from content (rough: ~200 words/min, ~5 chars/word)
  */
 function estimateReadTime(content: string): number {
@@ -162,7 +170,7 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
     source: "wp",
     source_label: "WordPress",
     source_url: post.link,
-    excerpt: stripHtml(post.excerpt.rendered),
+    excerpt: stripContinueReading(stripHtml(post.excerpt.rendered)),
     content: processed.html,
     featured_image: featuredImage,
     images: allImages,

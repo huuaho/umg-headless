@@ -41,7 +41,7 @@ NEXT_PUBLIC_API_MODE=wp
 |-------|------------------------|------------------------------|
 | Filter by category | `?category=slug` | `?categories=ID` (slug→ID lookup via `/wp/v2/categories?slug=X`) |
 | Title | `title` (plain string) | `title.rendered` (may contain HTML entities) |
-| Excerpt | `excerpt` (plain string) | `excerpt.rendered` (HTML with `<p>` tags) |
+| Excerpt | `excerpt` (plain string) | `excerpt.rendered` (HTML with `<p>` tags). Processed through `stripHtml()` then `stripContinueReading()` to remove WP's auto-generated "Continue reading 'Title'" suffix |
 | Featured image | `featured_image` (direct URL) | `_embedded['wp:featuredmedia'][0].source_url` |
 | Multiple images | `images[]` (array of URLs) | Not available from standard API |
 | Author | `author_name` (string) | `_embedded.author[0].name` |

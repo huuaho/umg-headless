@@ -50,7 +50,7 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 
 | Route | File | Description |
 |-------|------|-------------|
-| `/how-to-enter` | `app/how-to-enter/page.tsx` | Competition details, timeline, awards, venues, judges, sponsors, and collapsible rules ("Meet the Judges" heading links to `/judges-panel`) |
+| `/how-to-enter` | `app/how-to-enter/page.tsx` | Competition details, timeline, awards, venues, judges, rules, and sponsors ("Meet the Judges" heading links to `/judges-panel`) |
 | `/photo-submission` | `app/photo-submission/page.tsx` | Auth gate → submission form → payment → sponsors |
 | `/judges-panel` | `app/judges-panel/page.tsx` | Full judge bios with anchor-scrollable cards |
 

@@ -12,6 +12,7 @@ interface HeaderProps {
   logoAlt: string;           // Alt text for the logo
   categories: NavCategory[]; // Navigation categories
   bannerCompanies: BannerCompany[]; // Companies displayed in the scrolling banner
+  extraLinks?: { label: string; href: string }[]; // Additional links in mobile menu (optional)
 }
 
 interface NavCategory {
@@ -65,6 +66,7 @@ interface BannerCompany {
   - "Categories" header
   - Two-column grid of all category links
   - "About Us" link at bottom
+  - Extra links below "About Us" (if `extraLinks` prop is provided — UMG uses this for the competition link)
 
 ### 6. Logo Banner
 - Positioned below main header, separated by border
@@ -126,7 +128,8 @@ Header
     ├── Search Bar (hidden on search page)
     ├── Categories Header
     ├── Two-Column Category Grid
-    └── About Us Link
+    ├── About Us Link
+    └── Extra Links (optional, from extraLinks prop)
 ```
 
 ## Styling Notes
@@ -177,6 +180,17 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
   logoAlt="Echo Media"
   categories={navCategories}
   bannerCompanies={mediaCompanies}
+/>
+
+// apps/umg/app/layout.tsx — with extra mobile menu links
+<Header
+  logoUrl="/umg-logo.svg"
+  logoAlt="United Media Group"
+  categories={categories}
+  bannerCompanies={mediaCompanies}
+  extraLinks={[
+    { label: "2026 International Youth Photography Competition: My Hometown My Lens", href: "/how-to-enter" },
+  ]}
 />
 ```
 

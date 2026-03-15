@@ -305,6 +305,20 @@ export default function Header({
                         {category.name}
                       </Link>
                     ))}
+                    {extraLinks && extraLinks.length > 0 && (
+                      <>
+                        <div className="border-t border-gray-200 my-1" />
+                        {extraLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="block px-4 py-2 text-sm text-[#5d5d5d] hover:text-[#212223] hover:bg-[#f5f5f5] transition-colors"
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                      </>
+                    )}
                   </div>
                 )}
               </div>

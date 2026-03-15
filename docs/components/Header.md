@@ -12,7 +12,7 @@ interface HeaderProps {
   logoAlt: string;           // Alt text for the logo
   categories: NavCategory[]; // Navigation categories
   bannerCompanies: BannerCompany[]; // Companies displayed in the scrolling banner
-  extraLinks?: { label: string; href: string }[]; // Additional links in mobile menu (optional)
+  extraLinks?: { label: string; href: string }[]; // Additional links in More dropdown + mobile menu (optional)
 }
 
 interface NavCategory {
@@ -66,7 +66,8 @@ interface BannerCompany {
   - "Categories" header
   - Two-column grid of all category links
   - "About Us" link at bottom
-  - Extra links below "About Us" (if `extraLinks` prop is provided — UMG uses this for the competition link)
+  - Extra links below "About Us" (if `extraLinks` prop is provided)
+- `extraLinks` also appear at the bottom of the desktop "More" dropdown, separated by a divider (UMG uses this for the competition link)
 
 ### 6. Logo Banner
 - Positioned below main header, separated by border
@@ -116,7 +117,8 @@ Header
 │   │   ├── LG-Only Categories (3-4, lg+ only)
 │   │   └── More Dropdown
 │   │       ├── LG-Only Categories (below lg)
-│   │       └── Remaining Categories (5+)
+│   │       ├── Remaining Categories (5+)
+│   │       └── Extra Links (optional, separated by divider)
 │   ├── Desktop Search Icon (md+, right)
 │   ├── Desktop Search Expanded (replaces nav when open)
 │   └── Mobile Hamburger (below md)
@@ -182,14 +184,14 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
   bannerCompanies={mediaCompanies}
 />
 
-// apps/umg/app/layout.tsx — with extra mobile menu links
+// apps/umg/app/layout.tsx — with extra links in More dropdown + mobile menu
 <Header
   logoUrl="/umg-logo.svg"
   logoAlt="United Media Group"
   categories={categories}
   bannerCompanies={mediaCompanies}
   extraLinks={[
-    { label: "2026 International Youth Photography Competition: My Hometown My Lens", href: "/how-to-enter" },
+    { label: "2026 International Youth Photography Competition", href: "/how-to-enter" },
   ]}
 />
 ```

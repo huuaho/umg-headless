@@ -415,13 +415,10 @@ export default function HowToEnterPage() {
 
       {/* Official Competition Rules */}
       <section className="max-w-280 mx-auto px-6 py-8 md:py-10">
-        <details className="max-w-3xl mx-auto group">
-          <summary className="text-lg font-medium text-center text-gray-400 mb-6 cursor-pointer list-none flex items-center justify-center gap-2 hover:text-gray-500 transition-colors">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
             Official Competition Rules, Terms, and Conditions
-            <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </summary>
+          </h2>
           <div className="space-y-6 text-xs text-gray-400 leading-relaxed">
             <div>
               <h3 className="text-sm font-semibold text-gray-500 mb-2">1. Eligibility and Compliance</h3>
@@ -530,7 +527,7 @@ export default function HowToEnterPage() {
               <p>The information provided regarding exhibition locations, schedules, and featured artworks is accurate at the time of publication. However, all elements are subject to change. The organizers reserve the right to make alterations without prior notification. We recommend checking our official website and social media channels for the most current information.</p>
             </div>
           </div>
-        </details>
+        </div>
       </section>
     </main>
   );

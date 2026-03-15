@@ -48,6 +48,9 @@ export default function RootLayout({
           logoAlt="United Media Group"
           categories={categories}
           bannerCompanies={mediaCompanies}
+          extraLinks={[
+            { label: "2026 International Youth Photography Competition: My Hometown My Lens", href: "/how-to-enter" },
+          ]}
         />
         {children}
         <Footer

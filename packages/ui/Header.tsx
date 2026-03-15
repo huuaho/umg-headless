@@ -21,6 +21,7 @@ export interface HeaderProps {
   logoAlt: string;
   categories: NavCategory[];
   bannerCompanies: BannerCompany[];
+  extraLinks?: { label: string; href: string }[];
 }
 
 function ChevronDown({ className }: { className?: string }) {
@@ -102,6 +103,7 @@ export default function Header({
   logoAlt,
   categories,
   bannerCompanies,
+  extraLinks,
 }: HeaderProps) {
   // Compute category splits for responsive nav
   const mainCategories = categories.slice(0, 2);
@@ -430,6 +432,16 @@ export default function Header({
             >
               About Us
             </Link>
+            {extraLinks?.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={closeMobileMenu}
+                className="block text-sm font-medium text-[#404040] hover:text-[#212223] transition-colors mt-3"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       )}

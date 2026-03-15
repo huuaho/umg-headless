@@ -45,13 +45,14 @@ type Judge = {
 
 ### Judge Images
 
-Stored in `apps/umg/public/images/judges/` as PNG or JPG files, named by kebab-case judge ID:
+Stored in `apps/umg/public/images/judges/` as PNG files, named by kebab-case judge ID:
 
 ```
 public/images/judges/
 ├── antoine-denis.png
 ├── austin-amy.png
-├── bain-raymone.jpg
+├── bain-raymone.png
+├── chanault-nell.png
 ├── djoken-guy.png
 ├── du-plain-jan.png
 ├── herd-stan.png
@@ -59,12 +60,10 @@ public/images/judges/
 ├── lawson-madeline.png
 ├── lierman-terry.png
 ├── mcphatter-renee.png
-├── qiu-philip.jpg
+├── qiu-philip.png
 ├── rutledge-derrick.png
 └── whatley-annie.png
 ```
-
-Note: `chanault-nell.png` was removed. The judge entry still exists in the data but has no image file.
 
 ## Pages
 

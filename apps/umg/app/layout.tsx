@@ -49,7 +49,7 @@ export default function RootLayout({
           categories={categories}
           bannerCompanies={mediaCompanies}
           extraLinks={[
-            { label: "2026 International Youth Photography Competition: My Hometown My Lens", href: "/how-to-enter" },
+            { label: "2026 International Youth Photography Competition", href: "/how-to-enter" },
           ]}
         />
         {children}

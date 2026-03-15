@@ -54,7 +54,7 @@ export const judges: Judge[] = [
     name: "Raymone Bain",
     title: "PR & Crisis Management Expert",
     bio: 'Raymone K. Bain is a renowned public relations and crisis management expert who has represented some of the world\u2019s most influential figures in entertainment and sports, including Michael Jackson, Janet Jackson, Kenny "Babyface" Edmonds, BoyzIIMen, Steve Harvey, Serena Williams, Muhammad Ali, Deion Sanders, and Mike Tyson. With extensive experience across media, corporate, and public affairs sectors, she has also served as Spokesperson for the late Washington, D.C. Mayor Marion S. Barry, Jr. Her contributions to media and communications have earned her numerous honors, including recognition as the 2024 Women\u2019s HERstory Month DC Star Public Relations Expert.',
-    image: "/images/judges/bain-raymone.jpg",
+    image: "/images/judges/bain-raymone.png",
   },
   {
     id: "nell-chanault",
@@ -117,7 +117,7 @@ export const judges: Judge[] = [
     name: "Philip Qiu",
     title: "Founder & Chairman, Chinese American Museum DC",
     bio: "Dr. Philip Qiu is the founder and chairman of the Chinese American Museum in Washington, D.C., and chairman of the Hong Kong Wah Hing Charitable Foundation. A cultural leader and philanthropist, he has dedicated his work to promoting cross-cultural dialogue, supporting underserved communities, and advancing arts and education. He also established the Philip Qiu & Family Foundation in the United States to support children with autism and ADHD through programs in cultural exchange, arts, and music. Through his leadership, philanthropy, and support of exhibitions, scholarships, and public programs, Dr. Qiu has made significant contributions to fostering cultural understanding and community development internationally.",
-    image: "/images/judges/qiu-philip.jpg",
+    image: "/images/judges/qiu-philip.png",
   },
   {
     id: "derrick-rutledge",

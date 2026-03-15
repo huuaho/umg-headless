@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import FeaturedMedia from "../sections/components/FeaturedMedia";
 import CommentsSection from "./CommentsSection";
 import MoreArticles from "./MoreArticles";
@@ -28,6 +29,7 @@ interface ArticleLayoutProps {
   postId?: number; // WP post ID for comments (EM/IS only)
   currentSlug?: string; // Current article slug for More Articles carousel
   categoryColor?: string; // Hex color for category label
+  categorySlug?: string; // Category slug — links to /category/{slug}
   categoryColorMap?: Record<string, string>; // Map of category names to hex colors for More Articles
   videoUrl?: string; // YouTube URL for video interviews
 }
@@ -43,6 +45,7 @@ export default function ArticleLayout({
   postId,
   currentSlug,
   categoryColor,
+  categorySlug,
   categoryColorMap,
   videoUrl,
 }: ArticleLayoutProps) {
@@ -57,7 +60,17 @@ export default function ArticleLayout({
       <article className="max-w-4xl mx-auto px-6 pt-28 pb-8">
         {/* Category + Read Time */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <span className="font-semibold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category}</span>
+          {categorySlug ? (
+            <Link
+              href={`/category/${categorySlug}`}
+              className="font-semibold hover:underline"
+              style={categoryColor ? { color: categoryColor, textDecorationColor: categoryColor } : { color: '#000', textDecorationColor: '#000' }}
+            >
+              {category}
+            </Link>
+          ) : (
+            <span className="font-semibold" style={categoryColor ? { color: categoryColor } : { color: '#000' }}>{category}</span>
+          )}
           <span>&middot;</span>
           <span>{readTime}</span>
         </div>

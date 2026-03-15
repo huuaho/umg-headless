@@ -55,6 +55,7 @@ export default async function ArticlePage({
       postId={article.id}
       currentSlug={article.slug}
       categoryColor={categoryColor}
+      categorySlug={article.categories[0]?.slug}
       categoryColorMap={categoryColorMap}
       videoUrl={article.video_url}
     />

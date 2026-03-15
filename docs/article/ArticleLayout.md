@@ -26,6 +26,7 @@ interface ArticleLayoutProps {
   postId?: number;     // WP post ID — enables CommentsSection (EM/IS only)
   currentSlug?: string; // Current article slug — enables MoreArticles carousel (EM/IS only)
   categoryColor?: string; // Hex color for category label (e.g., "#0281b3")
+  categorySlug?: string; // Category slug — links category label to /category/{slug}
   categoryColorMap?: Record<string, string>; // Map of category names to hex colors, passed to MoreArticles
   videoUrl?: string;   // YouTube URL for video interviews — takes priority over images
 }
@@ -72,6 +73,7 @@ interface ArticleLayoutProps {
 ### Category + Read Time Bar
 - `text-sm text-gray-500`
 - Category name in `font-semibold`, colored via `categoryColor` prop (inline style). Falls back to black (`#000`) when not provided.
+- When `categorySlug` is provided, category name links to `/category/{slug}` with `hover:underline` (underline color matches category color). When omitted, renders as plain text.
 - Separated by `·` (middot)
 
 ### Title
@@ -138,6 +140,7 @@ export default async function ArticlePage({ params }) {
       postId={article.id}
       currentSlug={article.slug}
       categoryColor={categoryColor}
+      categorySlug={article.categories[0]?.slug}
       categoryColorMap={categoryColorMap}
     />
   );

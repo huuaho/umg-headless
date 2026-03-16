@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
+import { HostingCommittees } from "@/components/HostingCommittees";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthForm } from "./components/AuthForm";
 import { SubmissionForm } from "./components/SubmissionForm";
@@ -109,29 +110,7 @@ function PhotoSubmissionContent() {
         )}
       </section>
 
-      {/* Our Sponsors */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Our Sponsors
-        </h2>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 max-w-3xl mx-auto">
-          <img
-            src="/images/sponsors/international-salute.png"
-            alt="International Salute"
-            className="object-contain h-16 md:h-20 w-auto"
-          />
-          <img
-            src="/images/sponsors/chennault-foundation.png"
-            alt="Chennault Foundation"
-            className="object-contain h-16 md:h-20 w-auto"
-          />
-          <img
-            src="/images/sponsors/unesco-center-for-peace.jpg"
-            alt="UNESCO Center for Peace"
-            className="object-contain h-16 md:h-20 w-auto"
-          />
-        </div>
-      </section>
+      <HostingCommittees />
     </main>
   );
 }

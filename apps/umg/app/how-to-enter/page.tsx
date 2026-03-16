@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { currentCompetition } from "@/lib/competitions/current";
 import { judges } from "@/lib/competitions/judges";
+import { HostingCommittees } from "@/components/HostingCommittees";
 
 const competition = currentCompetition;
 
@@ -389,9 +390,9 @@ export default function HowToEnterPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
             Official Competition Rules, Terms, and Conditions
           </h2>
-          <div className="space-y-6 text-xs text-gray-400 leading-relaxed">
+          <div className="space-y-6 text-xs text-[#212223] leading-relaxed">
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">1. Eligibility and Compliance</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">1. Eligibility and Compliance</h3>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Verification of Compliance:</strong> The organizer reserves the right to verify original works and source materials to confirm they comply with these competition rules.</li>
                 <li><strong>Acceptance of Terms:</strong> By completing the registration, you acknowledge and accept all rules and regulations of this competition.</li>
@@ -401,7 +402,7 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">2. Entry Validity and Disqualification</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">2. Entry Validity and Disqualification</h3>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Consequences of Violation:</strong> Entries that violate any of these rules will not be considered for judging, and the organizer reserves the right to remove them.</li>
                 <li><strong>Post-Winning Disqualification:</strong> If a winning entry is found to be in violation of the rules, the organizer reserves the right to disqualify the winner and reclaim any certificates, prizes, and gifts already awarded.</li>
@@ -409,7 +410,7 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">3. AI Policy and Image Integrity</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">3. AI Policy and Image Integrity</h3>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Prohibition of Generative AI:</strong> The use of generative or fully synthetic imagery in the final submitted work is prohibited. Works should not rely primarily on AI-generated content.</li>
                 <li><strong>Value of Craftsmanship:</strong> While AI tools may be used during the creative or conceptual process, the competition places strong value on craftsmanship, authenticity, and the integrity of the photographic image.</li>
@@ -418,7 +419,7 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">4. Participant Responsibility (Intellectual Property, Ethics & Permissions)</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">4. Participant Responsibility (Intellectual Property, Ethics & Permissions)</h3>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Copyright and Liability:</strong> Participants shall be solely responsible for all legal consequences arising from copyright infringement, other infringements, or illegal activities related to their submitted work. The organizer shall not be held liable for such violations.</li>
                 <li><strong>Ethical Representation:</strong> All submissions must respect the dignity, safety, and cultural context of the subjects represented.</li>
@@ -434,14 +435,14 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">5. Ethical Standards for Photography</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">5. Ethical Standards for Photography</h3>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Wildlife and Ecology Entries:</strong> Entries depicting wildlife or ecology are strictly prohibited from being staged, lured, or depicting animals in cages, traps, or controlled conditions that compromise the animal{"\u2019"}s welfare or the authenticity of the image.</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">6. Rights and Usage</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">6. Rights and Usage</h3>
               <p className="mb-2">By participating, entrants grant the following rights to the organizer and its designated persons (collectively, the {"\u201c"}Authorized Parties{"\u201d"}):</p>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Grant of Non-Exclusive Rights:</strong> By submitting works to the competition, participants grant the organizers a non-exclusive right to use selected images for competition-related purposes, including but not limited to exhibitions, publications, educational programs, and promotional materials.</li>
@@ -460,7 +461,7 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">7. Limitation of Liability and Release</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">7. Limitation of Liability and Release</h3>
               <p className="mb-2">By participating, all entrants agree to release, waive, and hold harmless the organizer, United Media Group LLC, and its partners, affiliates, subsidiaries, advertising agencies, agents, and their respective employees, managers, directors, and representatives from any liability, loss, or damage arising from:</p>
               <ul className="space-y-1 list-disc pl-4 mb-3">
                 <li>Participation in the competition and related activities.</li>
@@ -478,7 +479,7 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">8. Modification, Cancellation, and Force Majeure</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">8. Modification, Cancellation, and Force Majeure</h3>
               <ul className="space-y-2 list-disc pl-4">
                 <li><strong>Interpretation and Amendments:</strong> Matters not covered in these rules shall be handled in accordance with detailed award descriptions. The organizer reserves the right to interpret, amend, and supplement these rules.</li>
                 <li><strong>Right to Cancel or Suspend:</strong> If the competition cannot proceed as planned due to computer viruses, bugs, tampering, unauthorized intervention, fraud, technical failures, force majeure, or any other cause beyond the control of the organizer that corrupts or affects the administration, security, fairness, integrity, or proper conduct of the competition, the organizer reserves the right to:
@@ -493,56 +494,14 @@ export default function HowToEnterPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">9. Exhibition Disclaimer</h3>
+              <h3 className="text-sm font-semibold text-[#212223] mb-2">9. Exhibition Disclaimer</h3>
               <p>The information provided regarding exhibition locations, schedules, and featured artworks is accurate at the time of publication. However, all elements are subject to change. The organizers reserve the right to make alterations without prior notification. We recommend checking our official website and social media channels for the most current information.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Hosting Committees */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Hosting Committees
-        </h2>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 max-w-3xl mx-auto">
-          {[
-            {
-              src: "/images/sponsors/unesco-center-for-peace.jpg",
-              alt: "UNESCO Center for Peace",
-              label: "UNESCO Center\nFor Peace",
-            },
-            {
-              src: "/images/sponsors/chennault-foundation.png",
-              alt: "Chennault Foundation",
-              label: "Chennault\nFoundation",
-            },
-            {
-              src: "/images/sponsors/international-salute.png",
-              alt: "International Salute to the Life of MLK Jr.",
-              label: "International Salute to\nthe Life of MLK Jr.",
-            },
-            {
-              src: "/umg-logo.svg",
-              alt: "United Media Group",
-              label: "United Media\nGroup",
-            },
-          ].map((sponsor) => (
-            <div key={sponsor.alt} className="flex flex-col items-center text-center w-36 md:w-44">
-              <Image
-                src={sponsor.src}
-                alt={sponsor.alt}
-                width={180}
-                height={80}
-                className="object-contain h-16 md:h-20 w-auto"
-              />
-              <p className="text-sm md:text-base font-semibold text-[#212223] mt-3 whitespace-pre-line">
-                {sponsor.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <HostingCommittees />
     </main>
   );
 }

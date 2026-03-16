@@ -32,7 +32,7 @@ export const currentCompetition: Competition = {
     },
     {
       label: "Jury Review",
-      date: "September 1 – October 16, 2026",
+      date: "September 1 – October 15, 2026",
       description: "Jury review and evaluation process",
     },
     {
@@ -43,8 +43,7 @@ export const currentCompetition: Competition = {
     {
       label: "Exhibition Showcases",
       date: "December 2026 – March 2027",
-      description:
-        "Multiple exhibition showings at the cited locations",
+      description: "Multiple exhibition showings at the cited locations",
     },
   ],
 

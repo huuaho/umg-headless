@@ -36,13 +36,14 @@ interface StudentProofEntry {
 interface SubmissionFormProps {
   user: { email: string; name: string };
   onLogout: () => void;
+  onStepChange?: (step: "form" | "payment" | "complete") => void;
 }
 
 function wordCount(text: string): number {
   return text.trim() ? text.trim().split(/\s+/).length : 0;
 }
 
-export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
+export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormProps) {
   const competition = currentCompetition;
   const { token, user: authUser, refreshUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -460,8 +461,15 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     allConsentsChecked &&
     !isSubmitting;
 
-  // --- Payment polling (only when submitted + unpaid) ---
+  // --- Sync step indicator with parent ---
   const paymentStatus = authUser?.payment_status ?? "unpaid";
+
+  useEffect(() => {
+    if (!isSubmitted) return;
+    onStepChange?.(paymentStatus === "paid" ? "complete" : "payment");
+  }, [isSubmitted, paymentStatus, onStepChange]);
+
+  // --- Payment polling (only when submitted + unpaid) ---
   const entryFee = selectedDivision.entryFee;
   const stripeUrl = `${competition.stripePaymentLink}?prefilled_email=${encodeURIComponent(user.email)}`;
 
@@ -514,50 +522,31 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
 
   // --- Read-Only Submitted View ---
   if (isSubmitted) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.5 12.75l6 6 9-13.5"
-                  />
-                </svg>
-              </div>
+    // Step 3A: Payment required
+    if (paymentStatus !== "paid") {
+      return (
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div>
               <h2 className="text-2xl font-bold text-[#212223]">
-                Submission Received
+                Complete Your Payment
               </h2>
+              <p className="text-sm text-gray-500">Signed in as {user.email}</p>
             </div>
-            <p className="text-sm text-gray-500">Signed in as {user.email}</p>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="text-sm text-gray-500 hover:text-[#212223] transition-colors"
+            >
+              Sign out
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onLogout}
-            className="text-sm text-gray-500 hover:text-[#212223] transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
 
-        <p className="text-gray-600 mb-8">
-          Thank you for your submission to {competition.title}. Your entry is
-          final and cannot be edited.
-          {paymentStatus === "unpaid" &&
-            " Please complete payment below to finalize your entry."}
-        </p>
+          <p className="text-gray-600 mb-8">
+            Your submission has been saved. Please complete payment below to
+            finalize your entry.
+          </p>
 
-        {/* Payment Section */}
-        {paymentStatus === "unpaid" ? (
           <div className="border border-amber-200 bg-amber-50 p-6 mb-8">
             <p className="text-xs font-semibold text-amber-800 uppercase tracking-wide mb-4">
               Payment Required
@@ -615,28 +604,71 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
               check manually.
             </p>
           </div>
-        ) : (
-          <div className="border border-green-200 bg-green-50 p-4 mb-8 flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-              <svg
-                className="w-3.5 h-3.5 text-green-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.5 12.75l6 6 9-13.5"
-                />
-              </svg>
+        </div>
+      );
+    }
+
+    // Step 3B: Fully complete (paid)
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-[#212223]">
+                Your Application is Fully Submitted
+              </h2>
             </div>
-            <p className="text-sm text-green-800 font-medium">
-              Payment confirmed — your entry is complete.
-            </p>
+            <p className="text-sm text-gray-500">Signed in as {user.email}</p>
           </div>
-        )}
+          <button
+            type="button"
+            onClick={onLogout}
+            className="text-sm text-gray-500 hover:text-[#212223] transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
+
+        <div className="border border-green-200 bg-green-50 p-4 mb-8 flex items-center gap-3">
+          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+            <svg
+              className="w-3.5 h-3.5 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+          </div>
+          <p className="text-sm text-green-800 font-medium">
+            Payment confirmed — your entry is complete.
+          </p>
+        </div>
+
+        <p className="text-gray-600 mb-8">
+          Thank you for your submission to {competition.title}. Your entry is
+          final and cannot be edited.
+        </p>
 
         {/* Division */}
         <div className="mb-6">
@@ -1287,8 +1319,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
       </button>
 
       <p className="text-xs text-gray-400 text-center mt-3">
-        Once submitted, your entry is final and cannot be edited. You will be
-        prompted to complete the ${entryFee} entry fee after submission.
+        Once submitted, your entry is final and cannot be edited. You will
+        proceed to payment (${entryFee}) after submission.
       </p>
     </form>
   );

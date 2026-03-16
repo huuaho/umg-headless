@@ -1,17 +1,22 @@
 "use client";
 
-import { Suspense } from "react";
-import { currentCompetition } from "@/lib/competitions/current";
+import { Suspense, useState, useCallback } from "react";
 import { HostingCommittees } from "@/components/HostingCommittees";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthForm } from "./components/AuthForm";
 import { SubmissionForm } from "./components/SubmissionForm";
 
 function PhotoSubmissionContent() {
-  const competition = currentCompetition;
   const { user, isLoading, logout } = useAuth();
+  const [submissionStep, setSubmissionStep] = useState<"form" | "payment" | "complete">("form");
 
-  const step: "auth" | "submission" = !user ? "auth" : "submission";
+  const handleStepChange = useCallback((step: "form" | "payment" | "complete") => {
+    setSubmissionStep(step);
+  }, []);
+
+  // Derive step index for the indicator
+  const stepIndex = !user ? 0 : submissionStep === "form" ? 1 : 2;
+  const isComplete = submissionStep === "complete";
 
   if (isLoading) {
     return (
@@ -47,10 +52,9 @@ function PhotoSubmissionContent() {
       {/* Step indicator */}
       <section className="max-w-280 mx-auto px-6 pt-6 pb-4 text-center">
         <div className="flex items-center justify-center gap-2 mb-8">
-          {["Sign In", "Submit"].map((label, i) => {
-            const stepIndex = step === "auth" ? 0 : 1;
-            const isActive = i === stepIndex;
-            const isCompleted = i < stepIndex;
+          {["Sign In", "Submit", "Payment"].map((label, i) => {
+            const isActive = i === stepIndex && !isComplete;
+            const isCompleted = i < stepIndex || (i === stepIndex && isComplete);
 
             return (
               <div key={label} className="flex items-center gap-2">
@@ -101,11 +105,12 @@ function PhotoSubmissionContent() {
 
       {/* Content */}
       <section className="max-w-280 mx-auto px-6 pb-16">
-        {step === "auth" && <AuthForm />}
-        {step === "submission" && user && (
+        {!user && <AuthForm />}
+        {user && (
           <SubmissionForm
             user={{ email: user.email, name: user.name }}
             onLogout={logout}
+            onStepChange={handleStepChange}
           />
         )}
       </section>

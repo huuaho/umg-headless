@@ -50,8 +50,8 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 
 | Route | File | Description |
 |-------|------|-------------|
-| `/how-to-enter` | `app/how-to-enter/page.tsx` | Competition details, timeline, awards, venues, judges, rules, and sponsors ("Meet the Judges" heading links to `/judges-panel`) |
-| `/photo-submission` | `app/photo-submission/page.tsx` | Auth gate → submission form → payment → sponsors |
+| `/how-to-enter` | `app/how-to-enter/page.tsx` | Competition details, timeline, awards, venues, judges, rules, and hosting committees ("Meet the Judges" heading links to `/judges-panel`) |
+| `/photo-submission` | `app/photo-submission/page.tsx` | Auth gate → submission form → payment → rules → hosting committees |
 | `/judges-panel` | `app/judges-panel/page.tsx` | Full judge bios with anchor-scrollable cards |
 
 ## Key Files
@@ -69,6 +69,8 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 | `app/photo-submission/layout.tsx` | Wraps children in `AuthProvider` |
 | `app/photo-submission/components/AuthForm.tsx` | Email verification form |
 | `app/photo-submission/components/SubmissionForm.tsx` | Full submission form with autosave |
+| `components/CompetitionRules.tsx` | Shared competition rules section (used on how-to-enter and photo-submission pages) |
+| `components/HostingCommittees.tsx` | Shared hosting committees section (used on how-to-enter and photo-submission pages) |
 | `app/judges-panel/HashScroller.tsx` | Client-side hash anchor scroll utility |
 
 ### Backend (`docs/plugin/umg-photo-contest/`)

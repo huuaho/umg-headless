@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
+import { CompetitionRules } from "@/components/CompetitionRules";
 import { HostingCommittees } from "@/components/HostingCommittees";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthForm } from "./components/AuthForm";
@@ -110,6 +111,7 @@ function PhotoSubmissionContent() {
         )}
       </section>
 
+      <CompetitionRules />
       <HostingCommittees />
     </main>
   );

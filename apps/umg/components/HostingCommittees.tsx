@@ -7,11 +7,6 @@ const committees = [
     label: "United Media\nGroup",
   },
   {
-    src: "/images/sponsors/unesco-center-for-peace.jpg",
-    alt: "UNESCO Center for Peace",
-    label: "UNESCO Center\nFor Peace",
-  },
-  {
     src: "/images/sponsors/chennault-foundation.png",
     alt: "Chennault Foundation",
     label: "Chennault\nFoundation",
@@ -20,6 +15,11 @@ const committees = [
     src: "/images/sponsors/international-salute.png",
     alt: "MLK, Jr. International Salute Committee",
     label: "MLK, Jr. International\nSalute Committee",
+  },
+  {
+    src: "/images/sponsors/unesco-center-for-peace.jpg",
+    alt: "UNESCO Center for Peace",
+    label: "UNESCO Center\nFor Peace",
   },
 ];
 
@@ -39,7 +39,7 @@ export function HostingCommittees() {
               height={80}
               className="object-contain h-16 md:h-20 w-auto"
             />
-            <p className="text-sm md:text-base font-semibold text-[#212223] mt-3 whitespace-pre-line">
+            <p className="text-sm md:text-base font-normal text-[#212223] mt-3 whitespace-pre-line">
               {committee.label}
             </p>
           </div>

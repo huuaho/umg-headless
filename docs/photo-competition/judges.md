@@ -28,31 +28,31 @@ type Judge = {
 
 | ID | Name | Title |
 |----|------|-------|
-| `antoine-denis` | Denis Antoine | Former Ambassador of Grenada |
-| `austin-amy` | Amy Austin | President & CEO, Theatre Washington |
-| `bain-raymone` | Raymone Bain | PR & Crisis Management Expert |
-| `chanault-nell` | Nell Chanault | Community Leader |
-| `djoken-guy` | Guy Djoken | Executive Director of the UNESCO Center for Peace |
-| `du-plain-jan` | Jan Du Plain | Author & Commentator |
-| `herd-stan` | Stan Herd | Crop Artist |
-| `ishii-lisa` | Lisa Ishii | SVP Operations, Johns Hopkins |
-| `lawson-madeline` | Madeline Lawson | Education Advocate |
-| `lierman-terry` | Terry Lierman | Former Chief of Staff to House Majority Leader & Senate Appropriations Staff Director |
-| `mcphatter-renee` | Renee McPhatter | Community Organizer |
-| `qiu-philip` | Philip Qiu | Photographer |
-| `rutledge-derrick` | Derrick Rutledge | Celebrity Makeup Artist |
-| `whatley-annie` | Annie Whatley | Arts Educator |
+| `denis-antoine` | Denis Antoine | Former Ambassador of Grenada to the U.S. & United Nations |
+| `amy-austin` | Amy Austin | President & CEO, Theatre Washington |
+| `raymone-bain` | Raymone Bain | PR & Crisis Management Expert |
+| `nell-chennault` | Nell Chennault | President & CEO, Chennault Aviation & Military Museum |
+| `guy-djoken` | Guy Djoken | Executive Director of the UNESCO Center for Peace |
+| `jan-du-plain` | Jan Du Plain | CEO & President, Du Plain Global Enterprises |
+| `stan-herd` | Stan Herd | Crop Artist & Painter |
+| `lisa-ishii` | Lisa Ishii | SVP Operations, Johns Hopkins Health System |
+| `madeline-lawson` | Madeline Lawson | Founder & CEO, Institute for Multicultural Minority Medicine |
+| `terry-lierman` | Terry Lierman | Former Chief of Staff to House Majority Leader & Senate Appropriations Staff Director |
+| `renee-mcphatter` | Renee McPhatter | AVP Government & Community Relations, George Washington University |
+| `philip-qiu` | Philip Qiu | Founder & Chairman, Chinese American Museum DC |
+| `derrick-rutledge` | Derrick Rutledge | Celebrity Stylist & Makeup Artist |
+| `annie-whatley` | Annie Whatley | AVP External Relations, University of the District of Columbia |
 
 ### Judge Images
 
-Stored in `apps/umg/public/images/judges/` as PNG files, named by kebab-case judge ID:
+Stored in `apps/umg/public/images/judges/` as PNG files. Note: image filenames use `lastname-firstname.png` format, while judge IDs use `firstname-lastname` format.
 
 ```
 public/images/judges/
 ├── antoine-denis.png
 ├── austin-amy.png
 ├── bain-raymone.png
-├── chanault-nell.png
+├── chennault-nell.png
 ├── djoken-guy.png
 ├── du-plain-jan.png
 ├── herd-stan.png

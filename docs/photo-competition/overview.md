@@ -95,11 +95,11 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 - **Theme**: "My Hometown, My Lens" — hometown as place of origin and meaning
 - **Status**: Open
 - **Divisions**:
-  - Youth (ages 10–18): up to 3 photos, 100-word description, $50 entry
-  - Young Adults (ages 19–30): up to 3 photos, 200-word description + biography, $50 entry
+  - Youth (ages 10–18, including 18): up to 3 photos, 100-word description, $50 entry
+  - Young Adults (ages 18–30, excluding 18): up to 3 photos, 200-word description + biography, $50 entry
 - **Timeline**: March 2026 (open) → August 2026 (deadline) → Sept–Oct (jury review) → October (winners)
-- **Awards**: $5,000 (1st), $4,000 (2nd), $2,000 (3rd), $500 (Honorable Mention, 20 per division)
-- **Photo requirements**: JPEG/JPG only, RGB color, min 2000px on longest side, max 20MB, taken after 2025
+- **Awards**: $8,000 (1st), $4,000 (2nd), $2,000 (3rd), $500 (Honorable Mention, 20 per division)
+- **Photo requirements**: JPEG/JPG only, RGB color, min 2000px on longest side, max 20MB, taken during or after 2023
 - **Exhibition venues**: Library of Congress, Smithsonian, National Press Club, Georgetown University, Johns Hopkins University
 
 ## User Flow

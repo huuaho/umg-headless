@@ -15,42 +15,45 @@ The root config object with the following shape:
 ```typescript
 interface Competition {
   // Identity
-  id: string;                    // e.g. "my-hometown-my-lens-2026"
+  id: string;                    // e.g. "2026-youth-photography"
   slug: string;                  // URL slug
   title: string;                 // "My Hometown, My Lens"
+  subtitle: string;              // "International Youth Photography Competition"
   year: number;                  // 2026
   status: "upcoming" | "open" | "closed" | "judging" | "complete";
 
   // Content
+  themeIntro: string;            // Single paragraph theme introduction
   themeDescription: string[];    // Array of paragraphs
   timeline: CompetitionTimeline[];
   divisions: CompetitionDivision[];
   awards: CompetitionAward[];
+  exhibitionVenues: string[];    // e.g. ["Library of Congress", "Smithsonian Museum"]
 
   // Photo rules
-  allowedFormats: string[];      // ["JPEG", "JPG"]
+  acceptedFormats: string[];     // ["JPEG", "JPG"]
   colorMode: string;             // "RGB"
-  minResolution: string;         // "2000px on longest side"
-  maxFileSize: string;           // "20MB"
-  allowedDevices: string;        // "DSLR, mirrorless, smartphone"
-  recencyRequirement?: string;   // "Taken after January 1, 2025"
+  maxFileSizeMB: number;         // 20
+  minResolutionPx: number;       // 2000
+  allowedDevices: string[];      // ["camera", "tablet", "smartphone"]
 
-  // Policy texts
+  // Rules text
   aiPolicy: string;
   originalityStatement: string;
   consentStatement: string;
-  rightsUsageStatement: string;
+  rightsStatement: string;
 
   // Judging
   evaluationCriteria: EvaluationCriterion[];
-  divisionNotes: { divisionId: string; notes: string[] }[];
+  divisionJudgingNotes: Record<string, string>;
 
   // Payment
   stripePaymentLink: string;
 
-  // Exhibition
-  exhibitionNote: string;
-  venues: { name: string; image?: string }[];
+  // Submission config
+  personalInfoFields: string[];  // ["name", "dob", "address", "school", "grade", "job"]
+  exhibitionOptIn: boolean;
+  exhibitionNote: string;        // Displayed when exhibitionOptIn is true
 }
 ```
 
@@ -58,13 +61,17 @@ interface Competition {
 
 ```typescript
 interface CompetitionDivision {
-  id: string;              // "youth" | "young-adults"
-  name: string;            // "Youth" | "Young Adults"
-  ageRange: string;        // "10-18" | "19-30"
-  maxPhotos: number;       // 3
+  id: string;                // "youth" | "young-adults"
+  name: string;              // "Youth Division" | "Young Adults Division"
+  ageRange: string;          // "10–18 (including 18)" | "18–30 (excluding 18)"
+  ageMin: number;            // 10 | 19
+  ageMax: number;            // 18 | 30
+  maxPhotos: number;         // 3
   maxDescriptionWords: number; // 100 | 200
-  entryFee: string;        // "$50"
-  requirements: string[];  // Division-specific rules
+  biographyRequired: boolean;  // false (Youth) | true (Young Adults)
+  entryFee: number;          // 50
+  requirements: string[];    // Division-specific rules
+  themeDescription: string[]; // Division-specific theme guidance
 }
 ```
 
@@ -72,7 +79,7 @@ interface CompetitionDivision {
 
 ```typescript
 interface EvaluationCriterion {
-  name: string;            // e.g. "Relevance to Theme"
+  name: string;            // e.g. "Relevance to the Theme"
   description: string;     // What judges look for
 }
 ```
@@ -85,7 +92,7 @@ Note: The `maxScore` field was removed — criteria are descriptive only, not nu
 interface CompetitionAward {
   place: string;                  // "First Prize", "Second Prize", etc.
   recipientsPerDivision: number;  // e.g. 1, 2, 3, 20
-  amount: number;                 // Dollar amount (e.g. 5000)
+  amount: number;                 // Dollar amount (e.g. 8000)
 }
 ```
 
@@ -93,8 +100,8 @@ interface CompetitionAward {
 
 ```typescript
 interface CompetitionTimeline {
-  phase: string;           // "Submissions Open", "Jury Review", etc.
-  date: string;            // "March 2026", "August 2026", etc.
+  label: string;           // "Submissions Open", "Jury Review", etc.
+  date: string;            // "March 16, 2026", "August 31, 2026", etc.
   description?: string;
 }
 ```
@@ -116,8 +123,8 @@ import { currentCompetition } from "@/lib/competitions/current";
 | Title | My Hometown, My Lens |
 | Year | 2026 |
 | Entry fee | $50 per division |
-| Deadline | August 2026 |
-| 1st Prize | $5,000 |
+| Deadline | August 31, 2026 |
+| 1st Prize | $8,000 |
 | 2nd Prize | $4,000 (2 per division) |
 | 3rd Prize | $2,000 (3 per division) |
 | Honorable Mention | $500 (20 per division) |
@@ -125,11 +132,11 @@ import { currentCompetition } from "@/lib/competitions/current";
 
 ### Evaluation Criteria
 
-1. Relevance to Theme
-2. Authenticity
-3. Clarity of Perspective
-4. Visual Storytelling
-5. Humanistic Insight
+1. Relevance to the Theme
+2. Authenticity and Sincerity of Expression
+3. Clarity of Personal Perspective
+4. Visual Storytelling and Composition
+5. Humanistic Insight and Cultural Value
 6. Technical Execution
 
 ## Updating for a New Competition

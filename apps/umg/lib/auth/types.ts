@@ -36,7 +36,6 @@ export interface DraftData {
   biography: string;
   photos: DraftPhoto[];
   student_proof: DraftStudentProof | null;
-  exhibition_opt_in: boolean;
   consent_originality: boolean;
   consent_subjects: boolean;
   consent_rights: boolean;
@@ -59,7 +58,6 @@ export interface SaveDraftPayload {
     title: string;
     description: string;
   }>;
-  exhibition_opt_in: boolean;
   consent_originality: boolean;
   consent_subjects: boolean;
   consent_rights: boolean;

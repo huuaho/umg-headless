@@ -52,8 +52,6 @@ interface Competition {
 
   // Submission config
   personalInfoFields: string[];  // ["name", "dob", "address", "school", "grade", "job"]
-  exhibitionOptIn: boolean;
-  exhibitionNote: string;        // Displayed when exhibitionOptIn is true
 }
 ```
 

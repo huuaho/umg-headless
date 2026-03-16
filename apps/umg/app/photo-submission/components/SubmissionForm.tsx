@@ -62,7 +62,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     null,
   );
   const studentProofInputRef = useRef<HTMLInputElement>(null);
-  const [exhibitionOptIn, setExhibitionOptIn] = useState(false);
+
   const [consentOriginality, setConsentOriginality] = useState(false);
   const [consentSubjects, setConsentSubjects] = useState(false);
   const [consentRights, setConsentRights] = useState(false);
@@ -103,7 +103,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           setGrade(draft.grade || "");
           setJob(draft.job || "");
           setBiography(draft.biography || "");
-          setExhibitionOptIn(draft.exhibition_opt_in || false);
+
           setConsentOriginality(draft.consent_originality || false);
           setConsentSubjects(draft.consent_subjects || false);
           setConsentRights(draft.consent_rights || false);
@@ -162,7 +162,6 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             title: p.title,
             description: p.description,
           })),
-        exhibition_opt_in: exhibitionOptIn,
         consent_originality: consentOriginality,
         consent_subjects: consentSubjects,
         consent_rights: consentRights,
@@ -186,7 +185,6 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     job,
     biography,
     photos,
-    exhibitionOptIn,
     consentOriginality,
     consentSubjects,
     consentRights,
@@ -222,7 +220,6 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     grade,
     job,
     biography,
-    exhibitionOptIn,
     consentOriginality,
     consentSubjects,
     consentRights,
@@ -409,7 +406,6 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             title: p.title,
             description: p.description,
           })),
-        exhibition_opt_in: exhibitionOptIn,
         consent_originality: consentOriginality,
         consent_subjects: consentSubjects,
         consent_rights: consentRights,
@@ -737,18 +733,6 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
               Biography
             </p>
             <p className="text-sm text-gray-600">{biography}</p>
-          </div>
-        )}
-
-        {/* Exhibition */}
-        {competition.exhibitionOptIn && (
-          <div className="mb-6">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
-              Exhibition
-            </p>
-            <p className="text-sm text-gray-600">
-              {exhibitionOptIn ? "Opted in" : "Not opted in"}
-            </p>
           </div>
         )}
 
@@ -1225,26 +1209,6 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400 resize-none"
         />
       </fieldset>
-
-      {/* Exhibition Opt-In */}
-      {competition.exhibitionOptIn && (
-        <fieldset className="mb-8">
-          <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
-            Get Featured in Upcoming Exhibitions
-          </legend>
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={exhibitionOptIn}
-              onChange={(e) => setExhibitionOptIn(e.target.checked)}
-              className="mt-0.5 w-4 h-4 border-gray-300 text-[#212223] focus:ring-gray-400"
-            />
-            <span className="text-sm text-gray-600">
-              {competition.exhibitionNote}
-            </span>
-          </label>
-        </fieldset>
-      )}
 
       <CompetitionRules />
 

@@ -125,7 +125,6 @@ Returns the full draft object or 404 if none exists:
     "url": "https://api.unitedmediadc.com/wp-content/uploads/2026/03/id.pdf",
     "filename": "student-id.pdf"
   },
-  "exhibition_opt_in": true,
   "consent_originality": true,
   "consent_subjects": true,
   "consent_rights": true,
@@ -143,7 +142,6 @@ Returns the full draft object or 404 if none exists:
   "division": "youth",
   "first_name": "Jane",
   "last_name": "Doe",
-  "exhibition_opt_in": true,
   "photos": [
     { "media_id": 101, "title": "Updated Title", "description": "Updated desc" }
   ]
@@ -233,7 +231,7 @@ Changes draft status from `draft` → `submitted`, sets `submitted_at` timestamp
 | `umgpc_photo_{1-3}_title` | string | Photo title |
 | `umgpc_photo_{1-3}_description` | string | Photo description |
 | `umgpc_student_proof_id` | int | Student proof attachment ID |
-| `umgpc_exhibition_signup` | bool | Exhibition opt-in |
+
 | `umgpc_consent_originality` | bool | Originality consent |
 | `umgpc_consent_subjects` | bool | Subject consent |
 | `umgpc_consent_rights` | bool | Rights usage consent |

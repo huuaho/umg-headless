@@ -177,7 +177,4 @@ export const currentCompetition: Competition = {
 
   // Submission config
   personalInfoFields: ["name", "dob", "address", "school", "grade", "job"],
-  exhibitionOptIn: true,
-  exhibitionNote:
-    "In addition to selected award recipients, any artist may choose to participate in the exhibition program. Further information will be sent via email at a later date.",
 };

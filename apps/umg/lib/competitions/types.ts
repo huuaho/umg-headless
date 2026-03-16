@@ -68,6 +68,4 @@ export interface Competition {
 
   // Submission config
   personalInfoFields: string[];
-  exhibitionOptIn: boolean;
-  exhibitionNote: string;
 }

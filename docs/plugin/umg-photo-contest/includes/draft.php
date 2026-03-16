@@ -193,7 +193,6 @@ function umgpc_get_draft(WP_REST_Request $request) {
         'biography'           => get_post_meta($post_id, 'umgpc_biography', true) ?: '',
         'photos'              => umgpc_build_photos_array($post_id),
         'student_proof'       => umgpc_build_student_proof($post_id),
-        'exhibition_opt_in'   => (bool) get_post_meta($post_id, 'umgpc_exhibition_signup', true),
         'consent_originality' => (bool) get_post_meta($post_id, 'umgpc_consent_originality', true),
         'consent_subjects'    => (bool) get_post_meta($post_id, 'umgpc_consent_subjects', true),
         'consent_rights'      => (bool) get_post_meta($post_id, 'umgpc_consent_rights', true),
@@ -249,7 +248,6 @@ function umgpc_save_draft(WP_REST_Request $request) {
 
     // Save boolean fields
     $bool_fields = array(
-        'exhibition_opt_in'   => 'umgpc_exhibition_signup',
         'consent_originality' => 'umgpc_consent_originality',
         'consent_subjects'    => 'umgpc_consent_subjects',
         'consent_rights'      => 'umgpc_consent_rights',

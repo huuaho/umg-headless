@@ -4,6 +4,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { currentCompetition } from "@/lib/competitions/current";
 import type { CompetitionDivision } from "@/lib/competitions/types";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { DivisionCard } from "@/components/DivisionCard";
+import { PhotoRequirements } from "@/components/PhotoRequirements";
+import { CompetitionRules } from "@/components/CompetitionRules";
 import {
   loadDraft as apiLoadDraft,
   saveDraft as apiSaveDraft,
@@ -316,7 +319,12 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     const file = e.target.files?.[0];
     if (!file || !token) return;
 
-    const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
     if (!validTypes.includes(file.type)) {
       setError("Only JPEG, PNG, or PDF files are accepted for student proof.");
       return;
@@ -438,7 +446,9 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     school.trim() &&
     grade;
 
-  const studentProofValid = !!(studentProof?.mediaId && !studentProof.isUploading);
+  const studentProofValid = !!(
+    studentProof?.mediaId && !studentProof.isUploading
+  );
 
   const canSubmit =
     personalInfoValid &&
@@ -851,6 +861,12 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         </div>
       </fieldset>
 
+      <DivisionCard divisionId={divisionId} />
+
+      <PhotoRequirements />
+
+      <hr className="border-gray-200 my-8" />
+
       {/* Personal Information */}
       <fieldset className="mb-8">
         <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
@@ -986,7 +1002,9 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
                 <option value="10th Grade">10th Grade</option>
                 <option value="11th Grade">11th Grade</option>
                 <option value="12th Grade">12th Grade</option>
-                <option value="Undergraduate Student">Undergraduate Student</option>
+                <option value="Undergraduate Student">
+                  Undergraduate Student
+                </option>
                 <option value="Graduate Student">Graduate Student</option>
               </select>
             </div>
@@ -1205,6 +1223,9 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
       {/* Exhibition Opt-In */}
       {competition.exhibitionOptIn && (
         <fieldset className="mb-8">
+          <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+            Get Featured in Upcoming Exhibitions
+          </legend>
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
@@ -1218,6 +1239,8 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           </label>
         </fieldset>
       )}
+
+      <CompetitionRules />
 
       {/* Consent Checkboxes */}
       <fieldset className="mb-8">

@@ -281,3 +281,22 @@ Runs weekly (`umgpc_cleanup_orphaned_drafts`):
 - Deletes attached media (photos + proof) from Media Library
 - Deletes the draft post
 - Processes up to 50 drafts per run
+
+## Future: Judges Viewing Panel
+
+A judges viewing panel will be built to let judges review and score submissions.
+
+### Filtering paid submissions
+
+- Query `umg_submission` posts where `umgpc_status = submitted`
+- Join with the submission author's `umgpc_payment_status` user meta — only show submissions where `payment_status = paid`
+- Unpaid submissions should be excluded from the judges' view entirely
+
+### Payment model limitation
+
+Payment is currently tracked **per-user** (user meta `umgpc_payment_status`), not per-submission. This works as long as each user has one submission — one payment covers their single entry.
+
+If we later support multiple submissions per user (e.g. entering both divisions separately with separate payments), payment tracking must move to **post meta on `umg_submission`**. This would require:
+- Server-side Stripe Checkout Session creation with submission ID in metadata
+- Webhook rework to match payments to specific submissions instead of users
+- A new post meta field (e.g. `umgpc_payment_status`) on the submission post

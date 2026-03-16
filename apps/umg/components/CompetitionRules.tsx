@@ -12,7 +12,7 @@ export function CompetitionRules() {
               <li><strong>Verification of Compliance:</strong> The organizer reserves the right to verify original works and source materials to confirm they comply with these competition rules.</li>
               <li><strong>Acceptance of Terms:</strong> By completing the registration, you acknowledge and accept all rules and regulations of this competition.</li>
               <li><strong>Right to Verify Identity:</strong> The organizer reserves the right to verify the identity, address, and validity of any entrant. Any entrant who fails to comply with the official rules or interferes with the competition process by improper means may be disqualified. The organizer{"\u2019"}s failure to exercise this right promptly at any stage does not constitute a waiver of this right.</li>
-              <li><strong>Originality:</strong> All submitted work must be original and created solely by the participant. Collaborative works are not accepted.</li>
+              <li><strong>Originality:</strong> All submitted work must be original and created solely by the participant. Collaborative works are not accepted. Photographs should be free of signatures, watermarks, logos, names, borders, and frames.</li>
             </ul>
           </div>
 
@@ -97,7 +97,7 @@ export function CompetitionRules() {
             <h3 className="text-sm font-semibold text-[#212223] mb-2">8. Modification, Cancellation, and Force Majeure</h3>
             <ul className="space-y-2 list-disc pl-4">
               <li><strong>Interpretation and Amendments:</strong> Matters not covered in these rules shall be handled in accordance with detailed award descriptions. The organizer reserves the right to interpret, amend, and supplement these rules.</li>
-              <li><strong>Right to Cancel or Suspend:</strong> If the competition cannot proceed as planned due to computer viruses, bugs, tampering, unauthorized intervention, fraud, technical failures, force majeure, or any other cause beyond the control of the organizer that corrupts or affects the administration, security, fairness, integrity, or proper conduct of the competition, the organizer reserves the right to:
+              <li><strong>Right to Cancel or Suspend:</strong> If the competition cannot proceed as planned due to insufficient submissions, computer viruses, bugs, tampering, unauthorized intervention, fraud, technical failures, force majeure, or any other cause beyond the control of the organizer that corrupts or affects the administration, security, fairness, integrity, or proper conduct of the competition, the organizer reserves the right to:
                 <ul className="mt-1 space-y-1 list-disc pl-4">
                   <li>Disqualify any individual attempting to tamper with the process.</li>
                   <li>Cancel, terminate, modify, or suspend the competition.</li>
@@ -110,7 +110,8 @@ export function CompetitionRules() {
 
           <div>
             <h3 className="text-sm font-semibold text-[#212223] mb-2">9. Exhibition Disclaimer</h3>
-            <p>The information provided regarding exhibition locations, schedules, and featured artworks is accurate at the time of publication. However, all elements are subject to change. The organizers reserve the right to make alterations without prior notification. We recommend checking our official website and social media channels for the most current information.</p>
+            <p className="mb-2">The information provided regarding exhibition locations, schedules, and featured artworks is accurate at the time of publication. However, all elements are subject to change. The organizers reserve the right to make alterations without prior notification. We recommend checking our official website and social media channels for the most current information.</p>
+            <p>All photographs of exhibition locations displayed on this website are the exclusive property of United Media Group LLC and are protected by copyright laws. These images are provided for informational and viewing purposes only. Unauthorized downloading, copying, reproduction, or distribution of any image is strictly prohibited and may result in legal action.</p>
           </div>
         </div>
       </div>

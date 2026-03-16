@@ -54,7 +54,7 @@ export default function RootLayout({
         />
         {children}
         <Footer
-          logoUrl="/umg-logo-black.png"
+          logoUrl="/umg-logo-black.svg"
           logoAlt="United Media Group"
           categories={categories}
           companies={mediaCompanies}

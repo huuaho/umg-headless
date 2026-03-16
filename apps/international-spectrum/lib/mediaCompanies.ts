@@ -12,8 +12,8 @@ export const mediaCompanies: MediaCompany[] = [
     description:
       "A network of media companies committed to sharing stories that inspire hope, connection, and positive change.",
     url: "https://www.unitedmediadc.com/",
-    logo: "/images/banner/umg-masthead.png",
-    logoBW: "/images/banner/umg-masthead-black.png",
+    logo: "/images/banner/umg-masthead.svg",
+    logoBW: "/images/banner/umg-masthead-black.svg",
   },
   {
     name: "Echo Media",

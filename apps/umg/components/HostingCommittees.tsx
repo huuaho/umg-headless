@@ -2,6 +2,11 @@ import Image from "next/image";
 
 const committees = [
   {
+    src: "/umg-logo.svg",
+    alt: "United Media Group",
+    label: "United Media\nGroup",
+  },
+  {
     src: "/images/sponsors/unesco-center-for-peace.jpg",
     alt: "UNESCO Center for Peace",
     label: "UNESCO Center\nFor Peace",
@@ -15,11 +20,6 @@ const committees = [
     src: "/images/sponsors/international-salute.png",
     alt: "International Salute to the Life of MLK Jr.",
     label: "International Salute to\nthe Life of MLK Jr.",
-  },
-  {
-    src: "/umg-logo.svg",
-    alt: "United Media Group",
-    label: "United Media\nGroup",
   },
 ];
 

@@ -129,6 +129,7 @@ Returns the full draft object or 404 if none exists:
   "consent_originality": true,
   "consent_subjects": true,
   "consent_rights": true,
+  "consent_rules": true,
   "submitted_at": null
 }
 ```
@@ -236,6 +237,7 @@ Changes draft status from `draft` → `submitted`, sets `submitted_at` timestamp
 | `umgpc_consent_originality` | bool | Originality consent |
 | `umgpc_consent_subjects` | bool | Subject consent |
 | `umgpc_consent_rights` | bool | Rights usage consent |
+| `umgpc_consent_rules` | bool | Rules & terms consent |
 | `umgpc_submitted_at` | string | Submission timestamp |
 
 ### User Meta Fields

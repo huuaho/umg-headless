@@ -66,6 +66,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const [consentOriginality, setConsentOriginality] = useState(false);
   const [consentSubjects, setConsentSubjects] = useState(false);
   const [consentRights, setConsentRights] = useState(false);
+  const [consentRules, setConsentRules] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoadingDraft, setIsLoadingDraft] = useState(true);
@@ -106,6 +107,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
           setConsentOriginality(draft.consent_originality || false);
           setConsentSubjects(draft.consent_subjects || false);
           setConsentRights(draft.consent_rights || false);
+          setConsentRules(draft.consent_rules || false);
           if (draft.photos?.length) {
             setPhotos(
               draft.photos.map((p) => ({
@@ -164,6 +166,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         consent_originality: consentOriginality,
         consent_subjects: consentSubjects,
         consent_rights: consentRights,
+        consent_rules: consentRules,
       });
       setSaveStatus("saved");
     } catch {
@@ -187,6 +190,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
     consentOriginality,
     consentSubjects,
     consentRights,
+    consentRules,
   ]);
 
   // Extract photo metadata for dependency tracking
@@ -409,6 +413,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
         consent_originality: consentOriginality,
         consent_subjects: consentSubjects,
         consent_rights: consentRights,
+        consent_rules: consentRules,
       });
 
       // Finalize submission
@@ -437,7 +442,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
   const biographyValid =
     !selectedDivision.biographyRequired || biography.trim().length > 0;
   const allConsentsChecked =
-    consentOriginality && consentSubjects && consentRights;
+    consentOriginality && consentSubjects && consentRights && consentRules;
   const personalInfoValid =
     firstName.trim() &&
     lastName.trim() &&
@@ -1284,6 +1289,21 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             />
             <span className="text-sm text-gray-600">
               {competition.rightsStatement}
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentRules}
+              onChange={(e) => setConsentRules(e.target.checked)}
+              required
+              className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+            />
+            <span className="text-sm text-gray-600">
+              I acknowledge that I have reviewed and agree to the Official
+              Competition Rules and Terms & Conditions, and I waive any right to
+              contest the outcome or administration of the competition.
             </span>
           </label>
         </div>

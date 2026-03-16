@@ -197,6 +197,7 @@ function umgpc_get_draft(WP_REST_Request $request) {
         'consent_originality' => (bool) get_post_meta($post_id, 'umgpc_consent_originality', true),
         'consent_subjects'    => (bool) get_post_meta($post_id, 'umgpc_consent_subjects', true),
         'consent_rights'      => (bool) get_post_meta($post_id, 'umgpc_consent_rights', true),
+        'consent_rules'       => (bool) get_post_meta($post_id, 'umgpc_consent_rules', true),
         'submitted_at'        => get_post_meta($post_id, 'umgpc_submitted_at', true) ?: null,
     ));
 }
@@ -252,6 +253,7 @@ function umgpc_save_draft(WP_REST_Request $request) {
         'consent_originality' => 'umgpc_consent_originality',
         'consent_subjects'    => 'umgpc_consent_subjects',
         'consent_rights'      => 'umgpc_consent_rights',
+        'consent_rules'       => 'umgpc_consent_rules',
     );
 
     foreach ($bool_fields as $param => $meta_key) {

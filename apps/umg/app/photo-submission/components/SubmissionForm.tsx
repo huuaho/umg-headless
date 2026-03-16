@@ -761,6 +761,7 @@ export function SubmissionForm({ user, onLogout }: SubmissionFormProps) {
             <p>Originality & AI policy: Confirmed</p>
             <p>Subject consent: Confirmed</p>
             <p>Rights & usage: Confirmed</p>
+            <p>Rules & terms: Confirmed</p>
           </div>
         </div>
 

@@ -416,6 +416,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
       // Finalize submission
       await apiSubmitEntry(token);
       setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(
         err instanceof Error

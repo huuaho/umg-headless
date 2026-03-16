@@ -69,6 +69,8 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 | `app/photo-submission/layout.tsx` | Wraps children in `AuthProvider` |
 | `app/photo-submission/components/AuthForm.tsx` | Email verification form |
 | `app/photo-submission/components/SubmissionForm.tsx` | Full submission form with autosave |
+| `components/CompetitionDivisions.tsx` | Shared divisions section with Youth and Young Adult cards |
+| `components/PhotoRequirements.tsx` | Shared photo requirements section (format, resolution, file size) |
 | `components/CompetitionRules.tsx` | Shared competition rules section (used on how-to-enter and photo-submission pages) |
 | `components/HostingCommittees.tsx` | Shared hosting committees section (used on how-to-enter and photo-submission pages) |
 | `app/judges-panel/HashScroller.tsx` | Client-side hash anchor scroll utility |

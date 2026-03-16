@@ -57,11 +57,11 @@ export const judges: Judge[] = [
     image: "/images/judges/bain-raymone.png",
   },
   {
-    id: "nell-chanault",
-    name: "Nell Chanault",
+    id: "nell-chennault",
+    name: "Nell Chennault",
     title: "President & CEO, Chennault Aviation & Military Museum",
     bio: "Nell Chennault Calloway is President and CEO of the Chennault Aviation and Military Museum, where she has led the institution since 2016 following her earlier role as Museum Director. As the granddaughter of General Claire Chennault, founder of the Flying Tigers, she is deeply committed to preserving and advancing his legacy through museum leadership, public education, and international outreach. A dedicated advocate for World War II veterans and their families, she works closely with veteran organizations and cultural institutions across the United States and Asia to promote historical understanding and strengthen cross-cultural connections.",
-    image: "/images/judges/chanault-nell.png",
+    image: "/images/judges/chennault-nell.png",
   },
   {
     id: "guy-djoken",

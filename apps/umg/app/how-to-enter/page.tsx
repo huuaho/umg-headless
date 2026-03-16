@@ -178,11 +178,11 @@ export default function HowToEnterPage() {
             </div>
           ))}
         </div>
-        <p className="text-gray-600 text-center mt-8 max-w-2xl mx-auto">
-          Would you like your photography to be featured in the upcoming
-          exhibitions? There is an additional fee to participate, and artists
-          will receive a payment link via email at a future date.
-        </p>
+        {competition.exhibitionNote && (
+          <p className="text-gray-600 text-center mt-8 max-w-2xl mx-auto">
+            {competition.exhibitionNote}
+          </p>
+        )}
       </section>
 
       {/* Evaluation Criteria */}

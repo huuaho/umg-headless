@@ -45,6 +45,7 @@ export interface Competition {
   divisions: CompetitionDivision[];
   awards: CompetitionAward[];
   exhibitionVenues: string[];
+  exhibitionNote?: string;
 
   // Photo rules
   acceptedFormats: string[];

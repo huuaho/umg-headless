@@ -110,6 +110,8 @@ export const currentCompetition: Competition = {
     "Georgetown University",
     "Johns Hopkins University",
   ],
+  exhibitionNote:
+    "Would you like to be featured in the upcoming exhibitions? There is an additional fee to participate, and artists will receive a payment link via email at a future date.",
 
   // Photo rules
   acceptedFormats: ["JPEG", "JPG"],

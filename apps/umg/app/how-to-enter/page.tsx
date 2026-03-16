@@ -11,7 +11,7 @@ const competition = currentCompetition;
 
 const venueImages: Record<string, string> = {
   "Library of Congress": "/images/venues/library-of-congress.jpg",
-  "Smithsonian Museum": "/images/venues/smithsonian-museum.webp",
+  "Smithsonian Museum": "/images/venues/smithsonian-museum.jpg",
   "Press Club": "/images/venues/press-club.jpg",
   "Georgetown University": "/images/venues/georgetown-university.jpg",
   "Johns Hopkins University": "/images/venues/johns-hopkins-university.jpg",

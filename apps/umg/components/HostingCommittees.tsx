@@ -18,8 +18,8 @@ const committees = [
   },
   {
     src: "/images/sponsors/international-salute.png",
-    alt: "International Salute to the Life of MLK Jr.",
-    label: "International Salute to\nthe Life of MLK Jr.",
+    alt: "MLK, Jr. International Salute Committee",
+    label: "MLK, Jr. International\nSalute Committee",
   },
 ];
 

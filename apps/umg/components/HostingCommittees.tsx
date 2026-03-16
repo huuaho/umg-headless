@@ -29,7 +29,7 @@ export function HostingCommittees() {
       <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
         Hosting Committees
       </h2>
-      <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 max-w-3xl mx-auto">
+      <div className="grid grid-cols-2 place-items-center gap-10 md:gap-16 max-w-2xl mx-auto">
         {committees.map((committee) => (
           <div key={committee.alt} className="flex flex-col items-center text-center w-36 md:w-44">
             <Image

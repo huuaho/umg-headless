@@ -111,7 +111,7 @@ export function CompetitionRules() {
           <div>
             <h3 className="text-sm font-semibold text-[#212223] mb-2">9. Exhibition Disclaimer</h3>
             <p className="mb-2">The information provided regarding exhibition locations, schedules, and featured artworks is accurate at the time of publication. However, all elements are subject to change. The organizers reserve the right to make alterations without prior notification. We recommend checking our official website and social media channels for the most current information.</p>
-            <p>All photographs of exhibition locations displayed on this website are the exclusive property of United Media Group LLC and are protected by copyright laws. These images are provided for informational and viewing purposes only. Unauthorized downloading, copying, reproduction, or distribution of any image is strictly prohibited and may result in legal action.</p>
+            <p>All photographs of exhibition locations displayed on this website are used under license by United Media Group LLC. These images are the exclusive property of their respective owners and are protected by copyright laws. They are provided for informational and viewing purposes only. Unauthorized downloading, copying, reproduction, or distribution of any image is strictly prohibited and may result in legal action.</p>
           </div>
         </div>
       </div>

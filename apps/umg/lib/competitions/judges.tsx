@@ -57,6 +57,13 @@ export const judges: Judge[] = [
     image: "/images/judges/bain-raymone.png",
   },
   {
+    id: "taryn-carroll",
+    name: "Taryn Carroll",
+    title: "Senate Media Photographer, Maryland Senate",
+    bio: "Taryn Carroll is a photographer and media professional currently serving as a Senate Media Photographer with the Maryland Senate. Her work focuses on visual storytelling within public service and government settings. She holds a Bachelor of Arts in Communication from Clemson University, where she graduated cum laude and was a scholarship student-athlete and captain of the NCAA Division I women\u2019s rowing team. Her interdisciplinary background reflects a strong commitment to both visual communication and public impact.",
+    image: "/images/judges/carroll-taryn.png",
+  },
+  {
     id: "nell-chennault",
     name: "Nell Chennault",
     title: "President & CEO, Chennault Aviation & Military Museum",

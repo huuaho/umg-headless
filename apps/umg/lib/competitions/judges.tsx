@@ -15,14 +15,16 @@ export const judges: Judge[] = [
     title: "Former Ambassador of Grenada to the U.S. & United Nations",
     bio: (
       <>
-        Dr. Denis G. Antoine is a distinguished diplomat and former Ambassador of
-        Grenada to China, the United Nations, and the United States, where he
+        Dr. Denis G. Antoine is a distinguished diplomat and former Ambassador
+        of Grenada to China, the United Nations, and the United States, where he
         also served as Vice President of the 69th United Nations General
         Assembly. With decades of experience in international relations,
         education, and public service, he has held leadership roles at the
         University of the District of Columbia and numerous nonprofit
         organizations. He is the author of{" "}
-        <em>Effective Diplomacy {"\u2013"} A Practitioner{"\u2019"}s Guide</em>{" "}
+        <em>
+          Effective Diplomacy {"\u2013"} A Practitioner{"\u2019"}s Guide
+        </em>{" "}
         and <em>Voice of Representation</em>, and his work has been recognized
         with the Martin Luther King Jr. Legacy Award for his contributions to
         diplomacy and global engagement.
@@ -41,10 +43,10 @@ export const judges: Judge[] = [
         award-winning local alternative news outlet known for long-form local
         journalism and in-depth arts coverage. She is a member of the Leadership
         Greater Washington, former board chair of The Theatre Lab, serves on the
-        board of Destination DC, and received the John Conyers Jr. Advocacy Award
-        from the DC Jazz Festival. She is committed to theatre arts and education
-        as essential to the human experience, fostering shared empathy,
-        understanding, and joy.
+        board of Destination DC, and received the John Conyers Jr. Advocacy
+        Award from the DC Jazz Festival. She is committed to theatre arts and
+        education as essential to the human experience, fostering shared
+        empathy, understanding, and joy.
       </>
     ),
     image: "/images/judges/austin-amy.png",
@@ -101,14 +103,16 @@ export const judges: Judge[] = [
   {
     id: "madeline-lawson",
     name: "Madeline Lawson",
-    title: "Founder & CEO, Institute for Multicultural Minority Medicine",
+    title:
+      "CEO of Institute for the Advancement of Multicultural & Minority Medicine",
     bio: "Madeline Y. Lawson is the founder and CEO of the Institute for the Advancement of Multicultural Minority Medicine and Founder and Chair of the International Salute to Dr. Martin Luther King, Jr., an annual program dedicated to honoring Dr. King\u2019s legacy. A recognized leader in advancing equity and reducing health disparities, she has held senior leadership roles with organizations including St. Jude Children\u2019s Research Hospital, the National Medical Association, Howard University, the U.S. Department of Health and Human Services, and the U.S. Food and Drug Administration. Her work focuses on education, advocacy, and strengthening multicultural and underserved communities.",
     image: "/images/judges/lawson-madeline.png",
   },
   {
     id: "terry-lierman",
     name: "Terry Lierman",
-    title: "Former Chief of Staff to House Majority Leader & Senate Appropriations Staff Director",
+    title:
+      "Former Chief of Staff to House Majority Leader & Senate Appropriations Staff Director",
     bio: "Terry Lierman is a founding partner of Summit Global Ventures, LLC, and a senior advisor with more than 35 years of experience in communications, public affairs, and government relations. He previously served as Chief of Staff to U.S. House Majority Leader Steny Hoyer and as Staff Director of the U.S. Senate Appropriations Committee. Throughout his career, he has advised businesses, universities, and public institutions and has held leadership roles on numerous nonprofit and healthcare boards, contributing to national initiatives in public policy, health, and research.",
     image: "/images/judges/lierman-terry.png",
   },

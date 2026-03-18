@@ -15,6 +15,7 @@ const committees = [
     src: "/images/sponsors/international-salute.png",
     alt: "MLK, Jr. International Salute Committee",
     label: "MLK, Jr. International\nSalute Committee",
+    href: "http://www.mlkinternationalsalute.org/",
   },
   {
     src: "/images/sponsors/unesco-center-for-peace.jpg",
@@ -30,20 +31,37 @@ export function HostingCommittees() {
         Hosting Committees
       </h2>
       <div className="grid grid-cols-2 place-items-center gap-10 md:gap-16 max-w-2xl mx-auto">
-        {committees.map((committee) => (
-          <div key={committee.alt} className="flex flex-col items-center text-center w-36 md:w-44">
-            <Image
-              src={committee.src}
-              alt={committee.alt}
-              width={180}
-              height={80}
-              className="object-contain h-16 md:h-20 w-auto"
-            />
-            <p className="text-sm md:text-base font-normal text-[#212223] mt-3 whitespace-pre-line">
-              {committee.label}
-            </p>
-          </div>
-        ))}
+        {committees.map((committee) => {
+          const content = (
+            <>
+              <Image
+                src={committee.src}
+                alt={committee.alt}
+                width={180}
+                height={80}
+                className="object-contain h-16 md:h-20 w-auto"
+              />
+              <p className="text-sm md:text-base font-normal text-[#212223] mt-3 whitespace-pre-line">
+                {committee.label}
+              </p>
+            </>
+          );
+          return committee.href ? (
+            <a
+              key={committee.alt}
+              href={committee.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center text-center w-36 md:w-44"
+            >
+              {content}
+            </a>
+          ) : (
+            <div key={committee.alt} className="flex flex-col items-center text-center w-36 md:w-44">
+              {content}
+            </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -40,6 +40,8 @@ export interface DraftData {
   consent_subjects: boolean;
   consent_rights: boolean;
   consent_rules: boolean;
+  consent_social_media: boolean;
+  social_links: string;
   submitted_at: string | null;
 }
 
@@ -62,6 +64,8 @@ export interface SaveDraftPayload {
   consent_subjects: boolean;
   consent_rights: boolean;
   consent_rules: boolean;
+  consent_social_media: boolean;
+  social_links: string;
 }
 
 export interface UploadPhotoResponse {

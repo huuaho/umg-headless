@@ -68,6 +68,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
   const [consentSubjects, setConsentSubjects] = useState(false);
   const [consentRights, setConsentRights] = useState(false);
   const [consentRules, setConsentRules] = useState(false);
+  const [consentSocialMedia, setConsentSocialMedia] = useState(false);
+  const [socialLinks, setSocialLinks] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoadingDraft, setIsLoadingDraft] = useState(true);
@@ -109,6 +111,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
           setConsentSubjects(draft.consent_subjects || false);
           setConsentRights(draft.consent_rights || false);
           setConsentRules(draft.consent_rules || false);
+          setConsentSocialMedia(draft.consent_social_media || false);
+          setSocialLinks(draft.social_links || "");
           if (draft.photos?.length) {
             setPhotos(
               draft.photos.map((p) => ({
@@ -167,6 +171,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
         consent_subjects: consentSubjects,
         consent_rights: consentRights,
         consent_rules: consentRules,
+        consent_social_media: consentSocialMedia,
+        social_links: socialLinks,
       });
       setSaveStatus("saved");
     } catch {
@@ -190,6 +196,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
     consentSubjects,
     consentRights,
     consentRules,
+    consentSocialMedia,
+    socialLinks,
   ]);
 
   // Extract photo metadata for dependency tracking
@@ -224,6 +232,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
     consentOriginality,
     consentSubjects,
     consentRights,
+    consentSocialMedia,
+    socialLinks,
     photoMetaKey,
   ]);
 
@@ -411,6 +421,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
         consent_subjects: consentSubjects,
         consent_rights: consentRights,
         consent_rules: consentRules,
+        consent_social_media: consentSocialMedia,
+        social_links: socialLinks,
       });
 
       // Finalize submission
@@ -779,6 +791,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
             <p>Subject consent: Confirmed</p>
             <p>Rights & usage: Confirmed</p>
             <p>Rules & terms: Confirmed</p>
+            <p>Social media consent: {consentSocialMedia ? "Granted" : "Not granted"}</p>
+            {socialLinks && <p>Social links: {socialLinks}</p>}
           </div>
         </div>
 
@@ -1244,6 +1258,41 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
       </fieldset>
 
       <CompetitionRules />
+
+      {/* Social Media Consent */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Social Media Consent Agreement
+        </legend>
+        <label className="flex items-start gap-3 cursor-pointer mb-4">
+          <input
+            type="checkbox"
+            checked={consentSocialMedia}
+            onChange={(e) => setConsentSocialMedia(e.target.checked)}
+            className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+          />
+          <span className="text-sm text-gray-600">
+            I grant United Media Group, LLC permission to share my submitted
+            photograph(s) on its official social media channels, including but
+            not limited to Instagram, Facebook, LinkedIn, and X (Twitter), with
+            appropriate credit given to the photographer for purposes of
+            promoting the International Youth Photography Competition.
+          </span>
+        </label>
+        <div>
+          <label className="block text-sm font-medium text-[#212223] mb-1">
+            Enter your social links here{" "}
+            <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <textarea
+            value={socialLinks}
+            onChange={(e) => setSocialLinks(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400 resize-none"
+            placeholder="e.g. instagram.com/yourhandle, twitter.com/yourhandle"
+          />
+        </div>
+      </fieldset>
 
       {/* Consent Checkboxes */}
       <fieldset className="mb-8">

@@ -197,6 +197,8 @@ function umgpc_get_draft(WP_REST_Request $request) {
         'consent_subjects'    => (bool) get_post_meta($post_id, 'umgpc_consent_subjects', true),
         'consent_rights'      => (bool) get_post_meta($post_id, 'umgpc_consent_rights', true),
         'consent_rules'       => (bool) get_post_meta($post_id, 'umgpc_consent_rules', true),
+        'consent_social_media' => (bool) get_post_meta($post_id, 'umgpc_consent_social_media', true),
+        'social_links'         => get_post_meta($post_id, 'umgpc_social_links', true) ?: '',
         'submitted_at'        => get_post_meta($post_id, 'umgpc_submitted_at', true) ?: null,
     ));
 }
@@ -238,6 +240,7 @@ function umgpc_save_draft(WP_REST_Request $request) {
         'grade'        => 'umgpc_grade',
         'job'         => 'umgpc_job',
         'biography'   => 'umgpc_biography',
+        'social_links' => 'umgpc_social_links',
     );
 
     foreach ($text_fields as $param => $meta_key) {
@@ -252,6 +255,7 @@ function umgpc_save_draft(WP_REST_Request $request) {
         'consent_subjects'    => 'umgpc_consent_subjects',
         'consent_rights'      => 'umgpc_consent_rights',
         'consent_rules'       => 'umgpc_consent_rules',
+        'consent_social_media' => 'umgpc_consent_social_media',
     );
 
     foreach ($bool_fields as $param => $meta_key) {

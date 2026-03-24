@@ -104,7 +104,7 @@ export default function AboutUsPage() {
             We welcome you to connect with us.
           </p>
           <a
-            href="mailto:unitedmediagroup196@gmail.com"
+            href="mailto:info@unitedmediadc.com"
             className="inline-block px-8 py-3 border border-white text-white font-medium hover:bg-white hover:text-[#212223] transition-colors"
           >
             Get In Touch

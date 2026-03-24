@@ -22,6 +22,7 @@ export interface HeaderProps {
   categories: NavCategory[];
   bannerCompanies: BannerCompany[];
   extraLinks?: { label: string; href: string }[];
+  announcementBanner?: { text: string; href: string };
 }
 
 function ChevronDown({ className }: { className?: string }) {
@@ -104,6 +105,7 @@ export default function Header({
   categories,
   bannerCompanies,
   extraLinks,
+  announcementBanner,
 }: HeaderProps) {
   // Compute category splits for responsive nav
   const mainCategories = categories.slice(0, 2);
@@ -382,9 +384,26 @@ export default function Header({
         </div>
       </div>
 
+      {/* Announcement Banner - Optional scrolling text banner */}
+      {announcementBanner && (
+        <Link href={announcementBanner.href} className="block bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] hover:opacity-90 transition-opacity">
+          <div className="max-w-[1440px] mx-auto overflow-hidden">
+            <div className="h-8 flex items-center">
+              <div className="animate-marquee flex shrink-0 items-center">
+                {[...Array(4)].map((_, i) => (
+                  <span key={i} className="text-[#1565A0] text-sm font-semibold whitespace-nowrap mx-16">
+                    {announcementBanner.text}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Link>
+      )}
+
       {/* Mobile Menu - Full Screen Below Header + Banner */}
       {mobileMenuOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-50 bg-white md:hidden overflow-y-auto border-t border-gray-300 pt-4" style={{ top: '6rem' }}>
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-white md:hidden overflow-y-auto border-t border-gray-300 pt-4" style={{ top: announcementBanner ? '8rem' : '6rem' }}>
           {/* Mobile Search (hidden on search page) */}
           {!isSearchPage && (
             <div className="px-4 pt-4 pb-8 flex justify-center">

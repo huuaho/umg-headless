@@ -51,6 +51,10 @@ export default function RootLayout({
           extraLinks={[
             { label: "2026 International Youth Photography Competition", href: "/how-to-enter" },
           ]}
+          announcementBanner={{
+            text: "2026 International Youth Photography Competition: My Hometown, My Lens",
+            href: "/how-to-enter",
+          }}
         />
         {children}
         <Footer

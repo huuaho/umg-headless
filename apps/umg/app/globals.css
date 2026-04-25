@@ -32,6 +32,16 @@ body {
   animation-play-state: paused;
 }
 
+/* Platform brand colors */
+:root {
+  --color-dw: #1a3578;
+  --color-dw-tagline: #2e5cb8;
+  --color-em: #2d6a2e;
+  --color-em-tagline: #4a8c3f;
+  --color-is: #8b4513;
+  --color-is-tagline: #c0542b;
+}
+
 /* Remove bottom border from last section to avoid clash with footer's top border */
 main > section:last-of-type {
   border-bottom: none;

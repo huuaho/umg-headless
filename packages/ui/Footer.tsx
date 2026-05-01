@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { NavCategory, BannerCompany } from "./Header";
+import NewsletterSignup from "./NewsletterSignup";
 
 export interface FooterProps {
   logoUrl: string;
@@ -9,6 +10,7 @@ export interface FooterProps {
   email: string;
   copyright: string;
   socials?: { platform: string; url: string }[];
+  apiBaseUrl?: string;
 }
 
 export default function Footer({
@@ -19,6 +21,7 @@ export default function Footer({
   email,
   copyright,
   socials,
+  apiBaseUrl,
 }: FooterProps) {
   const socialIcons: Record<string, React.ReactNode> = {
     x: (
@@ -60,6 +63,15 @@ export default function Footer({
           </div>
         </div>
       </div>
+
+      {/* Newsletter Signup */}
+      {apiBaseUrl && (
+        <div className="border-t border-gray-300">
+          <div className="max-w-325 mx-auto px-6 py-8">
+            <NewsletterSignup apiBaseUrl={apiBaseUrl} />
+          </div>
+        </div>
+      )}
 
       {/* Row 2: Content */}
       <div>

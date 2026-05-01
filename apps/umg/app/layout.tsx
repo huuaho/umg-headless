@@ -68,6 +68,7 @@ export default function RootLayout({
             { platform: "x", url: "https://x.com/unitedmedia_dc" },
             { platform: "instagram", url: "https://www.instagram.com/unitedmediagroupdc/" },
           ]}
+          apiBaseUrl={process.env.NEXT_PUBLIC_WP_API_URL}
         />
       </body>
     </html>

@@ -11,6 +11,7 @@ export { default as Header } from "./Header";
 export type { HeaderProps, NavCategory, BannerCompany } from "./Header";
 export { default as Footer } from "./Footer";
 export type { FooterProps } from "./Footer";
+export { default as NewsletterSignup } from "./NewsletterSignup";
 export { default as ArticleLink } from "./ArticleLink";
 export { default as ArticleLayout } from "./article/ArticleLayout";
 export { default as NotFoundPage } from "./NotFoundPage";

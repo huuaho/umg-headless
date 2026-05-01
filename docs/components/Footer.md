@@ -15,6 +15,7 @@ interface FooterProps {
   email: string;                // Contact email address
   copyright: string;            // Copyright text (e.g., "© 2025 Echo Media")
   socials?: { platform: string; url: string }[]; // Social media links (optional)
+  apiBaseUrl?: string;          // WordPress API base URL — enables newsletter signup form
 }
 ```
 
@@ -28,12 +29,24 @@ The `socials` prop accepts an array of platform/url pairs. Built-in icons are pr
 
 Icons are rendered as inline SVGs (24x24 viewBox, `w-5 h-5`). They appear in the meta column (desktop: right-aligned, mobile: centered) between the Contact Us link and copyright text.
 
+### Newsletter Signup (optional)
+
+The `apiBaseUrl` prop enables an inline newsletter signup form powered by the `NewsletterSignup` component. When provided, a "Stay Updated" section with an email input and subscribe button renders between the logo row and the content area. The form submits to `POST {apiBaseUrl}/umg/v1/subscribe` (handled by the `umg-newsletter` WordPress plugin). See `docs/plugin/umg-newsletter.md` for backend details.
+
+Currently only UMG passes this prop. Other sites can opt in by adding `apiBaseUrl` to their Footer invocation.
+
 ## Layout
 
 ### Row 1: Big Logo
 - Centered site logo (links to homepage)
 - Height: `h-12`
 - Padding: `py-8`
+
+### Newsletter Row (optional, between Row 1 and Row 2)
+- Only renders when `apiBaseUrl` is provided
+- Centered email input + subscribe button (stacks on mobile)
+- Bordered top: `border-t border-gray-300`
+- Container: `max-w-325 mx-auto px-6 py-8`
 
 ### Row 2: Content Area
 
@@ -85,6 +98,10 @@ Footer
 ├── Row 1: Logo Area (py-8)
 │   └── max-w-325 centered container
 │       └── Centered logo (h-12) → links to /
+│
+├── Newsletter Row (optional, only if apiBaseUrl is set)
+│   └── max-w-325 centered container
+│       └── NewsletterSignup component (email input + subscribe button)
 │
 └── Row 2: Content Area (py-8)
     └── max-w-325 centered container
@@ -162,7 +179,7 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
 ```
 
 ```tsx
-// apps/umg/app/layout.tsx — with social media icons
+// apps/umg/app/layout.tsx — with social media icons + newsletter
 <Footer
   logoUrl="/umg-logo-black.png"
   logoAlt="United Media Group"
@@ -174,6 +191,7 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
     { platform: "x", url: "https://x.com/unitedmediadc" },
     { platform: "instagram", url: "https://instagram.com/unitedmediadc" },
   ]}
+  apiBaseUrl={process.env.NEXT_PUBLIC_WP_API_URL}
 />
 ```
 
@@ -182,7 +200,9 @@ import { mediaCompanies } from "@/lib/mediaCompanies";
 | File | Purpose |
 |------|---------|
 | `packages/ui/Footer.tsx` | This component |
+| `packages/ui/NewsletterSignup.tsx` | Newsletter form (rendered by Footer when `apiBaseUrl` is set) |
 | `packages/ui/Header.tsx` | Exports `NavCategory`, `BannerCompany` types (used by Footer) |
-| `packages/ui/index.ts` | Barrel export (`Footer`, `FooterProps`) |
+| `packages/ui/index.ts` | Barrel export (`Footer`, `FooterProps`, `NewsletterSignup`) |
 | `apps/*/lib/categories.ts` | Per-app category configuration |
 | `apps/*/lib/mediaCompanies.ts` | Per-app company data |
+| `docs/plugin/umg-newsletter.md` | Backend plugin documentation |

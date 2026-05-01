@@ -24,12 +24,25 @@ const committees = [
   },
 ];
 
-export function HostingCommittees() {
+export function HostingCommittees({
+  title = "Hosting Committees",
+  titleClassName = "text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10",
+  subtitle,
+}: {
+  title?: string;
+  titleClassName?: string;
+  subtitle?: string;
+}) {
   return (
     <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-      <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-        Hosting Committees
+      <h2 className={titleClassName}>
+        {title}
       </h2>
+      {subtitle && (
+        <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+          {subtitle}
+        </p>
+      )}
       <div className="grid grid-cols-2 place-items-center gap-10 md:gap-16 max-w-2xl mx-auto">
         {committees.map((committee) => {
           const content = (

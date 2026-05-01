@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HostingCommittees } from "@/components/HostingCommittees";
 
 const platforms = [
   {
@@ -50,12 +51,6 @@ const values = [
   },
 ];
 
-const partners = [
-  "UNESCO Center for Peace",
-  "Library of Congress",
-  "Smithsonian Institution",
-  "MLK Initiative (IAMMM)",
-];
 
 export default function AboutUsNewPage() {
   return (
@@ -185,25 +180,11 @@ export default function AboutUsNewPage() {
       </section>
 
       {/* Section 6 — Our Partners */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-4">
-          Our Partners
-        </h2>
-        <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
-          We collaborate with organizations that share our commitment to cultural
-          exchange, education, and community storytelling.
-        </p>
-        <div className="grid grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
-          {partners.map((partner) => (
-            <div
-              key={partner}
-              className="p-6 bg-gray-50 border border-gray-200 text-center"
-            >
-              <p className="font-medium text-[#212223]">{partner}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <HostingCommittees
+        title="Our Partners"
+        titleClassName="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-4"
+        subtitle="We collaborate with organizations that share our commitment to cultural exchange, education, and community storytelling."
+      />
 
       {/* Section 7 — Connect With Us */}
       <section className="bg-[#212223] text-white">

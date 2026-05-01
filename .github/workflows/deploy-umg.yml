@@ -7,6 +7,12 @@ on:
       - 'apps/umg/**'
       - 'packages/**'
   workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-umg]
+
+concurrency:
+  group: deploy-umg
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -41,3 +47,13 @@ jobs:
           protocol: ftps
           local-dir: ./apps/umg/out/
           server-dir: ./unitedmediadc.com/public_html/
+
+      - name: Purge SiteGround cache
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.UMG_SSH_HOST }}
+          username: ${{ secrets.UMG_SSH_USERNAME }}
+          key: ${{ secrets.UMG_SSH_KEY }}
+          port: 18765
+          script: |
+            curl -sSX PURGE http://127.0.0.1/* -H "Host: unitedmediadc.com"

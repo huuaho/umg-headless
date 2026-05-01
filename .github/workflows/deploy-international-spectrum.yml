@@ -49,3 +49,13 @@ jobs:
           protocol: ftps
           local-dir: ./apps/international-spectrum/out/
           server-dir: ./internationalspectrum.org/public_html/
+
+      - name: Purge SiteGround cache
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.IS_SSH_HOST }}
+          username: ${{ secrets.IS_SSH_USERNAME }}
+          key: ${{ secrets.IS_SSH_KEY }}
+          port: 18765
+          script: |
+            curl -sSX PURGE http://127.0.0.1/* -H "Host: internationalspectrum.org"

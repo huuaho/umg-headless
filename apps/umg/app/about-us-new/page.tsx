@@ -55,9 +55,6 @@ const values = [
 export default function AboutUsNewPage() {
   return (
     <main className="min-h-screen bg-white">
-      <section className="bg-red-500 text-white text-center py-4">
-        <h1 className="text-2xl font-bold">TESTING SECTION</h1>
-      </section>
       {/* Section 1 — Hero Banner */}
       <section className="relative bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-white">
         <div className="max-w-280 mx-auto px-6 py-24 md:py-32 text-center">

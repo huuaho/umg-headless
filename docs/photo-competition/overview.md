@@ -72,7 +72,7 @@ The UMG site (`apps/umg/`) hosts a photography competition for young photographe
 | `components/CompetitionDivisions.tsx` | Shared divisions section with Youth and Young Adult cards |
 | `components/PhotoRequirements.tsx` | Shared photo requirements section (format, resolution, file size) |
 | `components/CompetitionRules.tsx` | Shared competition rules section (used on how-to-enter and photo-submission pages) |
-| `components/HostingCommittees.tsx` | Shared hosting committees section (used on how-to-enter and photo-submission pages) |
+| `components/HostingCommittees.tsx` | Shared hosting committees / partners section. Accepts optional `title`, `titleClassName`, and `subtitle` props. Used on how-to-enter, photo-submission, and about-us-new pages |
 | `app/judges-panel/HashScroller.tsx` | Client-side hash anchor scroll utility |
 
 ### Backend (`docs/plugin/umg-photo-contest/`)

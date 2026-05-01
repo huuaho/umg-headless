@@ -57,4 +57,7 @@ jobs:
           key: ${{ secrets.EM_SSH_KEY }}
           port: 18765
           script: |
-            curl -sSX PURGE http://127.0.0.1/* -H "Host: echo-media.info"
+            for host in echo-media.info www.echo-media.info api.echo-media.info; do
+              curl -sSX PURGE http://127.0.0.1/* -H "Host: $host"
+              curl -sSX PURGE https://127.0.0.1/* -H "Host: $host" -k
+            done

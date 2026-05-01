@@ -56,4 +56,7 @@ jobs:
           key: ${{ secrets.UMG_SSH_KEY }}
           port: 18765
           script: |
-            curl -sSX PURGE http://127.0.0.1/* -H "Host: unitedmediadc.com"
+            for host in unitedmediadc.com www.unitedmediadc.com api.unitedmediadc.com unitedmedia-group.com www.unitedmedia-group.com; do
+              curl -sSX PURGE http://127.0.0.1/* -H "Host: $host"
+              curl -sSX PURGE https://127.0.0.1/* -H "Host: $host" -k
+            done

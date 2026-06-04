@@ -22,9 +22,23 @@ export async function generateMetadata({
     return { title: "Article Not Found | International Spectrum" };
   }
 
+  const imageUrl = article.featured_image || article.images?.[0] || null;
+
   return {
     title: `${article.title} | International Spectrum`,
     description: article.excerpt,
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      type: "article",
+      ...(imageUrl && { images: [imageUrl] }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+      ...(imageUrl && { images: [imageUrl] }),
+    },
   };
 }
 

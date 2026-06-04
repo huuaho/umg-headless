@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://echo-media.info"),
   title: "Echo Media",
   description: "Educational content, resources, and stories that inspire learning and personal development",
 };

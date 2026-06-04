@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://internationalspectrum.org"),
   title: "International Spectrum",
   description: "Exploring the richness of global cultures, sharing stories that promote cross-cultural understanding",
 };

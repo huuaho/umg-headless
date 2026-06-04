@@ -14,6 +14,17 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
   "https://your-wordpress-site.com/wp-json";
 
+async function parseJsonResponse<T>(response: Response, url: string): Promise<T> {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const body = (await response.text()).slice(0, 200);
+    throw new Error(
+      `Expected JSON from ${url} but got ${contentType}: ${body}`
+    );
+  }
+  return response.json();
+}
+
 /**
  * Cache for category slug → WP category ID mapping
  */
@@ -215,7 +226,7 @@ export async function fetchArticlesWP(
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
 
-  const posts: WpPost[] = await response.json();
+  const posts: WpPost[] = await parseJsonResponse(response, url);
   const total = parseInt(response.headers.get("X-WP-Total") || "0", 10);
   const totalPages = parseInt(
     response.headers.get("X-WP-TotalPages") || "0",
@@ -263,7 +274,7 @@ export async function searchArticlesWP(
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
 
-  const posts: WpPost[] = await response.json();
+  const posts: WpPost[] = await parseJsonResponse(response, url);
   const total = parseInt(response.headers.get("X-WP-Total") || "0", 10);
   const totalPages = parseInt(
     response.headers.get("X-WP-TotalPages") || "0",
@@ -299,7 +310,7 @@ export async function fetchArticleBySlugWP(
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
 
-  const posts: WpPost[] = await response.json();
+  const posts: WpPost[] = await parseJsonResponse(response, url);
   if (posts.length === 0) return null;
 
   return wpPostToApiArticle(posts[0]);
@@ -329,7 +340,7 @@ export async function fetchAllSlugsWP(): Promise<string[]> {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
-    const posts: Array<{ slug: string }> = await response.json();
+    const posts: Array<{ slug: string }> = await parseJsonResponse(response, url);
     if (posts.length === 0) break;
 
     slugs.push(...posts.map((p) => p.slug));

@@ -2,10 +2,10 @@
 
 ## Overview
 
-The About Us page introduces United Media Group, its platforms, values, partners, and the My Hometown, My Lens photography competition. Currently staged at `/about-us-new` while the original `/about-us` remains live.
+The About Us page introduces United Media Group, its platforms, values, partners, and the My Hometown, My Lens photography competition. Currently staged at `/about-us` while the original `/about-us` remains live.
 
-**Route**: `/about-us-new` (staging) — will replace `/about-us` when finalized
-**File**: `apps/umg/app/about-us-new/page.tsx`
+**Route**: `/about-us`
+**File**: `apps/umg/app/about-us/page.tsx`
 
 ## Sections
 
@@ -69,7 +69,6 @@ All section headings (except Connect With Us which is white-on-dark) use the blu
 
 | File | Purpose |
 |------|---------|
-| `apps/umg/app/about-us-new/page.tsx` | New about page (staging) |
-| `apps/umg/app/about-us/page.tsx` | Original about page (still live) |
+| `apps/umg/app/about-us/page.tsx` | About Us page |
 | `apps/umg/app/globals.css` | Platform brand color CSS variables |
 | `apps/umg/components/HostingCommittees.tsx` | Reusable partner/committee logo grid |

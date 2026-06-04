@@ -1,258 +1,239 @@
-import { mediaCompanies } from "@/lib/mediaCompanies";
+import Link from "next/link";
+import { HostingCommittees } from "@/components/HostingCommittees";
+
+const platforms = [
+  {
+    name: "Diplomatic Watch",
+    tagline: "WHERE DC MEETS THE WORLD",
+    description:
+      "Ambassador profiles, cultural exchanges, embassy events, and the stories behind the flags that line Massachusetts Avenue.",
+    nameColor: "var(--color-dw)",
+    taglineColor: "var(--color-dw-tagline)",
+  },
+  {
+    name: "Echo Media",
+    tagline: "THE VOICES THAT MAKE DC HOME",
+    description:
+      "Community journalism rooted in the neighborhoods that give DC its character. Local profiles, cultural features, and the human stories behind the headlines.",
+    nameColor: "var(--color-em)",
+    taglineColor: "var(--color-em-tagline)",
+  },
+  {
+    name: "International Spectrum",
+    tagline: "DC THROUGH A GLOBAL LENS",
+    description:
+      "Multicultural coverage reflecting the international DNA of Washington, D.C. Language, food, art, identity: where global meets local.",
+    nameColor: "var(--color-is)",
+    taglineColor: "var(--color-is-tagline)",
+  },
+];
 
 const values = [
   {
-    name: "Integrity",
-    description: "We maintain high ethical standards.",
+    name: "Community First",
+    description:
+      "Every story starts with the people in it. We do not parachute into communities. We are part of them.",
   },
   {
-    name: "Connection",
-    description: "We enhance understanding between people.",
+    name: "Amplify, Don\u2019t Extract",
+    description:
+      "We give people the mic. The voice you hear is theirs, not a repackaged version of it.",
   },
   {
-    name: "Empowerment",
-    description: "We provide tools for personal growth.",
+    name: "Bridge Cultures",
+    description:
+      "DC is the most international city in the country. We cover the connections between communities, not the divisions.",
   },
   {
-    name: "Hope",
-    description: "We share stories that inspire optimism.",
-  },
-  {
-    name: "Inclusivity",
-    description: "We value diverse perspectives.",
+    name: "Invest in Youth",
+    description:
+      "The next generation of storytellers is already here. My Hometown, My Lens gives them a stage.",
   },
 ];
 
-const contentTypes = [
-  "In-depth articles and reports",
-  "Educational resources and programs",
-  "Cultural documentaries and features",
-  "Multimedia content",
-  "Youth initiatives",
-];
-
-const readershipInterests = [
-  "International affairs",
-  "Educational development",
-  "Cultural exploration",
-  "Positive and uplifting stories",
-  "Global citizenship",
-];
 
 export default function AboutUsPage() {
   return (
     <main className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h1 className="text-3xl md:text-4xl font-bold text-center text-[#212223] mb-6">
-          About Us
-        </h1>
-        <p className="text-lg text-gray-600 text-center max-w-3xl mx-auto leading-relaxed">
-          United Media Group, based in the United States, is a network of media
-          companies committed to sharing stories that inspire hope, connection,
-          and positive change. We believe media builds bridges between cultures
-          and empowers future generations. As an umbrella organization, we
-          support and amplify the impact of three distinct media platforms:
-          Diplomatic Watch Magazine, Echo Media, and International Spectrum
-          Media.
-        </p>
-      </section>
-
-      {/* Mission & Vision Section */}
-      <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-            <div>
-              <h2 className="text-2xl font-bold text-[#212223] mb-4">
-                Our Mission
-              </h2>
-              <p className="text-gray-600 leading-relaxed">
-                United Media Group creates content that inspires hope, connects
-                diverse communities, and empowers youth. We build bridges
-                between cultures through shared stories and provide resources
-                that enable young people to thrive. We unite media platforms to
-                amplify positive narratives and drive global connections. We
-                shine a light on the good in the world and equip the next
-                generation to shape it.
-              </p>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-[#212223] mb-4">
-                Our Vision
-              </h2>
-              <p className="text-gray-600 leading-relaxed">
-                We envision a world where stories kindle joy, cultures connect,
-                and young people build a better future.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Network Section */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Our Network of Media Companies
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {mediaCompanies.map((company) => (
-            <a
-              key={company.name}
-              href={company.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block p-6 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
-            >
-              <div className="mb-4 h-[100px] md:h-[120px] flex items-center justify-center">
-                <img
-                  src={company.logo}
-                  alt={`${company.name} logo`}
-                  className="max-h-full w-auto object-contain"
-                />
-              </div>
-              <h3 className="text-lg font-semibold text-[#212223] mb-3 group-hover:underline text-center">
-                {company.name}
-              </h3>
-              <p className="text-sm text-gray-600 leading-relaxed text-center">
-                {company.description}
-              </p>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      {/* Content & Readership Section */}
-      <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-            <div>
-              <h2 className="text-2xl font-bold text-[#212223] mb-4">
-                Our Content
-              </h2>
-              <p className="text-gray-600 mb-4">
-                We produce a diverse range of content, including:
-              </p>
-              <ul className="space-y-2 text-gray-600 mb-4">
-                {contentTypes.map((item) => (
-                  <li key={item} className="flex items-start">
-                    <span className="text-gray-400 mr-2">&bull;</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-gray-600">
-                Our content emphasizes positive stories, educational
-                advancement, and cultural appreciation.
-              </p>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-[#212223] mb-4">
-                Our Readership
-              </h2>
-              <p className="text-gray-600 mb-4">
-                We reach a global audience interested in:
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                {readershipInterests.map((item) => (
-                  <li key={item} className="flex items-start">
-                    <span className="text-gray-400 mr-2">&bull;</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Values Section */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
-          Our Values
-        </h2>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-4">
-          {values.map((value) => (
-            <div
-              key={value.name}
-              className="text-center w-full md:w-[calc(50%-8px)] lg:w-[calc(20%-13px)]"
-            >
-              <h3 className="font-semibold text-[#212223] mb-2">
-                {value.name}
-              </h3>
-              <p className="text-sm text-gray-600">{value.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Partnerships Section */}
-      <section className="bg-gray-50 border-y border-gray-200">
-        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
-          <div className="max-w-xl mx-auto">
-            <h2 className="text-2xl font-bold text-[#212223] mb-4">
-              Our Partnerships
-            </h2>
-            <p className="text-gray-600 mb-4">
-              We collaborate with organizations that share our goals. We seek
-              partnerships to:
-            </p>
-            <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start">
-                <span className="text-gray-400 mr-2">&bull;</span>
-                Expand our reach
-              </li>
-              <li className="flex items-start">
-                <span className="text-gray-400 mr-2">&bull;</span>
-                Support educational and cultural programs
-              </li>
-              <li className="flex items-start">
-                <span className="text-gray-400 mr-2">&bull;</span>
-                Create youth opportunities
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership Section */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-          <div>
-            <h2 className="text-2xl font-bold text-[#212223] mb-4">
-              Administrative Leadership
-            </h2>
-            <p className="text-gray-600 leading-relaxed">
-              United Media Group is led by experienced professionals dedicated
-              to our mission. We provide strategic guidance to our media
-              companies.
-            </p>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-[#212223] mb-4">
-              Editorial Team
-            </h2>
-            <p className="text-gray-600 leading-relaxed">
-              Our editorial teams include talented journalists and content
-              creators worldwide. We are passionate about impactful
-              storytelling.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact CTA Section */}
-      <section className="bg-[#212223] text-white">
-        <div className="max-w-280 mx-auto px-6 py-12 md:py-16 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Contact Us</h2>
-          <p className="text-gray-300 mb-6">
-            We welcome you to connect with us.
+      {/* Section 1 — Hero Banner */}
+      <section className="relative bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-white">
+        <div className="max-w-280 mx-auto px-6 py-24 md:py-32 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
+            Diplomacy. Culture. Community.
+          </h1>
+          <p className="text-lg md:text-xl text-gray-300">
+            Washington, D.C.&apos;s Multicultural Media Voice
           </p>
-          <a
-            href="mailto:info@unitedmediadc.com"
-            className="inline-block px-8 py-3 border border-white text-white font-medium hover:bg-white hover:text-[#212223] transition-colors"
+        </div>
+      </section>
+
+      {/* Section 2 — Who We Are */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-8">
+          Who We Are
+        </h2>
+        <div className="border-l-4 border-[#3b5fe5] pl-6 md:pl-8 space-y-4">
+          <p className="text-gray-600 leading-relaxed text-lg">
+            United Media Group is a Washington, D.C.-based media organization at
+            the intersection of diplomacy, culture, and community storytelling.
+            We cover what makes this city unlike any other: the diplomatic
+            corridor, the multicultural neighborhoods, and the people building
+            bridges between them.
+          </p>
+          <p className="text-gray-600 leading-relaxed text-lg">
+            From embassy row to neighborhood block parties, we give voice to the
+            communities, leaders, and changemakers shaping the cultural identity
+            of the nation&apos;s capital. The most powerful stories come from the
+            people living them, and that belief drives everything we do.
+          </p>
+        </div>
+      </section>
+
+      {/* Section 3 — Our Platforms */}
+      <section className="bg-gray-50 border-y border-gray-200">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-10">
+            Our Platforms
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {platforms.map((platform) => (
+              <div
+                key={platform.name}
+                className="p-6 bg-white border border-gray-200"
+              >
+                <h3
+                  className="text-xl font-bold mb-1"
+                  style={{ color: platform.nameColor }}
+                >
+                  {platform.name}
+                </h3>
+                <p
+                  className="text-xs font-semibold tracking-widest uppercase mb-4"
+                  style={{ color: platform.taglineColor }}
+                >
+                  {platform.tagline}
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  {platform.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4 — My Hometown, My Lens */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-10">
+          My Hometown, My Lens
+        </h2>
+        <div className="border-3 border-[#3b5fe5] rounded-lg p-8 md:p-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#212223] mb-6">
+            A National Youth Photography Competition
+          </h2>
+          <p className="text-gray-600 leading-relaxed text-lg mb-4">
+            My Hometown, My Lens invites young photographers ages 10 to 30 to
+            show the world their community through their own eyes. No filters.
+            No gatekeepers. Just honest, original photography that captures what
+            home looks like from the ground up.
+          </p>
+          <p className="text-gray-600 leading-relaxed text-lg mb-4">
+            Winners are exhibited at the{" "}
+            <strong className="text-[#212223]">Library of Congress</strong> and
+            the{" "}
+            <strong className="text-[#212223]">Smithsonian Institution</strong>.
+            Over <strong className="text-[#212223]">$8,000 in prizes</strong>{" "}
+            awarded across multiple age categories.
+          </p>
+          <p className="text-gray-600 leading-relaxed text-lg mb-8">
+            This is not a contest for professionals. This is a platform for
+            young people who have something to say and a camera to say it with.
+          </p>
+          <Link
+            href="/how-to-enter"
+            className="text-[#5d5d5d] hover:text-[#212223] font-medium text-lg transition-colors"
           >
-            Get In Touch
-          </a>
+            Enter the Competition &rarr;
+          </Link>
+        </div>
+      </section>
+
+      {/* Section 5 — What Drives Us */}
+      <section className="bg-gray-50 border-y border-gray-200">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-10">
+            What Drives Us
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            {values.map((value) => (
+              <div key={value.name}>
+                <h3 className="text-lg font-bold text-[#212223] mb-2">
+                  {value.name}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 6 — Our Partners */}
+      <HostingCommittees
+        title="Our Partners"
+        titleClassName="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-4"
+        subtitle="We collaborate with organizations that share our commitment to cultural exchange, education, and community storytelling."
+      />
+
+      {/* Section 7 — Connect With Us */}
+      <section className="bg-[#212223] text-white">
+        <div className="max-w-280 mx-auto px-6 py-12 md:py-16">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6">
+            Connect With Us
+          </h2>
+          <p className="text-gray-300 leading-relaxed mb-8 max-w-3xl">
+            Whether you are a community leader, an embassy representative, a
+            young photographer, or someone who believes DC&apos;s multicultural
+            identity deserves better coverage, we want to hear from you.
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-4">
+              <span className="font-semibold w-28">Email</span>
+              <a
+                href="mailto:info@unitedmediadc.com"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                info@unitedmediadc.com
+              </a>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-semibold w-28">Instagram</span>
+              <a
+                href="https://instagram.com/unitedmediagroupdc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                @unitedmediagroupdc
+              </a>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-semibold w-28">X / Twitter</span>
+              <a
+                href="https://x.com/unitedmedia_dc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                @unitedmedia_dc
+              </a>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-semibold w-28">Location</span>
+              <span className="text-gray-300">Washington, D.C.</span>
+            </div>
+          </div>
         </div>
       </section>
     </main>

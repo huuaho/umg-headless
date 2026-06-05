@@ -2,7 +2,7 @@
   "name": "umg-workspace",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@10.26.2",
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
     "dev": "turbo run dev --filter=umg",
     "dev:umg": "turbo run dev --filter=umg",
@@ -10,6 +10,6 @@
     "dev:is": "turbo run dev --filter=international-spectrum"
   },
   "devDependencies": {
-    "turbo": "^2.8.3"
+    "turbo": "^2.9.16"
   }
 }

@@ -1,0 +1,28 @@
+# apps/echo-media/public/images/banner — overview
+
+Local marquee/footer logo assets for the United Media brand banner. Four companies × two variants (color for the Header marquee, B&W for the Footer) = 8 files. Previously served from WordPress uploads, now fully local (see `docs/components/banner-assets.md`).
+
+## Contents
+| Item | Type | Summary |
+|------|------|---------|
+| em-logo.svg | asset | Echo Media color logo — this site's own Header logo (`layout.tsx`). |
+| em-logo-black.png | asset | Echo Media B&W logo — this site's own Footer logo (PNG due to original format). |
+| umg-masthead.svg / umg-masthead.png | asset | United Media Group color masthead (SVG referenced by `mediaCompanies.ts`; PNG legacy copy). |
+| umg-masthead-black.svg / umg-masthead-black.png | asset | UMG B&W masthead (SVG referenced; PNG legacy copy). |
+| is-logo.svg | asset | International Spectrum color logo (marquee). |
+| is-logo-black.svg | asset | International Spectrum B&W logo (footer). |
+| dw-logo.png | asset | Diplomatic Watch color logo (marquee). |
+| dw-logo-black.svg | asset | Diplomatic Watch B&W logo (footer). |
+
+## Connections
+```mermaid
+graph LR
+  mediaCompanies["lib/mediaCompanies.ts"] -.references.-> partners["umg/is/dw logos"]
+  layout["app/layout.tsx"] -.references.-> own["em-logo.svg, em-logo-black.png"]
+```
+
+## Entry points
+- Served statically at `/images/banner/<file>`. To update a logo, replace the same-named file in **all three** app copies (echo-media, international-spectrum, umg).
+
+---
+*Documented at commit 1cbdce5.*

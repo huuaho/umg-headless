@@ -20,6 +20,11 @@ const SECTION_TYPE_MAP: Record<string, SectionType> = {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white max-w-280 mx-auto px-6 [&>section:last-child]:border-b-0">
+      {/* Visually hidden page descriptor for crawlers/screen readers (AEO ticket 03) */}
+      <h1 className="sr-only">
+        United Media Group — Washington DC Multicultural Media: Diplomatic
+        Watch, Echo Media, International Spectrum
+      </h1>
       <SeenArticlesProvider>
         {categories.map((category, index) => (
           <CategorySectionWrapper

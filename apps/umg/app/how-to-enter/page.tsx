@@ -9,6 +9,88 @@ import { HostingCommittees } from "@/components/HostingCommittees";
 
 const competition = currentCompetition;
 
+export const metadata = {
+  title: `${competition.title} — ${competition.subtitle}`,
+  description: `${competition.subtitle} from United Media Group, open to photographers ages 10–30 worldwide. First Prize $${competition.awards[0].amount.toLocaleString()} per division. Winners exhibited at ${competition.exhibitionVenues.slice(0, 2).join(" and ")} in Washington, DC.`,
+};
+
+// Facts below derive from lib/competitions/current.ts so schema and visible
+// copy can't drift from the competition config (AEO tickets 07/08).
+const submissionDeadline = competition.timeline.find((t) =>
+  t.label.toLowerCase().includes("deadline")
+);
+
+const eventSchema = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: `${competition.title}: ${competition.subtitle} ${competition.year}`,
+  organizer: {
+    "@type": "Organization",
+    name: "United Media Group",
+    url: "https://unitedmediadc.com",
+  },
+  description: `${competition.subtitle} organized by United Media Group. Open worldwide to photographers ages 10–30 across two divisions. First Prize $${competition.awards[0].amount.toLocaleString()} per division. Winning work is exhibited at ${competition.exhibitionVenues.join(", ")} in Washington, DC.`,
+  startDate: "2026-03-16", // timeline: Submissions Open
+  endDate: "2027-03-31", // timeline: Exhibition Showcases conclude
+  eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+  location: { "@type": "Place", name: "Washington, DC" },
+  typicalAgeRange: "10-30",
+  offers: {
+    "@type": "Offer",
+    price: String(competition.divisions[0].entryFee),
+    priceCurrency: "USD",
+    url: "https://unitedmediadc.com/photo-submission/",
+  },
+};
+
+const awardsSummary = competition.awards
+  .map(
+    (a) =>
+      `${a.recipientsPerDivision} ${a.place}${a.recipientsPerDivision > 1 ? "s" : ""} of $${a.amount.toLocaleString()}`
+  )
+  .join(", ");
+
+const faqs = [
+  {
+    question: `Who can enter the ${competition.title} competition?`,
+    answer: `The competition is an international call open to young photographers ages 10 to 30. There are two divisions: the ${competition.divisions[0].name} (ages ${competition.divisions[0].ageRange}) and the ${competition.divisions[1].name} (ages ${competition.divisions[1].ageRange}).`,
+  },
+  {
+    question: "How much does it cost to enter?",
+    answer: `The entry fee is $${competition.divisions[0].entryFee}. Each entrant may submit up to ${competition.divisions[0].maxPhotos} photographs in their division.`,
+  },
+  {
+    question: "What are the prizes?",
+    answer: `Each division awards ${awardsSummary}. All award recipients receive official certificates and are invited to featured exhibitions.`,
+  },
+  {
+    question: "When is the submission deadline?",
+    answer: `All entries must be submitted by ${submissionDeadline?.date ?? "the deadline listed in the competition timeline"}.`,
+  },
+  {
+    question: "Where will winning photographs be exhibited?",
+    answer: `Award recipients are invited to featured exhibitions at ${competition.exhibitionVenues.join(", ")} in Washington, DC.`,
+  },
+  {
+    question: "What are the photo requirements?",
+    answer: `Images must be submitted in ${competition.acceptedFormats.join(" or ")} format, in ${competition.colorMode} color mode, with a minimum resolution of ${competition.minResolutionPx} pixels on the longest side and a maximum file size of ${competition.maxFileSizeMB} MB per image.`,
+  },
+  {
+    question: "Is AI-generated imagery allowed?",
+    answer: competition.aiPolicy,
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
+  })),
+};
+
 const venueImages: Record<string, string> = {
   "Library of Congress": "/images/venues/library-of-congress.jpg",
   "Smithsonian Museum": "/images/venues/smithsonian-museum.jpg",
@@ -20,6 +102,14 @@ const venueImages: Record<string, string> = {
 export default function HowToEnterPage() {
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* Hero Banner */}
       <section className="w-full bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
         <div className="max-w-280 mx-auto flex justify-center">
@@ -269,6 +359,23 @@ export default function HowToEnterPage() {
       </section>
 
       <CompetitionRules />
+
+      {/* FAQ — visible content backing the FAQPage schema above (AEO ticket 08) */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#212223] mb-10">
+          Frequently Asked Questions
+        </h2>
+        <div className="max-w-3xl mx-auto space-y-8">
+          {faqs.map((faq) => (
+            <div key={faq.question}>
+              <h3 className="text-lg font-semibold text-[#212223] mb-2">
+                {faq.question}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <HostingCommittees />
     </main>

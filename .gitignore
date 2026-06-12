@@ -37,6 +37,9 @@ yarn-error.log*
 .env*
 /claude-context/
 
+# claude code local config (permissions, skills)
+.claude/
+
 # vercel
 .vercel
 

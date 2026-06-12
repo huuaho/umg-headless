@@ -11,6 +11,8 @@ export interface FooterProps {
   copyright: string;
   socials?: { platform: string; url: string }[];
   apiBaseUrl?: string;
+  /** Internal contact page path; when set, "Contact Us" links here instead of mailto */
+  contactHref?: string;
 }
 
 export default function Footer({
@@ -22,6 +24,7 @@ export default function Footer({
   copyright,
   socials,
   apiBaseUrl,
+  contactHref,
 }: FooterProps) {
   const socialIcons: Record<string, React.ReactNode> = {
     x: (
@@ -138,7 +141,7 @@ export default function Footer({
                 About Us
               </Link>
               <a
-                href={`mailto:${email}`}
+                href={contactHref ?? `mailto:${email}`}
                 className="text-sm text-[#404040] hover:text-[#212223] transition-colors"
               >
                 Contact Us
@@ -150,7 +153,7 @@ export default function Footer({
                       key={social.platform}
                       href={social.url}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="me noopener noreferrer"
                       className="text-[#404040] hover:text-[#212223] transition-colors"
                       aria-label={social.platform}
                     >
@@ -222,7 +225,7 @@ export default function Footer({
                 About Us
               </Link>
               <a
-                href={`mailto:${email}`}
+                href={contactHref ?? `mailto:${email}`}
                 className="text-sm text-[#404040] hover:text-[#212223] transition-colors"
               >
                 Contact Us
@@ -234,7 +237,7 @@ export default function Footer({
                       key={social.platform}
                       href={social.url}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="me noopener noreferrer"
                       className="text-[#404040] hover:text-[#212223] transition-colors"
                       aria-label={social.platform}
                     >

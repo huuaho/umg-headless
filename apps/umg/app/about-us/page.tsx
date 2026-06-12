@@ -1,12 +1,47 @@
 import Link from "next/link";
 import { HostingCommittees } from "@/components/HostingCommittees";
 
+export const metadata = {
+  title: "About United Media Group",
+  description:
+    "United Media Group is Washington DC's multicultural media organization, covering diplomatic affairs, community stories, and international perspectives through Diplomatic Watch, Echo Media, and International Spectrum.",
+};
+
+// Visible FAQ + FAQPage schema share this array so they can't drift (AEO ticket 08)
+const faqs = [
+  {
+    question: "What does United Media Group cover?",
+    answer:
+      "United Media Group is Washington DC's multicultural media organization. It publishes content across three pillars: Diplomatic Watch (diplomatic and ambassador affairs), Echo Media (DC community stories and local profiles), and International Spectrum (multicultural and international perspectives).",
+  },
+  {
+    question: "Where is United Media Group based?",
+    answer:
+      "United Media Group is based in Washington, DC, covering the city's diplomatic corridor and multicultural neighborhoods.",
+  },
+  {
+    question: "How can I contact United Media Group?",
+    answer:
+      "Email info@unitedmediadc.com, or reach out on Instagram (@unitedmediagroupdc) or X (@unitedmedia_dc).",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
+  })),
+};
+
 const platforms = [
   {
     name: "Diplomatic Watch",
     tagline: "WHERE DC MEETS THE WORLD",
     description:
-      "Ambassador profiles, cultural exchanges, embassy events, and the stories behind the flags that line Massachusetts Avenue.",
+      "Diplomatic Watch covers Washington's diplomatic community: ambassador profiles, cultural exchanges, embassy events, and the stories behind the flags that line Massachusetts Avenue.",
     nameColor: "var(--color-dw)",
     taglineColor: "var(--color-dw-tagline)",
   },
@@ -14,7 +49,7 @@ const platforms = [
     name: "Echo Media",
     tagline: "THE VOICES THAT MAKE DC HOME",
     description:
-      "Community journalism rooted in the neighborhoods that give DC its character. Local profiles, cultural features, and the human stories behind the headlines.",
+      "Echo Media is community journalism rooted in the neighborhoods that give DC its character: local profiles, cultural features, and the human stories behind the headlines.",
     nameColor: "var(--color-em)",
     taglineColor: "var(--color-em-tagline)",
   },
@@ -22,7 +57,7 @@ const platforms = [
     name: "International Spectrum",
     tagline: "DC THROUGH A GLOBAL LENS",
     description:
-      "Multicultural coverage reflecting the international DNA of Washington, D.C. Language, food, art, identity: where global meets local.",
+      "International Spectrum is multicultural coverage reflecting the international DNA of Washington, D.C. Language, food, art, identity: where global meets local.",
     nameColor: "var(--color-is)",
     taglineColor: "var(--color-is-tagline)",
   },
@@ -55,12 +90,19 @@ const values = [
 export default function AboutUsPage() {
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* Section 1 — Hero Banner */}
       <section className="relative bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-white">
         <div className="max-w-280 mx-auto px-6 py-24 md:py-32 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-            Diplomacy. Culture. Community.
+            About United Media Group
           </h1>
+          <p className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
+            Diplomacy. Culture. Community.
+          </p>
           <p className="text-lg md:text-xl text-gray-300">
             Washington, D.C.&apos;s Multicultural Media Voice
           </p>
@@ -74,11 +116,12 @@ export default function AboutUsPage() {
         </h2>
         <div className="border-l-4 border-[#3b5fe5] pl-6 md:pl-8 space-y-4">
           <p className="text-gray-600 leading-relaxed text-lg">
-            United Media Group is a Washington, D.C.-based media organization at
-            the intersection of diplomacy, culture, and community storytelling.
-            We cover what makes this city unlike any other: the diplomatic
-            corridor, the multicultural neighborhoods, and the people building
-            bridges between them.
+            United Media Group is Washington DC&apos;s multicultural media
+            organization, covering diplomatic affairs, community stories, and
+            international perspectives through Diplomatic Watch, Echo Media,
+            and International Spectrum. We cover what makes this city unlike
+            any other: the diplomatic corridor, the multicultural
+            neighborhoods, and the people building bridges between them.
           </p>
           <p className="text-gray-600 leading-relaxed text-lg">
             From embassy row to neighborhood block parties, we give voice to the
@@ -101,12 +144,12 @@ export default function AboutUsPage() {
                 key={platform.name}
                 className="p-6 bg-white border border-gray-200"
               >
-                <h3
+                <h2
                   className="text-xl font-bold mb-1"
                   style={{ color: platform.nameColor }}
                 >
                   {platform.name}
-                </h3>
+                </h2>
                 <p
                   className="text-xs font-semibold tracking-widest uppercase mb-4"
                   style={{ color: platform.taglineColor }}
@@ -185,6 +228,23 @@ export default function AboutUsPage() {
         titleClassName="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-4"
         subtitle="We collaborate with organizations that share our commitment to cultural exchange, education, and community storytelling."
       />
+
+      {/* FAQ — visible content backing the FAQPage schema (AEO ticket 08) */}
+      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-10">
+          Frequently Asked Questions
+        </h2>
+        <div className="max-w-3xl mx-auto space-y-8">
+          {faqs.map((faq) => (
+            <div key={faq.question}>
+              <h3 className="text-lg font-bold text-[#212223] mb-2">
+                {faq.question}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Section 7 — Connect With Us */}
       <section className="bg-[#212223] text-white">

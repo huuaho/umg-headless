@@ -2,6 +2,12 @@ import Image from "next/image";
 import { judges } from "@/lib/competitions/judges";
 import { HashScroller } from "./HashScroller";
 
+export const metadata = {
+  title: "Competition Judges",
+  description:
+    "Meet the judges of My Hometown, My Lens, the international youth photography competition organized by United Media Group in Washington, DC.",
+};
+
 export default function JudgesPanelPage() {
   return (
     <main className="min-h-screen bg-white">

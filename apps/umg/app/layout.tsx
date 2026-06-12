@@ -27,10 +27,59 @@ const libreFranklin = Libre_Franklin({
   weight: "600",
 });
 
+const SITE_URL = "https://unitedmediadc.com";
+const SITE_DESCRIPTION =
+  "Washington DC's multicultural media organization, covering diplomatic affairs, community stories, and international perspectives through Diplomatic Watch, Echo Media, and International Spectrum.";
+
 export const metadata: Metadata = {
-  title: "United Media Group",
-  description:
-    "News aggregator for Diplomatic Watch, Echo Media, and International Spectrum",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "United Media Group | DC Multicultural Media",
+    template: "%s | United Media Group",
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: "United Media Group",
+    description:
+      "DC multicultural media. Diplomatic Watch. Echo Media. International Spectrum.",
+    url: SITE_URL,
+    siteName: "United Media Group",
+    // Interim image until the designed 1200x630 OG asset lands (ticket 09)
+    images: [{ url: "/images/venues/library-of-congress.jpg", width: 1920, height: 1280 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@unitedmedia_dc",
+    title: "United Media Group",
+    description:
+      "DC multicultural media. Diplomatic Watch. Echo Media. International Spectrum.",
+    images: ["/images/venues/library-of-congress.jpg"],
+  },
+};
+
+// Machine-readable identity card for AI/search crawlers (AEO ticket 01).
+// sameAs must stay in sync with the Footer socials below.
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "NewsMediaOrganization",
+  name: "United Media Group",
+  alternateName: "UMG",
+  url: SITE_URL,
+  logo: `${SITE_URL}/umg-logo.png`,
+  description: SITE_DESCRIPTION,
+  email: "info@unitedmediadc.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Washington",
+    addressRegion: "DC",
+    addressCountry: "US",
+  },
+  sameAs: [
+    "https://x.com/unitedmedia_dc",
+    "https://www.instagram.com/unitedmediagroupdc/",
+  ],
 };
 
 export default function RootLayout({
@@ -43,6 +92,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${arizonaSans.variable} ${libreFranklin.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
         <Header
           logoUrl="/umg-logo.svg"
           logoAlt="United Media Group"
@@ -62,7 +115,8 @@ export default function RootLayout({
           logoAlt="United Media Group"
           categories={categories}
           companies={mediaCompanies}
-          email="unitedmediagroup196@gmail.com"
+          email="info@unitedmediadc.com"
+          contactHref="/contact"
           copyright={"\u00A9 2026 United Media Group"}
           socials={[
             { platform: "x", url: "https://x.com/unitedmedia_dc" },

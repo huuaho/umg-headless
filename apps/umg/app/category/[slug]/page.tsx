@@ -14,8 +14,11 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const category = categories.find((c) => c.slug === slug);
+  const name = category?.name || slug;
   return {
-    title: `${category?.name || slug} | United Media`,
+    // Root layout template appends "| United Media Group"
+    title: name,
+    description: `${name} coverage from United Media Group's pillars: Diplomatic Watch, Echo Media, and International Spectrum.`,
   };
 }
 

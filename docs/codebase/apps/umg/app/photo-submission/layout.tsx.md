@@ -7,6 +7,7 @@ Wraps the photo-submission subtree in `AuthProvider` from `lib/auth/AuthContext`
 
 ## Key exports
 - `default PhotoSubmissionLayout({ children }) -> JSX`
+- `metadata` — title "Photo Submission" + description (covers the client-component page, which can't export metadata itself).
 
 ## Dependencies
 - Internal: [lib/auth/AuthContext](../../lib/auth/AuthContext.tsx.md)
@@ -19,4 +20,4 @@ App Router — wraps [photo-submission/page.tsx](page.tsx.md).
 If other routes ever need auth (e.g. a "my entry" page), move the provider up or duplicate this layout.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 60deaa3.*

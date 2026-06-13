@@ -3,7 +3,7 @@
 **Purpose:** Category archive route — thin server wrapper around the shared `CategoryContent` listing component.
 
 ## Responsibilities
-`generateStaticParams` emits one page per entry in the local `categories` list (7 pages for International Spectrum, from `communitypublicprograms` to `video-interviews`); `dynamicParams = false` 404s anything else. `generateMetadata` sets the title to `<Category Name> | International Spectrum`. The page resolves the slug to its display name and renders `CategoryContent`, which handles all client-side fetching, pagination, loading skeletons, and error states (see `docs/search/CategoryPage.md`).
+`generateStaticParams` emits one page per entry in the local `categories` list (7 pages for International Spectrum, from `communitypublicprograms` to `video-interviews`); `dynamicParams = false` 404s anything else. `generateMetadata` sets the title to `<Category Name> | International Spectrum`. The page resolves the slug to its display name and renders `CategoryContent`, which handles all client-side fetching, pagination, loading skeletons, and error states.
 
 ## Key exports
 - `dynamicParams = false`

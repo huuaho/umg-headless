@@ -7,6 +7,7 @@ Renders the same competition hero banner as `/how-to-enter`, then a responsive c
 
 ## Key exports
 - `default JudgesPanelPage() -> JSX` — the `/judges-panel` route.
+- `metadata` — title "Competition Judges" + description (per-page override of the layout template).
 
 ## Dependencies
 - Internal: [lib/competitions/judges](../../lib/competitions/judges.tsx.md), [HashScroller](HashScroller.tsx.md)
@@ -16,7 +17,7 @@ Renders the same competition hero banner as `/how-to-enter`, then a responsive c
 App Router — route `/judges-panel`; linked (with per-judge hash anchors) from the "Meet the Judges" section of [how-to-enter/page.tsx](../how-to-enter/page.tsx.md).
 
 ## Notes
-Server component except for the embedded HashScroller. Judge portraits live in `public/images/judges/`. See also `docs/photo-competition/judges.md`.
+Server component except for the embedded HashScroller. Judge portraits live in `public/images/judges/`.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 60deaa3.*

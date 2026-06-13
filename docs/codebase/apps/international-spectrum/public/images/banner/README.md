@@ -1,6 +1,6 @@
 # apps/international-spectrum/public/images/banner — overview
 
-Local marquee/footer logo assets for the United Media brand banner. Four companies × two variants (color for the Header marquee, B&W for the Footer) = 8 files. Previously served from WordPress uploads, now fully local (see `docs/components/banner-assets.md`).
+Local marquee/footer logo assets for the United Media brand banner. Four companies × two variants (color for the Header marquee, B&W for the Footer) = 8 files. Previously served from WordPress uploads, now fully local.
 
 ## Contents
 | Item | Type | Summary |

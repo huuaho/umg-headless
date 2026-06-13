@@ -3,7 +3,7 @@
 **Purpose:** Search route — thin wrapper that renders the shared `SearchContent` component.
 
 ## Responsibilities
-Renders `<SearchContent />` for the `/search` route. All behavior — the search bar, reading the `?search=` query param, client-side fetching via `@umg/api`, pagination, loading skeletons, and error/empty states — lives in the shared component (documented in `docs/search/SearchPage.md`).
+Renders `<SearchContent />` for the `/search` route. All behavior — the search bar, reading the `?search=` query param, client-side fetching via `@umg/api`, pagination, loading skeletons, and error/empty states — lives in the shared component.
 
 ## Key exports
 - `SearchPage() -> JSX` — default export; the `/search` route.

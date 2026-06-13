@@ -3,12 +3,12 @@
 **Purpose:** Category listing route — statically generated page per category slug.
 
 ## Responsibilities
-Generates one static page per entry in `lib/categories` via `generateStaticParams`, with `dynamicParams = false` so unknown slugs 404 (required for the static-export build). `generateMetadata` sets the title to "<Category Name> | United Media". The page body delegates entirely to `CategoryContent` from `@umg/ui` with `externalOnly` (article links go to the source media-company sites).
+Generates one static page per entry in `lib/categories` via `generateStaticParams`, with `dynamicParams = false` so unknown slugs 404 (required for the static-export build). `generateMetadata` returns the bare category name as `title` (the root layout's title template appends "| United Media Group") plus a per-category `description`. The page body delegates entirely to `CategoryContent` from `@umg/ui` with `externalOnly` (article links go to the source media-company sites).
 
 ## Key exports
 - `default CategoryPage({ params }) -> JSX` — the `/category/[slug]` route (async; awaits `params`).
 - `generateStaticParams() -> {slug}[]` — one param set per category.
-- `generateMetadata({ params })` — per-category page title.
+- `generateMetadata({ params })` — per-category title (via the layout template) + description.
 - `dynamicParams = false`
 
 ## Dependencies
@@ -22,4 +22,4 @@ App Router — routes `/category/world-news-politics`, `/category/diplomacy`, et
 Uses Next 15+ async `params` (Promise). Adding a category to `lib/categories.ts` automatically adds a route here.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 60deaa3.*

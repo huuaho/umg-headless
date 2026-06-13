@@ -25,7 +25,6 @@ Defines, in code, the unified two-level category scheme the UMG site presents: 8
 ## Notes
 - Adding a category is a three-step code change: child spec here, source map entry here, then re-activate the plugin (or create the term manually) so the term exists — `um_resolve_categories` only returns slugs; `wp_set_object_terms` in storage relies on the term existing.
 - Exclusion is coarse: one excluded category marks the *whole article* excluded (`um_is_excluded = 1`), even if it also has mapped categories — it still gets its mapped terms assigned but is filtered from default REST results.
-- The full slug tables are also documented (and verified consistent) in `docs/wordpress-api.md`.
 
 ---
 *Documented at commit 1cbdce5.*

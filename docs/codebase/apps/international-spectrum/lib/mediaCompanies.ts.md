@@ -17,7 +17,7 @@ Defines the `MediaCompany` shape and lists the three *other* United Media brands
 [app/layout.tsx](../app/layout.tsx.md) — passed to `Header` as `bannerCompanies` and to `Footer` as `companies`.
 
 ## Notes
-- Logos were previously loaded from WordPress uploads; they are now fully local (see `docs/components/banner-assets.md`), so no remote image domains are needed for the banner.
+- Logos were previously loaded from WordPress uploads; they are now fully local, so no remote image domains are needed for the banner.
 - The site's *own* logo (`is-logo.svg` / `is-logo-black.svg`) is not in this list — it's passed separately to Header/Footer in `layout.tsx`.
 - **Difference vs echo-media:** each app lists the other two siblings plus UMG — IS lists Echo Media (education-focused description, `www.echo-media.info`); EM lists International Spectrum instead. UMG and Diplomatic Watch entries are identical in both.
 

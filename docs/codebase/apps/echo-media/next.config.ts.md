@@ -17,7 +17,7 @@ Next.js CLI (`next dev` / `next build`) via the app's [package.json](package.jso
 
 ## Notes
 - Because images are `unoptimized`, `remotePatterns` mostly future-proofs `next/image` usage for content images hosted on the site's own WP backend (`api.echo-media.info`).
-- Banner logos are local, so `api.unitedmediadc.com` no longer needs whitelisting here (see `docs/components/banner-assets.md`).
+- Banner logos are local, so `api.unitedmediadc.com` no longer needs whitelisting here.
 - **Difference vs international-spectrum:** only the three hostnames — IS allows `www.internationalspectrum.org`, `internationalspectrum.org`, `api.internationalspectrum.org`. Everything else is identical.
 
 ---

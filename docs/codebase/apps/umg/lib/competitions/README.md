@@ -22,7 +22,7 @@ graph LR
 ```
 
 ## Entry points
-Pure data modules — consumed by the how-to-enter, judges-panel, and photo-submission routes and the competition components. Limits/fees must stay in sync with the WP plugin's server-side enforcement and the Stripe payment link. Prose docs: `docs/photo-competition/`.
+Pure data modules — consumed by the how-to-enter, judges-panel, and photo-submission routes and the competition components. Limits/fees must stay in sync with the WP plugin's server-side enforcement and the Stripe payment link.
 
 ---
 *Documented at commit 1cbdce5.*

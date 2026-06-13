@@ -20,7 +20,7 @@ Next.js App Router — the `/articles/[slug]` route. Article cards in homepage s
 
 ## Notes
 - Server component; fetches at build time from the WP backend (`NEXT_PUBLIC_WP_API_URL`) — the article is fetched twice per page (metadata + page), relying on fetch caching.
-- Passes `postId` and `currentSlug` to `ArticleLayout`, which enables the comments section and the "More Articles" carousel (see `docs/article/*.md`).
+- Passes `postId` and `currentSlug` to `ArticleLayout`, which enables the comments section and the "More Articles" carousel.
 - IS categories have four distinct colors, so `categoryColorMap` actually varies per category here (unlike Echo Media's uniform blue).
 - **Difference vs echo-media:** EM does *not* pass `videoUrl` (it has no Video Interviews category); otherwise the files are identical apart from the "| Echo Media" title suffix.
 

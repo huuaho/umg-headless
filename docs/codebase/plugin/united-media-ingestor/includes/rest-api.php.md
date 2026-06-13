@@ -20,7 +20,7 @@ Query params: `search` (string, WP `s` search), `source` (site id), `category` (
 - External: WordPress REST + `WP_Query` + terms APIs.
 
 ## Used by
-The UMG frontend via the shared API client ([packages/api/client.ts](../../../packages/api/client.ts.md), types in packages/api/types.ts) — homepage category sections, search, and article cards on www.unitedmediadc.com. The full request/response contract is also documented in `docs/wordpress-api.md` (note: that doc omits the `slug` field).
+The UMG frontend via the shared API client ([packages/api/client.ts](../../../packages/api/client.ts.md), types in packages/api/types.ts) — homepage category sections, search, and article cards on www.unitedmediadc.com.
 
 ## Notes
 - The `search` param uses WordPress native `s` (title + post_content, i.e. the stored excerpt) — it does **not** search `um_plaintext`; the deeper three-field search lives in [search.php](search.php.md) and is not exposed through this route.

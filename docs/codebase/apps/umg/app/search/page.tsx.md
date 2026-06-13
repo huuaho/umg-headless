@@ -7,6 +7,7 @@ Renders `SearchContent` from `@umg/ui` with `externalOnly`, meaning results link
 
 ## Key exports
 - `default SearchPage() -> JSX` — the `/search` route.
+- `metadata` — title "Search" + description.
 
 ## Dependencies
 - Internal: `@umg/ui` [SearchContent](../../../../packages/ui/SearchContent.tsx.md)
@@ -19,4 +20,4 @@ App Router — route `/search` (linked from the Header's search UI).
 All query handling, fetching, and result rendering live in `packages/ui`.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 60deaa3.*

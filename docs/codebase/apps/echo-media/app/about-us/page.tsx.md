@@ -19,7 +19,7 @@ Next.js App Router — the `/about-us` route. Linked from the shared Footer navi
 - No data fetching, no client interactivity — statically exported at build time.
 - Contact email here is `info@unitedmediadc.com`, while the Footer (set in `layout.tsx`) uses `unitedmediagroup196@gmail.com`.
 - **Difference vs international-spectrum:** content only. The IS version is much shorter (four paragraphs about culture/lifestyle journalism, no Mission/Vision/Values headings) but uses the identical page structure and Contact Us band.
-- The older `docs/about-us.md` describes the *UMG* about page (hero banner, platform cards, competition callout) — that doc does not apply to this much simpler page.
+- Echo Media's About page is much simpler than the UMG About page (which has a hero banner, platform cards, and a competition callout).
 
 ---
 *Documented at commit 1cbdce5.*

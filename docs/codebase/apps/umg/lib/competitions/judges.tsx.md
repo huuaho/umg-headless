@@ -16,7 +16,7 @@ Defines the `Judge` type (`id`, `name`, `title`, `bio: ReactNode`, `image`) and 
 [app/judges-panel/page.tsx](../../app/judges-panel/page.tsx.md) (full bio cards) and [app/how-to-enter/page.tsx](../../app/how-to-enter/page.tsx.md) (thumbnail grid with anchor links).
 
 ## Notes
-Adding a judge requires an entry here plus a portrait in `public/images/judges/` (filenames follow `lastname-firstname.png`). Because `bio` is ReactNode, this module must stay `.tsx` and is not serializable config. See prose doc `docs/photo-competition/judges.md`.
+Adding a judge requires an entry here plus a portrait in `public/images/judges/` (filenames follow `lastname-firstname.png`). Because `bio` is ReactNode, this module must stay `.tsx` and is not serializable config.
 
 ---
 *Documented at commit 1cbdce5.*

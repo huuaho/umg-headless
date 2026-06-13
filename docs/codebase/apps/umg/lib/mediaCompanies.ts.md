@@ -16,7 +16,7 @@ Defines `MediaCompany` (`name`, `description`, `url`, `logo`, `logoBW`) and the 
 [app/layout.tsx](../app/layout.tsx.md) — passed to `@umg/ui` `Header` (`bannerCompanies`) and `Footer` (`companies`).
 
 ## Notes
-Banner logos were migrated from WP uploads to local assets; each of the three apps keeps its own copy (see `docs/components/banner-assets.md`). 4 companies × 2 variants exist as files, but only these 3 companies are listed here (the UMG logo itself lives at `public/umg-logo*.svg`).
+Banner logos were migrated from WP uploads to local assets; each of the three apps keeps its own copy. 4 companies × 2 variants exist as files, but only these 3 companies are listed here (the UMG logo itself lives at `public/umg-logo*.svg`).
 
 ---
 *Documented at commit 1cbdce5.*

@@ -24,7 +24,7 @@ graph LR
 
 ## Entry points
 - **Plugin bootstrap:** [united-media-ingestor.php](united-media-ingestor.php.md) (activation seeds `um_category` terms and schedules cron; deactivation unschedules).
-- **Public REST:** `GET /wp-json/um/v1/articles` (search/source/category/page/per_page/include_excluded/include_content) — public, no auth; consumed by [packages/api/client.ts](../../packages/api/client.ts.md). Contract also documented in `docs/wordpress-api.md`.
+- **Public REST:** `GET /wp-json/um/v1/articles` (search/source/category/page/per_page/include_excluded/include_content) — public, no auth; consumed by [packages/api/client.ts](../../packages/api/client.ts.md).
 - **Cron hooks:** `um_cron_incremental` (every 5 min — new posts), `um_cron_backfill` (every 15 min — archive continuation), `um_cron_server_backfill` (every minute while the admin-toggled option is active).
 - **Admin:** UM Articles → Ingestor Control (`um-ingestor-control`) with manual/continuous/server backfill, incremental runs, settings, image refresh, and delete-all.
 

@@ -3,7 +3,8 @@
  * UMG Photo Contest - Payment Endpoints
  *
  * 1. GET  /umg/v1/payment-status  — return payment status for authenticated user
- * 2. POST /umg/v1/stripe-webhook  — handle Stripe checkout.session.completed
+ * 2. POST /umg/v1/stripe-webhook  — handle Stripe checkout settlement events
+ *    (checkout.session.completed [paid] and checkout.session.async_payment_succeeded)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -53,8 +54,10 @@ function umgpc_payment_status(WP_REST_Request $request) {
 /**
  * POST /umg/v1/stripe-webhook
  *
- * Verify Stripe signature, handle checkout.session.completed,
- * mark user as paid by matching customer_email.
+ * Verify Stripe signature, then mark the user paid (matched by customer_email)
+ * on a settled payment: checkout.session.completed with payment_status "paid"
+ * (immediate methods) or checkout.session.async_payment_succeeded (asynchronous
+ * methods like Alipay, which complete first as "processing" and settle later).
  */
 function umgpc_stripe_webhook(WP_REST_Request $request) {
     $payload = file_get_contents('php://input');
@@ -99,12 +102,27 @@ function umgpc_stripe_webhook(WP_REST_Request $request) {
         return new WP_Error('webhook_error', 'Invalid event payload.', array('status' => 400));
     }
 
-    // Only handle checkout.session.completed
-    if ($event['type'] !== 'checkout.session.completed') {
+    // Determine whether this event represents a *settled* payment.
+    //
+    // Immediate methods (cards, wallets) settle on checkout.session.completed
+    // with payment_status "paid". Asynchronous methods (Alipay, etc.) complete
+    // first with payment_status "unpaid"/"processing" and only settle later via
+    // checkout.session.async_payment_succeeded. We must act on that async event,
+    // and must NOT grant access on a completed-but-still-processing session.
+    $session = isset($event['data']['object']) ? $event['data']['object'] : array();
+    $session_payment_status = isset($session['payment_status']) ? $session['payment_status'] : '';
+
+    $is_completed_paid = ($event['type'] === 'checkout.session.completed'
+        && $session_payment_status === 'paid');
+    $is_async_success = ($event['type'] === 'checkout.session.async_payment_succeeded');
+
+    if (!$is_completed_paid && !$is_async_success) {
+        // Not a settlement event we act on. This includes async_payment_failed
+        // and completed-but-still-processing sessions. Acknowledge so Stripe
+        // stops retrying; the definitive settlement event will follow later.
         return rest_ensure_response(array('received' => true));
     }
 
-    $session = isset($event['data']['object']) ? $event['data']['object'] : array();
     $customer_email = isset($session['customer_email']) ? sanitize_email($session['customer_email']) : '';
 
     // Also check customer_details.email as fallback

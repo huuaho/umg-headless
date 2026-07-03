@@ -64,6 +64,12 @@ add_action('rest_api_init', function () {
 /**
  * Find the umg_submission CPT post for a user.
  *
+ * Excludes school-batch applications (umgpc_school_batch = '1', see
+ * includes/school.php) — those are independent applications managed
+ * through the school endpoints, not this account's individual draft.
+ * Existing individual-flow posts have no umgpc_school_batch meta at all,
+ * so this exclusion is a no-op for them (NOT EXISTS matches "no such key").
+ *
  * @param int $user_id WordPress user ID
  * @return int Post ID or 0 if not found
  */
@@ -77,6 +83,10 @@ function umgpc_find_draft_id($user_id) {
             array(
                 'key'   => 'umgpc_user_id',
                 'value' => (string) $user_id,
+            ),
+            array(
+                'key'     => 'umgpc_school_batch',
+                'compare' => 'NOT EXISTS',
             ),
         ),
         'no_found_rows' => true,

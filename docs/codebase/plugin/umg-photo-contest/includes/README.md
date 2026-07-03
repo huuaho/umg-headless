@@ -1,6 +1,6 @@
 # umg-photo-contest/includes — overview
 
-The nine include files of the photo competition plugin: constants/CORS, the `umg_submission` CPT, a dependency-free HS256 JWT layer, passwordless email-code auth, Stripe payment tracking, draft CRUD with media uploads, final submission, and a weekly cleanup cron.
+The ten include files of the photo competition plugin: constants/CORS, the `umg_submission` CPT, a dependency-free HS256 JWT layer, passwordless email-code auth, Stripe payment tracking, draft CRUD with media uploads, final submission, school/bulk-registration CRUD, and a weekly cleanup cron.
 
 ## Contents
 | Item | Type | Summary |
@@ -13,6 +13,7 @@ The nine include files of the photo competition plugin: constants/CORS, the `umg
 | [payment.php](payment.php.md) | file | `GET /payment-status` (JWT) and `POST /stripe-webhook` (signature-verified) marking users paid |
 | [draft.php](draft.php.md) | file | Draft CRUD: `GET/PUT /draft`, photo upload/delete (max 3 JPEGs), student-proof upload/delete |
 | [submission.php](submission.php.md) | file | `POST /submit` — flips the draft to `submitted` and timestamps it |
+| [school.php](school.php.md) | file | School/bulk-registration CRUD: many independent applications per account, `GET/POST /school/applications`, `GET/PUT/DELETE /school/application/{id}`, photo upload/delete, `POST .../submit` |
 | [cleanup.php](cleanup.php.md) | file | Weekly cron deleting 90-day-stale never-submitted drafts and their photos |
 
 ## Connections
@@ -26,6 +27,9 @@ graph LR
   draft --> cpt[post-types.php]
   submission[submission.php] --> jwt
   submission --> draft
+  school[school.php] --> jwt
+  school --> cpt
+  school -.reuses helpers.-> draft
   cleanup[cleanup.php] --> draft
   cleanup --> cpt
   jwt --> config
@@ -35,9 +39,9 @@ graph LR
 ```
 
 ## Entry points
-- Loaded by [../umg-photo-contest.php](../umg-photo-contest.php.md) in order: config → cors → post-types → jwt → auth → payment → draft → submission → cleanup.
-- REST routes (namespace `umg/v1`): public `POST /auth/request-code`, `POST /auth/verify-code`, `POST /stripe-webhook` (Stripe signature); Bearer-JWT `GET /me`, `GET /payment-status`, `GET/PUT /draft`, `POST /draft/photo`, `DELETE /draft/photo/{id}`, `POST /draft/student-proof`, `DELETE /draft/student-proof`, `POST /submit`. All consumed by [apps/umg/lib/auth/api.ts](../../../apps/umg/lib/auth/api.ts.md).
+- Loaded by [../umg-photo-contest.php](../umg-photo-contest.php.md) in order: config → cors → post-types → jwt → auth → payment → draft → submission → school → cleanup.
+- REST routes (namespace `umg/v1`): public `POST /auth/request-code`, `POST /auth/verify-code`, `POST /stripe-webhook` (Stripe signature); Bearer-JWT `GET /me`, `GET /payment-status`, `GET/PUT /draft`, `POST /draft/photo`, `DELETE /draft/photo/{id}`, `POST /draft/student-proof`, `DELETE /draft/student-proof`, `POST /submit`, `GET/POST /school/applications`, `GET/PUT/DELETE /school/application/{id}`, `POST /school/application/{id}/photo`, `DELETE /school/application/{id}/photo/{mediaId}`, `POST /school/application/{id}/submit`. All consumed by [apps/umg/lib/auth/api.ts](../../../apps/umg/lib/auth/api.ts.md) (school routes not yet consumed — frontend pending, see [school.php](school.php.md)).
 - Cron hook: `umgpc_cleanup_orphaned_drafts` (weekly, scheduled by the bootstrap's activation hook).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 62e1c78.*

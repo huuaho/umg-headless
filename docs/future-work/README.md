@@ -23,7 +23,9 @@ future work.
 - [remediation/payment-fix-now.md](remediation/payment-fix-now.md) — exact
   before/after code for the three functional fixes (I-2 `client_reference_id`
   binding, I-3 stale "check payment" button, I-5 webhook logging), with a Stripe
-  test-mode verification plan and commit ordering.
+  test-mode verification plan and commit ordering. **✅ Shipped 2026-07-02**
+  (commit `f4c4cca`, deployed + verified live), together with the I-11 webhook
+  purpose gate.
 - [remediation/payment-deferred-custom-backend.md](remediation/payment-deferred-custom-backend.md)
   — Node/Postgres designs for the deferred security/privacy items (I-4, I-6, I-7,
   I-9, I-10), with a migration checklist.

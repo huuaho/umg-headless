@@ -27,7 +27,7 @@ folder is the roadmap/AEO build work.
 1. **Judge/admin dashboard** — the only deadline-bound item (jury review Sept–Oct 2026). Build in WP now, keep the REST contract clean for a later backend port.
 2. **EM/IS AEO rollout, Step 0** — extract the shared `packages/ui/JsonLd` helper (migrate UMG's 4 hand-rolled spots). Enables the article-schema work.
 3. **llms.txt** and **OG share image (Option B, dynamic)** — trivial, code-only.
-4. **Donations** — if wanted; XS. ⚠️ Must gate the webhook (see below).
+4. **Donations** — if wanted; XS. The webhook gate it required is already shipped (see below); only the new link's `purpose: donation` metadata remains.
 
 **Tier 2 — unblocked but lower urgency:**
 5. **EM/IS AEO rollout** (rest) + **EM/IS article schema** — needs Step 0 first; article schema's `dateModified` closes trivially since `wp/v2/posts` already returns `modified`.
@@ -43,6 +43,6 @@ folder is the roadmap/AEO build work.
 ## Cross-cutting facts the agents verified
 
 - **Static export everywhere** (`output: "export"` on UMG and EM/IS) — dynamic routes (`opengraph-image`, editor pages, judge routes) must be client-side shells or build-time-emitted; no server runtime. This shapes several plans.
-- **⚠️ New payment bug found (donations agent):** `umgpc_stripe_webhook` acts on *every* completed checkout on the Stripe account, so adding any second Payment Link (donations, merch) will mark a matching user `paid`. Gate the webhook on `purpose: entry_fee` session metadata. Logged against the audit as a follow-up to [I-2].
+- **✅ Payment bug found by the donations agent — now FIXED (2026-07-02):** `umgpc_stripe_webhook` used to act on *every* completed checkout on the Stripe account. It now gates on `purpose` session metadata (audit I-11, deployed) and the entry-fee link carries `purpose=entry_fee`. Any new Payment Link (donations, merch) must set its own `purpose` metadata — a link without it is treated as an entry fee.
 - **No shared `JsonLd` helper exists** — UMG hand-rolls `application/ld+json` in `layout.tsx`, `how-to-enter/`, `about-us/`, `contact/`. Extract before the EM/IS rollout.
 - **EM/IS blockers:** no social handles in the repo; IS has only an SVG logo (no raster for schema `logo`); both still expose a Gmail address that shouldn't go in schema.

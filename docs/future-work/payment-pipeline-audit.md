@@ -107,7 +107,11 @@ completed-but-processing sessions are acknowledged without granting.
 "Alipay stuck on processing" outage — see the RCA above. Those payments never
 settled at the Alipay partner, so no webhook change would have helped.
 
-### [I-1] Async fix requires Stripe Dashboard + deploy — 🚀 OPS
+### [I-1] Async fix requires Stripe Dashboard + deploy — ✅ DONE (2026-07-02) except event resend
+**Status:** webhook endpoint subscribed to both async events (done in-dashboard
+2026-07-01) and the updated plugin deployed to the live WP install (2026-07-02,
+commit `f4c4cca`, verified live). **Still open:** step 3 below — resend the May 23
+`async_payment_succeeded` event if that payer is still unpaid.
 **Action (not code):**
 1. Stripe Dashboard → Developers → Webhooks → the endpoint → subscribe to
    `checkout.session.async_payment_succeeded` **and**
@@ -117,7 +121,7 @@ settled at the Alipay partner, so no webhook change would have helped.
 3. To recover users already stuck: Developers → Events → the relevant
    `async_payment_succeeded` event → **Resend**.
 
-### [I-2] Payment lost when payer's email ≠ login email — 🔧 FIXING NOW
+### [I-2] Payment lost when payer's email ≠ login email — ✅ DONE (deployed 2026-07-02, commit `f4c4cca`)
 **Where:** `payment.php` (webhook matches on `customer_email`) +
 `apps/umg/app/photo-submission/components/SubmissionForm.tsx` (builds the Stripe
 URL).
@@ -133,7 +137,7 @@ will **not** resolve.
 match the webhook on `client_reference_id` first, falling back to email so
 nothing regresses. See also [I-5] (log the fallback misses).
 
-### [I-3] "Check payment" button reads stale state — 🔧 FIXING NOW
+### [I-3] "Check payment" button reads stale state — ✅ DONE (deployed 2026-07-02, commit `f4c4cca`)
 **Where:** `SubmissionForm.tsx:503-521` (`handleCheckPayment`).
 **Problem:** Calls `await refreshUser()` then, inside a `setTimeout`, reads
 `authUser?.payment_status` — a value captured from the render closure, so it
@@ -143,7 +147,7 @@ status" button therefore reports "Payment not yet detected" even on success. The
 **Fix:** Have `refreshUser()` return the fresh user and branch on the returned
 value rather than the closed-over `authUser`.
 
-### [I-11] Webhook acts on *every* checkout on the Stripe account — 🔧 FIXING NOW (with I-2)
+### [I-11] Webhook acts on *every* checkout on the Stripe account — ✅ DONE (deployed 2026-07-02, commit `f4c4cca`; `purpose=entry_fee` metadata set on the entry-fee link)
 **Where:** `docs/plugin/umg-photo-contest/includes/payment.php`.
 **Problem:** The webhook has no notion of *what* was paid for. It marks the
 matching user `paid` on any settled `checkout.session` on the account. Today only
@@ -155,7 +159,7 @@ entrant. Surfaced by the donations planning agent.
 webhook to act only on sessions with that purpose. Bundle with [I-2] since both
 touch the same matching logic.
 
-### [I-5] Unmatched webhook payments leave no trace — 🔧 FIXING NOW
+### [I-5] Unmatched webhook payments leave no trace — ✅ DONE (deployed 2026-07-02, commit `f4c4cca`)
 **Where:** `payment.php` (the `get_user_by('email', …)` miss path).
 **Problem:** When no user matches, the webhook returns `received: true` with no
 logging. A payment lost to [I-2] is invisible — no way to reconcile.
@@ -248,12 +252,12 @@ low priority. Revisit token storage/session model in the custom backend.
 
 | ID | Issue | Class | Status |
 | --- | --- | --- | --- |
-| I-0 | Alipay/async never settled | Functional | ✅ DONE |
-| I-1 | Dashboard subscribe + deploy | Ops | 🚀 OPS |
-| I-2 | Email-mismatch lost payment | Functional | 🔧 FIXING NOW |
-| I-3 | Stale "check payment" button | Functional | 🔧 FIXING NOW |
-| I-5 | Unmatched payments not logged | Functional support | 🔧 FIXING NOW |
-| I-11 | Webhook acts on every account checkout | Functional (latent) | 🔧 FIXING NOW |
+| I-0 | Alipay/async never settled | Functional | ✅ DONE (deployed 2026-07-02) |
+| I-1 | Dashboard subscribe + deploy | Ops | ✅ DONE (resend of stuck May 23 event still pending) |
+| I-2 | Email-mismatch lost payment | Functional | ✅ DONE (deployed 2026-07-02) |
+| I-3 | Stale "check payment" button | Functional | ✅ DONE (deployed 2026-07-02) |
+| I-5 | Unmatched payments not logged | Functional support | ✅ DONE (deployed 2026-07-02) |
+| I-11 | Webhook acts on every account checkout | Functional (latent) | ✅ DONE (deployed 2026-07-02) |
 | I-8 | Account-level paid flag | Business logic | ✅ BY DESIGN |
 | I-4 | No server-side submit validation | Integrity | ⏭️ DEFER |
 | I-6 | Auth code brute-forceable | Security | ⏭️ DEFER |

@@ -151,7 +151,7 @@ Implementation breakdown:
 Mechanical steps (in order):
 1. **WP (source of truth):** create new categories in EM wp-admin, reassign articles, delete/merge old ones.
 2. **`apps/echo-media/lib/categories.ts`:** update names/slugs/colors. Slugs **must exactly match** WP slugs — `getCategoryId()` in `packages/api/wp-client.ts` resolves IDs at runtime via `GET /wp/v2/categories?slug={slug}`. If >4 categories, adjust the nav split (`mainCategories` / `lgOnlyCategories` / `moreCategories`).
-3. **`apps/echo-media/app/page.tsx`:** update `SECTION_TYPE_MAP` (type1–4) and add/remove `CategorySectionWrapper` entries.
+3. **`apps/echo-media/app/page.tsx`:** update `SECTION_TYPE_MAP` (type1–4). No manual section add/remove — the page maps over `categories` and renders one `CategorySectionWrapper` per entry automatically (unmapped slugs fall back to `type1`).
 4. **Category pages** (`app/category/[slug]/page.tsx`): no change — `generateStaticParams()` reads `categories.ts` dynamically.
 5. **Header/Footer:** no change — categories flow through from `categories.ts`.
 6. **Article pages** (`app/articles/[slug]/page.tsx`): no change — `categoryColorMap` is derived from `categories.ts`.

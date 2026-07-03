@@ -115,6 +115,38 @@ All paths under `apps/umg/`. Remember `output: "export"`: everything below is cl
 
 **Step F4 — Per-entry scoring UI (static-export gotcha).**
 `output: "export"` cannot pre-render a dynamic `[id]` segment for entry ids unknown at build time. **Use a query-param route, not a dynamic segment:** `app/admin/entry/page.tsx` reads `?id=` via `useSearchParams()` and calls `getSubmission(token, id)`. (If a `[id]` segment is preferred later, it would need `generateStaticParams` returning known ids — not viable for live entries, so avoid.)
+
+**⚠️ Suspense requirement (build fails without it):** under static export, a client
+component calling `useSearchParams()` must sit inside a `<Suspense>` boundary, or
+`next build` errors with "useSearchParams() should be wrapped in a suspense
+boundary". Structure the route as a thin wrapper + client component:
+
+```tsx
+// app/admin/entry/page.tsx — wrapper, no hooks
+import { Suspense } from "react";
+import EntryScoring from "./EntryScoring";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading entry…</div>}>
+      <EntryScoring /> {/* "use client"; reads ?id= via useSearchParams() */}
+    </Suspense>
+  );
+}
+```
+
+The fallback is what gets prerendered into the static shell; the client component
+mounts at runtime, reads `?id=`, and fetches over authenticated REST. Apply the
+same wrapper pattern to any other admin page that reads query params.
+
+**Custom-backend migration note (intentional):** the `?id=` query-param route is a
+workaround for the static export, not the preferred URL shape. Once the custom
+backend lands and the frontend gains a server runtime (no `output: "export"`),
+**switch this to a real dynamic route** `app/admin/entry/[id]/page.tsx` (clean
+URLs, server-side auth checks, no Suspense workaround). Keep that cheap: isolate
+all id-reading in one place (the wrapper + `getSubmission(token, id)` call) so the
+move from `useSearchParams()` to a `params.id` prop touches only the wrapper, not
+the scoring UI or API client.
 - Renders the photos + descriptions + biography + division notes, and a form with **one control per `currentCompetition.evaluationCriteria` entry** (imported directly from config) on the agreed 1–10 scale, plus a notes textarea. Shows the running total. Save → `saveScore`; "Submit final" sets `status: final` and locks. Only ever shows the caller's own score.
 
 **Step F5 — Results / aggregation view.**

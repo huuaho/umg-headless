@@ -41,6 +41,14 @@ checkout on that account — **including donations**. If a donation is made from
 that matches a registered contest user, that user would be **wrongly marked as a paid
 contest entrant**.
 
+> **✅ Update (2026-07-02): mitigation 1 is SHIPPED.** The webhook now skips any
+> session whose `metadata.purpose` is set and ≠ `entry_fee` (audit I-11, commit
+> `f4c4cca`, deployed), and the entry-fee Payment Link carries
+> `purpose=entry_fee` metadata in Stripe. The only remaining requirement when
+> building donations: **set `purpose: donation` metadata on the new donation
+> Payment Link** (step A3 below) — a link with *no* purpose metadata would be
+> treated as an entry fee.
+
 Mitigation (choose one, do this as part of shipping donations):
 
 1. **Preferred — scope the entry-fee webhook so it ignores donations.** Add `metadata`
@@ -185,5 +193,3 @@ nav/footer link.
 | `packages/ui/Footer.tsx` | Optional — add `extraMetaLinks` prop to keep the footer link UMG-only |
 | `docs/plugin/umg-photo-contest/includes/payment.php` | Guard `umgpc_stripe_webhook` to act only on `purpose: entry_fee` sessions |
 | Stripe entry-fee Payment Link | Add `purpose: entry_fee` metadata (pairs with the webhook guard) |
-</content>
-</invoke>

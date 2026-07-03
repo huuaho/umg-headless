@@ -1,5 +1,12 @@
 # Payment Pipeline — "Fix Now" Remediation
 
+> **✅ IMPLEMENTED & DEPLOYED 2026-07-02** (commit `f4c4cca`) — all three fixes
+> below plus the I-11 purpose gate are live: plugin uploaded to the production
+> WP install (verified responding), frontend deployed via `deploy-umg.yml`
+> (verified: live bundle carries `client_reference_id`), webhook secret in
+> `wp-config.php` verified, `purpose=entry_fee` metadata set on the entry-fee
+> Payment Link. This doc is retained as the implementation record / test plan.
+
 Implementation breakdown for the three functional payment bugs (I-2, I-3, I-5) from `docs/future-work/payment-pipeline-audit.md`. Follow each section top to bottom; the "Combined change set" at the end lists every file in commit order.
 
 ---

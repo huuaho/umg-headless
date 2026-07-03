@@ -3,6 +3,9 @@ export interface User {
   email: string;
   name: string;
   payment_status: "unpaid" | "paid";
+  // Optional: only present once the plugin's judging update is deployed.
+  is_judge?: boolean;
+  is_admin?: boolean;
 }
 
 export interface AuthResponse {

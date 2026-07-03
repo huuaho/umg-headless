@@ -161,6 +161,8 @@ function umgpc_verify_code(WP_REST_Request $request) {
             'email'          => $user->user_email,
             'name'           => $user->display_name,
             'payment_status' => $payment_status,
+            'is_judge'       => user_can($user->ID, 'umgpc_judge_submissions'),
+            'is_admin'       => user_can($user->ID, 'umgpc_admin_results'),
         ),
     ));
 }
@@ -189,5 +191,7 @@ function umgpc_me(WP_REST_Request $request) {
         'email'          => $user->user_email,
         'name'           => $user->display_name,
         'payment_status' => $payment_status,
+        'is_judge'       => user_can($user_id, 'umgpc_judge_submissions'),
+        'is_admin'       => user_can($user_id, 'umgpc_admin_results'),
     ));
 }

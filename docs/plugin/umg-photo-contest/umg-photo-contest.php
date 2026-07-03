@@ -13,10 +13,12 @@ require_once UMGPC_PATH . 'includes/config.php';
 require_once UMGPC_PATH . 'includes/cors.php';
 require_once UMGPC_PATH . 'includes/post-types.php';
 require_once UMGPC_PATH . 'includes/jwt.php';
+require_once UMGPC_PATH . 'includes/roles.php';
 require_once UMGPC_PATH . 'includes/auth.php';
 require_once UMGPC_PATH . 'includes/payment.php';
 require_once UMGPC_PATH . 'includes/draft.php';
 require_once UMGPC_PATH . 'includes/submission.php';
+require_once UMGPC_PATH . 'includes/judging.php';
 require_once UMGPC_PATH . 'includes/cleanup.php';
 
 /* =========================================================

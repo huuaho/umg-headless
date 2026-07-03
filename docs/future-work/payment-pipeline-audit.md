@@ -16,6 +16,67 @@ WordPress plugin (`docs/plugin/umg-photo-contest/`) and the Next.js frontend
 - An async-payment webhook fix has **already been applied** (see [I-0]); this doc
   records the remaining items.
 
+---
+
+## ⭐ Investigation: "Alipay stuck on processing" (2026-07-01 — root cause NOT confirmed)
+
+**Reported symptom:** entrants said Alipay payments "get stuck on processing."
+
+**What we confirmed via the Stripe CLI (live mode):**
+- Every Alipay attempt since Jun 30 fails at the Alipay partner with
+  `decline_code: partner_payment_not_found` ("the payment provider can't find
+  this payment"), at the `alipay_handle_redirect` step. Two real applicants,
+  ~100% failure, one retried 5×; new attempts were still arriving Jul 2.
+- Alipay **succeeded on 2026-05-23** (`pi_3TaEmCBVqSmFnmcs2XvMzTgx`), and the
+  failing PaymentIntents are **config-identical** to it — nothing in our
+  integration changed.
+- Alipay is still switched **on** at checkout (pmc `available: true`), so
+  customers can select it and reach the Alipay+ QR/redirect.
+- Account is healthy: `charges_enabled`, `payouts_enabled`, no `disabled_reason`,
+  nothing `currently_due`.
+
+**Ruled out:**
+- **Not the webhook / our code** — the failure occurs at Stripe↔Alipay, before
+  any webhook fires. [I-0] was a real but *separate* latent bug.
+- **Not a "lapsed Alipay capability"** — an earlier hypothesis, now **retracted**.
+  The account has **no `alipay_payments` capability at all**: the API returns
+  *"Unknown capability: alipay_payments"* and it is absent from the full
+  capability list (Alipay is provisioned via **Alipay+**, not a classic
+  per-account capability). Its absence is therefore **not** evidence of anything.
+
+**Root cause — NOT yet determined.** Stripe's own data can't distinguish between:
+  (a) **customers not completing authorization** in their Alipay wallet — mobile
+  hangs on "Processing", desktop QR is one-scan-only with a ~5-min expiry, all
+  consistent with `partner_payment_not_found`; vs
+  (b) a **systemic Alipay+/cross-border issue** that began affecting completions
+  after May. The May 23 success proves the integration *can* work.
+
+**Update (confirmed by team):** the failing attempts are **real applicants**
+genuinely trying to pay — the only internal test accounts are `kenho_99` and
+`daisy`. This weakens the benign "customer just abandoned" reading of (a): real,
+motivated users with real Alipay wallets are failing ~100%, which points toward
+(b) — a **systemic completion/provider-side problem** affecting genuine Alipay
+users. It does **not** yet reveal the *mechanism* (cross-border restriction,
+Alipay+ QR/redirect handoff, region/app issue) — that still requires Stripe
+Support's partner-side visibility.
+
+**Next steps to actually resolve:**
+1. **Stripe Support** (they can see the partner-side exchange): PI IDs +
+   "succeeded May 23, then ~100% `partner_payment_not_found` at
+   `alipay_handle_redirect` since Jun 30 — why can't the partner find these?"
+2. **One clean end-to-end test** with a real Alipay account completing the
+   authorization: succeeds → the failures are customer-completion; still fails →
+   systemic.
+3. **Meanwhile (independent of root cause):** route entrants to **UnionPay/card**
+   (active and working); optionally hide Alipay at checkout while failures persist.
+
+**Method note / lesson:** an initial "inactive capability" root cause was asserted
+from a single past success + a missing capability key, then disproved by fetching
+the capability directly. Correlation was over-read as causation — recorded here so
+the reasoning trail is honest.
+
+---
+
 ### Status legend
 
 | Tag | Meaning |
@@ -42,6 +103,9 @@ could grant access on a still-processing session.
 `completed` path on `payment_status === 'paid'`. `async_payment_failed` and
 completed-but-processing sessions are acknowledged without granting.
 **Still required to go live:** see [I-1] (OPS).
+**Note:** this was a real latent bug but **not** the cause of the reported
+"Alipay stuck on processing" outage — see the RCA above. Those payments never
+settled at the Alipay partner, so no webhook change would have helped.
 
 ### [I-1] Async fix requires Stripe Dashboard + deploy — 🚀 OPS
 **Action (not code):**

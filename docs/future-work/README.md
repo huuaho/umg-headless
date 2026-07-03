@@ -4,6 +4,10 @@ Tracked issues and improvements that are known but not yet actioned (or only
 partially actioned). Each doc states, per issue, whether it is being fixed now
 or deferred — and why.
 
+- [alipay-incident-log.md](alipay-incident-log.md) — 🔴 **open incident**: running
+  log of the Alipay payment outage (fails ~100% since Jun 30 with
+  `partner_payment_not_found`) and the Stripe Support correspondence. Root cause
+  unconfirmed; escalation to Stripe's payments infra team pending.
 - [payment-pipeline-audit.md](payment-pipeline-audit.md) — full audit of the
   photo-competition auth + payment pipeline (WordPress plugin + Next.js
   frontend). Covers functional bugs, security, and privacy. Records which items

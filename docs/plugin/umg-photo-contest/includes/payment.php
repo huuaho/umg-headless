@@ -54,10 +54,18 @@ function umgpc_payment_status(WP_REST_Request $request) {
 /**
  * POST /umg/v1/stripe-webhook
  *
- * Verify Stripe signature, then mark the user paid (matched by customer_email)
- * on a settled payment: checkout.session.completed with payment_status "paid"
- * (immediate methods) or checkout.session.async_payment_succeeded (asynchronous
- * methods like Alipay, which complete first as "processing" and settle later).
+ * Verify Stripe signature, then mark the user paid (matched by
+ * client_reference_id, falling back to customer_email) on a settled payment:
+ * checkout.session.completed with payment_status "paid" (immediate methods) or
+ * checkout.session.async_payment_succeeded (asynchronous methods like Alipay,
+ * which complete first as "processing" and settle later).
+ *
+ * Only entry-fee checkouts are acted on: a session whose metadata carries a
+ * purpose other than "entry_fee" is acknowledged and skipped. Sessions with no
+ * purpose metadata are treated as entry fees (the current entry-fee Payment
+ * Link predates the metadata); any future Payment Link on this Stripe account
+ * (e.g. donations) MUST set its own purpose metadata or it will be treated as
+ * an entry fee.
  */
 function umgpc_stripe_webhook(WP_REST_Request $request) {
     $payload = file_get_contents('php://input');
@@ -123,6 +131,15 @@ function umgpc_stripe_webhook(WP_REST_Request $request) {
         return rest_ensure_response(array('received' => true));
     }
 
+    // Only act on entry-fee checkouts. Sessions without purpose metadata are
+    // treated as entry fees (the current entry-fee link predates the metadata);
+    // any other purpose (e.g. a future donations link) is acknowledged and
+    // skipped so its payers are never flagged as paid contest entrants.
+    $purpose = isset($session['metadata']['purpose']) ? $session['metadata']['purpose'] : '';
+    if ($purpose !== '' && $purpose !== 'entry_fee') {
+        return rest_ensure_response(array('received' => true));
+    }
+
     $customer_email = isset($session['customer_email']) ? sanitize_email($session['customer_email']) : '';
 
     // Also check customer_details.email as fallback
@@ -130,14 +147,35 @@ function umgpc_stripe_webhook(WP_REST_Request $request) {
         $customer_email = sanitize_email($session['customer_details']['email']);
     }
 
-    if (!$customer_email) {
-        return new WP_Error('webhook_error', 'No customer email in session.', array('status' => 400));
+    // Prefer client_reference_id (the WP user id we set on the payment link):
+    // it survives payer-email edits and wallet flows that settle under a
+    // different email. Fall back to email so in-flight sessions created before
+    // this change (no client_reference_id) still resolve.
+    $user = null;
+
+    $client_reference_id = isset($session['client_reference_id'])
+        ? sanitize_text_field($session['client_reference_id'])
+        : '';
+    if ($client_reference_id !== '' && ctype_digit($client_reference_id)) {
+        $user = get_user_by('id', (int) $client_reference_id);
     }
 
-    // Find WP user by email
-    $user = get_user_by('email', $customer_email);
+    if (!$user && $customer_email) {
+        $user = get_user_by('email', $customer_email);
+    }
+
     if (!$user) {
-        // User hasn't signed up yet - this is unusual but not an error for Stripe
+        // No user matched by id or email. Payment may be orphaned (see I-5).
+        // Acknowledge so Stripe stops retrying; the miss is logged below.
+        error_log(sprintf(
+            '[umgpc webhook] UNMATCHED payment: event=%s type=%s email=%s amount=%s session=%s client_ref=%s',
+            isset($event['id']) ? $event['id'] : '(none)',
+            $event['type'],
+            $customer_email ?: '(none)',
+            isset($session['amount_total']) ? $session['amount_total'] : '(none)',
+            isset($session['id']) ? $session['id'] : '(none)',
+            $client_reference_id ?: '(none)'
+        ));
         return rest_ensure_response(array('received' => true));
     }
 

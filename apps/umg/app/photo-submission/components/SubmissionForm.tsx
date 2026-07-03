@@ -484,7 +484,15 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
 
   // --- Payment polling (only when submitted + unpaid) ---
   const entryFee = selectedDivision.entryFee;
-  const stripeUrl = `${competition.stripePaymentLink}?prefilled_email=${encodeURIComponent(user.email)}`;
+  const stripeUrl = (() => {
+    const params = new URLSearchParams({ prefilled_email: user.email });
+    // client_reference_id lets the webhook match the payment to this WP user
+    // even if the payer settles under a different email (wallets, Link, PayPal).
+    if (authUser?.id) {
+      params.set("client_reference_id", String(authUser.id));
+    }
+    return `${competition.stripePaymentLink}?${params.toString()}`;
+  })();
 
   useEffect(() => {
     if (!isSubmitted || paymentStatus === "paid") return;
@@ -505,15 +513,13 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
     setPaymentPollError("");
 
     try {
-      await refreshUser();
-      setTimeout(() => {
-        setIsCheckingPayment(false);
-        if (authUser?.payment_status !== "paid") {
-          setPaymentPollError(
-            "Payment not yet detected. If you just paid, please wait a moment and try again.",
-          );
-        }
-      }, 100);
+      const fresh = await refreshUser();
+      setIsCheckingPayment(false);
+      if (fresh?.payment_status !== "paid") {
+        setPaymentPollError(
+          "Payment not yet detected. If you just paid, please wait a moment and try again.",
+        );
+      }
     } catch {
       setIsCheckingPayment(false);
       setPaymentPollError("Could not check payment status. Please try again.");

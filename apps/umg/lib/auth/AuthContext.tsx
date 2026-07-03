@@ -26,7 +26,7 @@ interface AuthContextValue {
   requestCode: (email: string) => Promise<void>;
   verifyCode: (email: string, code: string) => Promise<void>;
   logout: () => void;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
   clearError: () => void;
 }
 
@@ -97,15 +97,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
   }, []);
 
-  const refreshUser = useCallback(async () => {
-    if (!token) return;
+  const refreshUser = useCallback(async (): Promise<User | null> => {
+    if (!token) return null;
     try {
       const u = await fetchCurrentUser(token);
       setUser(u);
+      return u;
     } catch (err) {
       if (err instanceof CompetitionApiError && err.status === 401) {
         logout();
       }
+      return null;
     }
   }, [token, logout]);
 

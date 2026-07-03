@@ -174,6 +174,38 @@ Alipay payment before telling clients it's fixed.
 
 ---
 
+### 2026-07-02 — second opinion filed; pipeline fixes deployed
+
+**Second opinion (unanchored review):** an independent facts-only diagnosis was
+run in a parallel session and written to
+[unbiased-review-stripe.md](unbiased-review-stripe.md). It **corroborates** this
+log's evidence reading (handoff fails before Alipay registers the session;
+capability absence is a non-signal — it independently re-derived the retracted
+theory as a red herring). It adds ranked hypotheses (Alipay-side sub-merchant
+registration invalidated → possibly a category/compliance flag on "competition
+entry fee"; or an Alipay+ cutover/migration bug around Jun 30) and
+distinguishing tests not yet run:
+- Ask an affected customer for a **screenshot of the Alipay app after scanning**
+  (order-not-found vs risk-control message distinguishes registration vs compliance).
+- Test with a **non-mainland Alipay+ wallet** (AlipayHK/GCash/TnG) — success
+  while mainland fails would implicate CN-wallet enablement specifically.
+- Check whether the **May 23 success ran on legacy Alipay vs Alipay+**.
+- Two pointed questions for Stripe: what did Alipay return at order creation on
+  the failed PIs; is our Alipay merchant registration with Ant active, and was
+  the account migrated to Alipay+ between May 23 and Jun 30?
+
+**Deployment (separate from the outage, commit `f4c4cca`):** the payment-pipeline
+fix-now set (I-0 async settlement, I-2 `client_reference_id` matching, I-3
+check-payment button, I-5 unmatched-payment logging, I-11 purpose gating) is
+**live and verified**: plugin uploaded to SiteGround (webhook responds 400 to
+unsigned POSTs — new code parses), frontend deployed (live bundle serves
+`client_reference_id`), webhook secret in `wp-config.php` verified, and
+`purpose=entry_fee` metadata set on the entry-fee Payment Link. Follow-ups:
+resend the May 23 `async_payment_succeeded` event if that user is still unpaid,
+and run a one-time reconciliation of succeeded Stripe payments vs paid WP users.
+
+---
+
 ## Current best understanding
 
 The handoff to Alipay is failing **before** Alipay registers the payment (null

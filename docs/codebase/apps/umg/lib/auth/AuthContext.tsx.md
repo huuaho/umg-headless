@@ -8,7 +8,7 @@
 - `requestCode(email)` — sends the OTP email; sets `error` and rethrows on failure.
 - `verifyCode(email, code)` — exchanges the code for `{token, user}`, persists the token, sets state.
 - `logout()` — clears token, user, and error.
-- `refreshUser()` — re-fetches `/me` (used to poll `payment_status`); auto-logs-out on a 401.
+- `refreshUser()` — re-fetches `/me` (used to poll `payment_status`); returns the fresh `User` (or `null` on no token / 401) so callers can branch on the just-fetched value instead of the stale closed-over state; auto-logs-out on a 401.
 - `clearError()`.
 
 `useAuth()` returns the context and throws if used outside the provider.
@@ -25,7 +25,7 @@
 Mounted by [app/photo-submission/layout.tsx](../../app/photo-submission/layout.tsx.md); consumed by [photo-submission/page.tsx](../../app/photo-submission/page.tsx.md), [AuthForm](../../app/photo-submission/components/AuthForm.tsx.md), and [SubmissionForm](../../app/photo-submission/components/SubmissionForm.tsx.md).
 
 ## Notes
-`"use client"`. `isLoading` is true only during the initial token restoration, not during requestCode/verifyCode (forms manage their own spinners). The JWT lives in localStorage (XSS-readable — acceptable for this low-stakes flow); only the `/photo-submission` segment mounts the provider, so the rest of the static site does no auth work.
+`"use client"`. `isLoading` is true only during the initial token restoration, not during requestCode/verifyCode (forms manage their own spinners). The JWT lives in localStorage (XSS-readable — acceptable for this low-stakes flow); only the `/photo-submission` segment mounts the provider, so the rest of the static site does no auth work. `refreshUser()`'s return type is `Promise<User | null>` (was `Promise<void>`) — a non-breaking widening for callers that ignore the return value, but [SubmissionForm.tsx](../../app/photo-submission/components/SubmissionForm.tsx.md)'s manual "check payment" button now relies on it to avoid a stale-closure read.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit f4c4cca.*

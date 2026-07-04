@@ -404,6 +404,9 @@ function umgpc_upload_photo(WP_REST_Request $request) {
     // Validate file type (JPEG only)
     $allowed_types = array('image/jpeg', 'image/jpg');
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($finfo === false) {
+        return new WP_Error('mime_check_failed', 'Could not verify file type. Please try again.', array('status' => 500));
+    }
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
 
@@ -555,6 +558,9 @@ function umgpc_upload_student_proof(WP_REST_Request $request) {
     // Validate file type (JPEG, PNG, or PDF)
     $allowed_types = array('image/jpeg', 'image/jpg', 'image/png', 'application/pdf');
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($finfo === false) {
+        return new WP_Error('mime_check_failed', 'Could not verify file type. Please try again.', array('status' => 500));
+    }
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
 

@@ -232,6 +232,7 @@ function umgpc_mark_school_batch_paid($session) {
     $ids = array_filter(array_map('intval', explode(',', $raw_ids)));
     $credited = array();
     $skipped = array();
+    $owner_id = 0;
 
     foreach ($ids as $post_id) {
         $is_valid_school_post = get_post_type($post_id) === 'umg_submission'
@@ -247,6 +248,37 @@ function umgpc_mark_school_batch_paid($session) {
         update_post_meta($post_id, 'umgpc_stripe_payment_id', $session_id);
         update_post_meta($post_id, 'umgpc_payment_date', current_time('mysql'));
         $credited[] = $post_id;
+
+        if (!$owner_id) {
+            $owner_id = (int) get_post_meta($post_id, 'umgpc_user_id', true);
+        }
+    }
+
+    // Release school.php's checkout-in-progress lock now that this batch is
+    // paid, so the account isn't blocked from starting a fresh checkout for
+    // a future batch until the TTL expires. Resolved once per batch (every
+    // application in one checkout shares the same owner), not once per
+    // post. Only released if the stored lock is still THIS session's —
+    // Stripe can redeliver an already-processed event (e.g. the first ack
+    // was missed), and an unconditional release would otherwise be able to
+    // wipe out a different, still-in-flight checkout's lock for the same
+    // account, reopening the double-charge window this lock exists to close.
+    if ($owner_id) {
+        $lock_session = get_user_meta($owner_id, 'umgpc_school_checkout_lock_session', true);
+        if ($lock_session === $session_id) {
+            delete_user_meta($owner_id, 'umgpc_school_checkout_lock_at');
+            delete_user_meta($owner_id, 'umgpc_school_checkout_lock_session');
+        }
+    } elseif (!empty($credited)) {
+        // Shouldn't happen — every school application gets umgpc_user_id at
+        // creation — but if it ever did, the account's checkout lock would
+        // otherwise sit stuck until UMGPC_SCHOOL_CHECKOUT_LOCK_TTL expires
+        // with no visible cause. Log it rather than fail silently.
+        error_log(sprintf(
+            '[umgpc webhook] school_bulk_entry event credited posts with no resolvable umgpc_user_id: session=%s credited=%s',
+            $session_id ?: '(none)',
+            implode(',', $credited)
+        ));
     }
 
     if (!empty($skipped)) {

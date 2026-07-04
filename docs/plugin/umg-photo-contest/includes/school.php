@@ -29,6 +29,35 @@
 
 if (!defined('ABSPATH')) exit;
 
+// How long a Stripe Checkout Session stays open before Stripe itself
+// expires it (set explicitly on session creation — see
+// umgpc_school_create_checkout — rather than trusting Stripe's own
+// 24-hour default). 1800s is Stripe's documented minimum for expires_at.
+define('UMGPC_SCHOOL_CHECKOUT_SESSION_TTL', 1800);
+
+// Buffer added on top of UMGPC_SCHOOL_CHECKOUT_SESSION_TTL when telling
+// Stripe the session's actual expires_at, guarding against Stripe
+// validating "at least 30 minutes from now" against its own clock a
+// moment after this request is sent. Defined once and reused below (not
+// duplicated as a separate literal) so the lock TTL's margin over the
+// real Stripe expiry can't silently drift out of sync with this value.
+define('UMGPC_SCHOOL_CHECKOUT_EXPIRY_BUFFER', 120);
+
+// How long the "checkout in progress" lock blocks a second Checkout
+// Session for the same batch. MUST stay longer than the session's REAL
+// expiry (UMGPC_SCHOOL_CHECKOUT_SESSION_TTL + UMGPC_SCHOOL_CHECKOUT_EXPIRY_BUFFER,
+// which is what's actually sent to Stripe as expires_at) — the lock's
+// whole job is to prevent a second session from being created while an
+// earlier one could still be completed, so if the lock ever expired first
+// there would be a window where session 1 is still payable but a retry
+// could open session 2 anyway. The extra 300s beyond the session's real
+// expiry is slack for webhook delivery delay after Stripe expires the
+// session, plus the async-payment-method settlement window (e.g. Alipay
+// can settle well after the checkout page itself closes — see
+// payment.php); confirmed against Stripe's docs that expires_at has no
+// documented incompatibility with async/redirect payment methods.
+define('UMGPC_SCHOOL_CHECKOUT_LOCK_TTL', UMGPC_SCHOOL_CHECKOUT_SESSION_TTL + UMGPC_SCHOOL_CHECKOUT_EXPIRY_BUFFER + 300);
+
 add_action('rest_api_init', function () {
 
     // GET /umg/v1/school/applications
@@ -109,13 +138,22 @@ add_action('rest_api_init', function () {
 /**
  * Find all school-batch application post IDs owned by a user, oldest first.
  *
- * @param int $user_id WordPress user ID
+ * @param int          $user_id     WordPress user ID
+ * @param string|array $post_status Defaults to 'publish' (the only status
+ *                                  this plugin's own code ever creates a
+ *                                  school post with). Pass an explicit
+ *                                  array — e.g. array('publish', 'trash')
+ *                                  — to also see posts moved to Trash via
+ *                                  wp-admin; WordPress's 'any' status
+ *                                  silently excludes 'trash' and
+ *                                  'auto-draft', so it is NOT a safe way
+ *                                  to mean "every status."
  * @return int[] Post IDs
  */
-function umgpc_school_find_applications($user_id) {
+function umgpc_school_find_applications($user_id, $post_status = 'publish') {
     $q = new WP_Query(array(
         'post_type'      => 'umg_submission',
-        'post_status'    => 'publish',
+        'post_status'    => $post_status,
         'posts_per_page' => -1,
         'fields'         => 'ids',
         'orderby'        => 'date',
@@ -135,6 +173,126 @@ function umgpc_school_find_applications($user_id) {
     ));
 
     return $q->posts;
+}
+
+/**
+ * Run $callback only while holding a short-lived MySQL named lock.
+ *
+ * WordPress meta has no atomic read-modify-write primitive — a plain
+ * get_*_meta() followed by update_*_meta() is a check-then-set race under
+ * concurrent requests. GET_LOCK/RELEASE_LOCK gives a real mutex without
+ * adding an external dependency. The lock is held only for the duration of
+ * $callback, never across a slow external call (Stripe, etc.) — callers
+ * must do slow work outside this wrapper.
+ *
+ * Fails CLOSED: if the lock can't be acquired within $timeout seconds,
+ * $callback never runs and a WP_Error is returned instead — silently
+ * falling back to running the critical section unprotected would defeat
+ * the entire point of taking the lock.
+ *
+ * Calls to this function DO nest safely (umgpc_school_compute_title's
+ * per-post lock wraps a call to umgpc_school_next_seq, which takes its own
+ * separate per-account lock) — MySQL >= 5.7.5 and MariaDB >= 10.0 support
+ * holding multiple distinct named locks per session simultaneously, which
+ * is also WordPress core's own stated minimum DB requirement, so any host
+ * capable of running WordPress at all supports this. Pre-5.7.5 MySQL only
+ * allowed one named lock per session (acquiring a second silently released
+ * the first), which would reopen the exact races these locks exist to
+ * close — not a concern on any currently-supported WordPress host.
+ *
+ * @param string   $name     Unique lock name (caller scopes it, e.g. per-user).
+ * @param int      $timeout  Seconds to wait for the lock.
+ * @param callable $callback Runs only while the lock is held; no arguments.
+ * @return mixed|WP_Error Callback's return value, or WP_Error('lock_busy', ...).
+ */
+function umgpc_school_with_named_lock($name, $timeout, $callback) {
+    global $wpdb;
+
+    $acquired = (string) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, %d)', $name, $timeout)) === '1';
+    if (!$acquired) {
+        return new WP_Error(
+            'lock_busy',
+            'Another request for this account is already in progress. Please try again in a moment.',
+            array('status' => 429)
+        );
+    }
+
+    try {
+        return $callback();
+    } finally {
+        $wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $name));
+    }
+}
+
+/**
+ * Claim a per-account application sequence number, atomically — used both
+ * for a brand-new application and for backfilling a legacy one that
+ * predates umgpc_school_seq. Runs inside umgpc_school_with_named_lock()
+ * (see that function for why a plain get_user_meta()-then-update_user_meta()
+ * isn't safe under concurrent requests).
+ *
+ * On an account's first-ever call, initializes the per-account counter by
+ * scanning EVERY one of the account's umg_submission posts — any post
+ * status, not just 'publish' — for the highest umgpc_school_seq already
+ * assigned, so the first number this function ever claims can never
+ * collide with one already in use (e.g. by a legacy record numbered
+ * before this counter existed).
+ *
+ * Deliberately does NOT try to guarantee perfectly chronological numbering
+ * across a mix of legacy applications (numbered lazily, whenever their
+ * name/backfill happens to run) and brand-new ones (numbered eagerly at
+ * creation) — numbers are handed out in whatever order this function is
+ * actually called, not sorted by post date. An earlier version tried to
+ * batch-backfill every un-numbered sibling at once specifically to force
+ * chronological order, and introduced four distinct bugs doing it (see
+ * this file's docs, "Round 5" — a counter that could still collide, a
+ * backfill that numbered from the wrong base, un-numberable non-'publish'
+ * posts, and a race that could make a fully-titled sibling look
+ * un-retitleable). umgpc_school_seq is a purely cosmetic wp-admin label —
+ * it is never used for payment matching or any other load-bearing logic
+ * (that's always the real WP post ID) — so the properties that actually
+ * matter are UNIQUENESS (no two applications ever show the same number)
+ * and ATOMICITY (no race under concurrent requests), both of which this
+ * simpler version guarantees. A legacy application backfilled well after a
+ * newer one was already created may end up with a higher number than that
+ * newer one — a cosmetic imperfection, not a correctness bug, and one that
+ * stops recurring once every legacy application has been backfilled once.
+ *
+ * @param int $user_id
+ * @return int|WP_Error The sequence number claimed, or WP_Error('lock_busy', ...)
+ *                       if the account is under contention right now — callers
+ *                       MUST check is_wp_error() and must NOT proceed as if a
+ *                       number was claimed.
+ */
+function umgpc_school_next_seq($user_id) {
+    return umgpc_school_with_named_lock('umgpc_school_seq_' . $user_id, 2, function () use ($user_id) {
+        $next = (int) get_user_meta($user_id, 'umgpc_school_next_seq', true);
+
+        if ($next < 1) {
+            $next = 1;
+            // Every registered post status, not a hardcoded subset — this
+            // plugin's own code only ever creates school posts as
+            // 'publish', but umg_submission has show_ui: true, so a
+            // wp-admin action (Quick Edit, Trash, etc.) can move one to
+            // 'trash', 'draft', 'pending', or anything else WordPress
+            // registers. get_post_stati() covers all of them, so this
+            // scan can't miss an already-assigned umgpc_school_seq no
+            // matter what status a post ends up in. Reuses
+            // umgpc_school_find_applications() rather than a second
+            // hand-written query, so this scan can't silently drift out
+            // of sync with what "this account's applications" means.
+            $siblings = umgpc_school_find_applications($user_id, array_keys(get_post_stati()));
+            foreach ($siblings as $sibling_id) {
+                $existing_seq = (int) get_post_meta($sibling_id, 'umgpc_school_seq', true);
+                if ($existing_seq >= $next) {
+                    $next = $existing_seq + 1;
+                }
+            }
+        }
+
+        update_user_meta($user_id, 'umgpc_school_next_seq', (string) ($next + 1));
+        return $next;
+    });
 }
 
 /**
@@ -215,7 +373,8 @@ function umgpc_school_create_application(WP_REST_Request $request) {
     // wp-admin; umgpc_school_update_application appends the student's name
     // once known, reusing this same number (stored in umgpc_school_seq)
     // rather than recomputing it, so the number stays stable across edits.
-    $seq = count(umgpc_school_find_applications($user_id)) + 1;
+    $seq = umgpc_school_next_seq($user_id);
+    if (is_wp_error($seq)) return $seq;
     $title = "School Application #{$seq} - {$email}";
 
     $post_id = wp_insert_post(array(
@@ -354,9 +513,14 @@ function umgpc_school_update_application(WP_REST_Request $request) {
     // known; also touches post_modified for orphan cleanup tracking
     // (matches draft.php).
     $title = umgpc_school_compute_title($post_id, $user_id);
-    if ($title !== null) {
+    if (is_string($title)) {
         wp_update_post(array('ID' => $post_id, 'post_title' => $title));
     } else {
+        // No name yet, or a WP_Error('lock_busy', ...) from rare contention
+        // claiming/backfilling a sequence number — either way, just skip
+        // the retitle this save; a later save (autosave is on a timer) or
+        // the retitle endpoint will retry it. Not worth failing the whole
+        // save over a cosmetic title update.
         wp_update_post(array('ID' => $post_id));
     }
 
@@ -365,14 +529,23 @@ function umgpc_school_update_application(WP_REST_Request $request) {
 
 /**
  * Compute the "School Application #N {Name} - {email}" title for a post
- * from its currently-stored name meta, backfilling umgpc_school_seq if it
- * predates that field (assigned by position among the user's applications,
- * oldest first, so numbering stays sensible for a mix of old and new
- * records). Returns null if no name is stored yet (nothing to retitle to).
+ * from its currently-stored name meta, backfilling umgpc_school_seq via
+ * umgpc_school_next_seq() if it predates that field. Deliberately does NOT
+ * compute its own number (e.g. from sibling position) — umgpc_school_seq
+ * must have exactly one assigning authority (the atomic counter) or two
+ * legacy posts backfilled independently by each mechanism could end up
+ * with the same number.
  *
  * @param int $post_id
  * @param int $user_id
- * @return string|null
+ * @return string|null|WP_Error The title, null if no name is stored yet
+ *                       (nothing to retitle to — permanent, not worth
+ *                       retrying), or WP_Error('lock_busy', ...) if a
+ *                       sequence number couldn't be claimed right now due
+ *                       to contention (transient — distinct from null
+ *                       specifically so umgpc_school_retitle_application
+ *                       can tell a real "try again" apart from "nothing to
+ *                       do here").
  */
 function umgpc_school_compute_title($post_id, $user_id) {
     $full_name = trim(
@@ -383,10 +556,30 @@ function umgpc_school_compute_title($post_id, $user_id) {
 
     $seq = get_post_meta($post_id, 'umgpc_school_seq', true);
     if ($seq === '') {
-        $siblings = umgpc_school_find_applications($user_id);
-        $position = array_search($post_id, $siblings, true);
-        $seq = $position !== false ? ($position + 1) : count($siblings);
-        update_post_meta($post_id, 'umgpc_school_seq', (string) $seq);
+        // The claim itself (umgpc_school_next_seq) is atomic per-account,
+        // but checking-then-writing THIS post's own umgpc_school_seq is
+        // not — two concurrent calls for the SAME post (e.g. two
+        // near-simultaneous autosaves) could both see it empty and both
+        // claim a distinct number, one silently orphaned when the other's
+        // write lands last. Wrapped in its own per-post named lock, with a
+        // re-check inside it (another request may have already assigned
+        // this post a number while this one waited for the lock).
+        $result = umgpc_school_with_named_lock('umgpc_school_seq_post_' . $post_id, 2, function () use ($post_id, $user_id) {
+            $existing = get_post_meta($post_id, 'umgpc_school_seq', true);
+            if ($existing !== '') {
+                return (int) $existing;
+            }
+            $claimed = umgpc_school_next_seq($user_id);
+            if (is_wp_error($claimed)) {
+                return $claimed;
+            }
+            update_post_meta($post_id, 'umgpc_school_seq', (string) $claimed);
+            return $claimed;
+        });
+        if (is_wp_error($result)) {
+            return $result;
+        }
+        $seq = $result;
     }
 
     $user = get_user_by('id', $user_id);
@@ -412,6 +605,12 @@ function umgpc_school_retitle_application(WP_REST_Request $request) {
     if (is_wp_error($post_id)) return $post_id;
 
     $title = umgpc_school_compute_title($post_id, $user_id);
+    if (is_wp_error($title)) {
+        // Real lock contention, distinct from "nothing to retitle" —
+        // surface it so the caller knows to retry, rather than silently
+        // reporting retitled:false as if there were no name to work with.
+        return $title;
+    }
     if ($title === null) {
         return rest_ensure_response(array('success' => true, 'retitled' => false));
     }
@@ -480,6 +679,9 @@ function umgpc_school_upload_photo(WP_REST_Request $request) {
 
     $allowed_types = array('image/jpeg', 'image/jpg');
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($finfo === false) {
+        return new WP_Error('mime_check_failed', 'Could not verify file type. Please try again.', array('status' => 500));
+    }
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
 
@@ -676,6 +878,38 @@ function umgpc_school_create_checkout(WP_REST_Request $request) {
         return new WP_Error('nothing_to_pay', 'No submitted, unpaid applications found.', array('status' => 400));
     }
 
+    // Guard against creating a second Checkout Session for the same batch
+    // (e.g. the caller hits back or opens a second tab before the webhook
+    // has marked anything paid) — without this, both sessions could be
+    // completed and the school would be charged twice with no
+    // reconciliation. The check-then-set runs inside
+    // umgpc_school_with_named_lock() (see that function) so it's a real
+    // atomic check-and-set, not a get_user_meta()-then-update_user_meta()
+    // race; released immediately below on a failed Stripe call, and by the
+    // webhook once the batch is paid (or once UMGPC_SCHOOL_CHECKOUT_LOCK_TTL
+    // elapses if the checkout is abandoned — chosen to always outlast the
+    // Stripe session's own expiry, see that constant's definition).
+    $lock_result = umgpc_school_with_named_lock('umgpc_school_checkout_' . $user_id, 2, function () use ($user_id) {
+        $lock_at = (int) get_user_meta($user_id, 'umgpc_school_checkout_lock_at', true);
+        if ($lock_at && (time() - $lock_at) < UMGPC_SCHOOL_CHECKOUT_LOCK_TTL) {
+            return false; // already locked
+        }
+        update_user_meta($user_id, 'umgpc_school_checkout_lock_at', (string) time());
+        delete_user_meta($user_id, 'umgpc_school_checkout_lock_session');
+        return true; // lock claimed
+    });
+
+    if (is_wp_error($lock_result)) {
+        return $lock_result;
+    }
+    if ($lock_result === false) {
+        return new WP_Error(
+            'checkout_in_progress',
+            'A checkout for this batch is already in progress. Please finish or wait a moment before trying again.',
+            array('status' => 429)
+        );
+    }
+
     $quantity = count($post_ids);
     $application_ids = implode(',', $post_ids);
 
@@ -696,8 +930,14 @@ function umgpc_school_create_checkout(WP_REST_Request $request) {
     // booleans: wp_remote_post()'s array body gets serialized via
     // http_build_query(), which turns PHP true into "1" — Stripe's form
     // parser rejects "1" as an invalid boolean and wants the literal word.
+    // Explicit expiry (rather than trusting Stripe's 24h default) so the
+    // checkout lock above (UMGPC_SCHOOL_CHECKOUT_LOCK_TTL) is guaranteed to
+    // outlast the session itself. Uses the SAME buffer constant the lock
+    // TTL's own margin is computed from, so the two can't silently drift
+    // out of sync with each other.
     $body = array(
         'mode'                       => 'payment',
+        'expires_at'                 => time() + UMGPC_SCHOOL_CHECKOUT_SESSION_TTL + UMGPC_SCHOOL_CHECKOUT_EXPIRY_BUFFER,
         'billing_address_collection' => 'required',
         'phone_number_collection'    => array(
             'enabled' => 'true',
@@ -744,6 +984,9 @@ function umgpc_school_create_checkout(WP_REST_Request $request) {
 
     if (is_wp_error($response)) {
         error_log('[umgpc school checkout] Stripe request failed: ' . $response->get_error_message());
+        // Release the lock — a failed attempt shouldn't block a legitimate retry.
+        delete_user_meta($user_id, 'umgpc_school_checkout_lock_at');
+        delete_user_meta($user_id, 'umgpc_school_checkout_lock_session');
         return new WP_Error('stripe_request_failed', 'Could not reach Stripe. Please try again.', array('status' => 502));
     }
 
@@ -764,8 +1007,17 @@ function umgpc_school_create_checkout(WP_REST_Request $request) {
             $status_code,
             $error_message
         ));
+        // Release the lock — a failed attempt shouldn't block a legitimate retry.
+        delete_user_meta($user_id, 'umgpc_school_checkout_lock_at');
+        delete_user_meta($user_id, 'umgpc_school_checkout_lock_session');
         return new WP_Error('stripe_error', 'Could not create checkout session.', array('status' => 502));
     }
+
+    // Stamp which session this lock belongs to, so payment.php only
+    // releases it for a webhook event matching *this* checkout — a
+    // redelivered/retried Stripe webhook for an already-settled batch must
+    // never clear the lock for a different, still-in-flight checkout.
+    update_user_meta($user_id, 'umgpc_school_checkout_lock_session', sanitize_text_field($data['id'] ?? ''));
 
     return rest_ensure_response(array(
         'url'             => $data['url'],

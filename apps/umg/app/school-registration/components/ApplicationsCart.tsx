@@ -22,6 +22,7 @@ export function ApplicationsCart() {
   const [applications, setApplications] = useState<ApplicationSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [loadFailed, setLoadFailed] = useState(false);
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const checkoutParam = searchParams.get("checkout");
@@ -33,8 +34,10 @@ export function ApplicationsCart() {
     try {
       const apps = await listApplications(token);
       setApplications(apps);
+      setLoadFailed(false);
     } catch {
       setError("Could not load applications. Please try again.");
+      setLoadFailed(true);
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +154,20 @@ export function ApplicationsCart() {
         <p className="text-sm text-red-600 text-center mb-4">{error}</p>
       )}
 
-      {applications.length === 0 ? (
+      {loadFailed ? (
+        <div className="text-center py-12 border border-dashed border-red-200">
+          <p className="text-gray-500 mb-4">
+            Couldn&apos;t load your applications.
+          </p>
+          <button
+            type="button"
+            onClick={() => refresh()}
+            className="text-sm text-[#1565A0] hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      ) : applications.length === 0 ? (
         <div className="text-center py-12 border border-dashed border-gray-300">
           <p className="text-gray-500 mb-4">
             No applications yet — add your first student.

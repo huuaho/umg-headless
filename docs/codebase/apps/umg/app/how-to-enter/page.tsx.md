@@ -17,7 +17,7 @@ Then the marketing brochure, rendered from `lib/competitions/current.ts`:
 5. Awards grid ($ amounts × recipients per division) and exhibition venue cards — venue names map to local images via the in-file `venueImages` record (`public/images/venues/*.jpg`).
 6. Evaluation criteria list.
 7. "Meet the Judges" grid of portrait thumbnails from [lib/competitions/judges](../../lib/competitions/judges.tsx.md), each linking to `/judges-panel#<judge-id>`.
-8. "Apply Now" CTA linking to `/photo-submission`.
+8. "Apply Now" CTA linking to `/photo-submission`, plus a secondary "Apply as a school" link to `/school-registration` (registering multiple students under one school account).
 9. [CompetitionRules](../../components/CompetitionRules.tsx.md) legal text, the visible FAQ section ("Frequently Asked Questions", 7 Q&As), and [HostingCommittees](../../components/HostingCommittees.tsx.md).
 
 ## Key exports

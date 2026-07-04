@@ -61,7 +61,12 @@ function umgpc_retitle_all_submissions() {
             ? umgpc_school_compute_title($post_id, $owner_id)
             : umgpc_compute_draft_title($post_id, $owner_id);
 
-        if ($title === null) {
+        // umgpc_school_compute_title() can return WP_Error('lock_busy', ...)
+        // under rare contention, distinct from null ("no name yet") — both
+        // mean "nothing to do this pass" here; re-running this tool retries
+        // any WP_Error skips (lock contention is transient), while a null
+        // skip only resolves once a name is entered.
+        if (!is_string($title)) {
             $skipped++;
             continue;
         }

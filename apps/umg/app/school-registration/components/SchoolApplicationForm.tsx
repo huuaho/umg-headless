@@ -61,6 +61,7 @@ export function SchoolApplicationForm({
 
   const [status, setStatus] = useState<"draft" | "submitted">("draft");
   const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle"
@@ -72,55 +73,61 @@ export function SchoolApplicationForm({
   ) as CompetitionDivision;
 
   // --- Load ---
-  useEffect(() => {
-    async function load() {
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-      try {
-        const app = await getApplication(token, applicationId);
-        setStatus(app.status);
-        const isKnownDivision = competition.divisions.some(
-          (d) => d.id === app.division
-        );
-        setDivisionId(
-          isKnownDivision ? app.division : competition.divisions[0].id
-        );
-        setFirstName(app.first_name || "");
-        setLastName(app.last_name || "");
-        setDob(app.dob || "");
-        setAddress(app.address || "");
-        setSchool(app.school || "");
-        setGrade(app.grade || "");
-        setJob(app.job || "");
-        setBiography(app.biography || "");
-        setConsentOriginality(app.consent_originality || false);
-        setConsentSubjects(app.consent_subjects || false);
-        setConsentRights(app.consent_rights || false);
-        setConsentRules(app.consent_rules || false);
-        setConsentSocialMedia(app.consent_social_media || false);
-        setSocialLinks(app.social_links || "");
-        if (app.photos?.length) {
-          setPhotos(
-            app.photos.map((p) => ({
-              file: null,
-              preview: p.url,
-              mediaId: String(p.media_id),
-              title: p.title || "",
-              description: p.description || "",
-              isUploading: false,
-            }))
-          );
-        }
-      } catch {
-        setError("Could not load this application.");
-      } finally {
-        setIsLoading(false);
-      }
+  const loadApplication = useCallback(async () => {
+    if (!token) {
+      setIsLoading(false);
+      return;
     }
-    load();
-  }, [token, applicationId, competition.divisions]);
+    setIsLoading(true);
+    setLoadFailed(false);
+    try {
+      const app = await getApplication(token, applicationId);
+      setStatus(app.status);
+      const isKnownDivision = competition.divisions.some(
+        (d) => d.id === app.division
+      );
+      setDivisionId(
+        isKnownDivision ? app.division : competition.divisions[0].id
+      );
+      setFirstName(app.first_name || "");
+      setLastName(app.last_name || "");
+      setDob(app.dob || "");
+      setAddress(app.address || "");
+      setSchool(app.school || "");
+      setGrade(app.grade || "");
+      setJob(app.job || "");
+      setBiography(app.biography || "");
+      setConsentOriginality(app.consent_originality || false);
+      setConsentSubjects(app.consent_subjects || false);
+      setConsentRights(app.consent_rights || false);
+      setConsentRules(app.consent_rules || false);
+      setConsentSocialMedia(app.consent_social_media || false);
+      setSocialLinks(app.social_links || "");
+      if (app.photos?.length) {
+        setPhotos(
+          app.photos.map((p) => ({
+            file: null,
+            preview: p.url,
+            mediaId: String(p.media_id),
+            title: p.title || "",
+            description: p.description || "",
+            isUploading: false,
+          }))
+        );
+      }
+    } catch {
+      setError("Could not load this application.");
+      setLoadFailed(true);
+    } finally {
+      setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, applicationId]);
+
+  useEffect(() => {
+    loadApplication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, applicationId]);
 
   // --- Autosave (debounced) ---
   const save = useCallback(async () => {
@@ -324,6 +331,30 @@ export function SchoolApplicationForm({
 
   if (isLoading) {
     return <p className="text-center text-gray-500 py-12">Loading...</p>;
+  }
+
+  if (loadFailed) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-12">
+        <p className="text-gray-500 mb-4">Could not load this application.</p>
+        <div className="flex items-center justify-center gap-4">
+          <button
+            type="button"
+            onClick={() => loadApplication()}
+            className="text-sm text-[#1565A0] hover:underline"
+          >
+            Try again
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/school-registration")}
+            className="text-sm text-gray-500 hover:underline"
+          >
+            Back to applications
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (status === "submitted") {

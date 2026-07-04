@@ -18,8 +18,9 @@ folder is the roadmap/AEO build work.
 | Social profiles rollout | [social-profiles.md](social-profiles.md) | Code may be near no-op; waits on handle sign-off |
 | llms.txt | [llms-txt.md](llms-txt.md) | Trivial; emerging/optional convention |
 | EM category overhaul | [em-category-overhaul.md](em-category-overhaul.md) | Mechanical; blocked on final category list |
-| EM/IS custom post editor | [em-is-post-editor.md](em-is-post-editor.md) | Recommend **defer** into custom backend |
+| EM/IS custom post editor | [em-is-post-editor.md](em-is-post-editor.md) | Recommend **defer** into custom backend; §2.1 records why never on WP |
 | Social auto-post | [social-auto-post.md](social-auto-post.md) | Blocked on editor; start with a scheduler |
+| WP plugin → backend conversion scaffolds | [plugin-migration/](plugin-migration/) | Per-plugin maps + data migration + **secrets inventory**; executes on [architecture doc](../custom-backend-architecture.md) §7 triggers; commit-stamped for staleness |
 
 ## Recommended build order
 

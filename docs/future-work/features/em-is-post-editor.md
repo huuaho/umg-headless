@@ -46,6 +46,55 @@ Why we still can't fully defer:
 
 The steps below (§4–§8) describe the **full build** for completeness. If the interim path is chosen, build only §3, §4, §5 (featured image only), §7 (draft + publish, skip revisions), and the minimal dashboard in §8 — explicitly deferring layout variations, custom flags, bulk actions, and preview polish.
 
+### 2.1 Why not WordPress — the full argument (decided 2026-07-04)
+
+Recorded after the backend-migration deep-dive
+([`../custom-backend-architecture.md`](../custom-backend-architecture.md)).
+Five reasons, descending weight:
+
+1. **Everything a WP editor is built on is exactly what the migration throws
+   away.** An editor is an investment in a persistence layer: TipTap HTML into
+   `post_content`, layout flags via `register_post_meta`, drafts/revisions
+   through `wp/v2/posts` semantics, publish → `repository_dispatch` rebuild.
+   Post-migration, each becomes a Postgres column, a revisions table, or an
+   on-demand revalidate call. It would be **rearchitected, not ported** — the
+   XL effort spent twice.
+2. **It doubles the security surface the payment-pipeline audit condemned.**
+   EM/IS WordPress have no auth at all today (their plugins are CORS + rebuild
+   webhook only). A WP editor means porting UMG's hand-rolled JWT
+   (`jwt.php`/`auth.php`) to two more installs — the same stack whose deferred
+   items (brute-forceable codes, localStorage tokens; I-6/I-10) are the
+   migration's strongest justification — and these accounts carry **publish
+   rights**, so token theft = publishing as staff. Standing up new privileged
+   auth on the stack already judged a liability is the wrong direction.
+3. **The platform fights it.** EM/IS are static exports — no server runtime.
+   Every editor route is an empty client shell doing authed browser calls:
+   multipart uploads to `wp/v2/media` through CORS preflights, autosave over a
+   REST API designed for wp-admin cookie auth. Possible (photo-submission
+   proves the pattern), but it puts the most interactive surface in the
+   project on the stack least suited to it — vs. Next.js + Supabase where
+   auth, storage upload, and RLS-scoped writes are the paved road.
+4. **The economics invert for this feature specifically.** The judge panel was
+   *correctly* built on WP: hard Sept 1 deadline, M-sized, data already in WP.
+   The editor is the mirror image: **no deadline** (wp-admin works — zero
+   functional gap), **XL-sized** (largest roadmap item), greenfield data
+   model. For the judge panel WP was the cheap fast path; for the editor WP is
+   the expensive slow path to a throwaway.
+5. **The editor is not just a feature — it's the migration trigger.** Once
+   EM/IS authors write into Postgres, their articles are native rows:
+   two-thirds of the ingestor (EM/IS pull loops, cursors, dedup) is deleted,
+   only the DW import survives, UMG aggregation becomes a plain query, and the
+   shared auth/roles the end-state needs exist because the editor forced them.
+   Built on WP, the editor **delays** the migration by sinking effort into the
+   old stack; built on Postgres, it **is** the migration's phase 4 and drags
+   phases 1–2 along. Same feature, opposite strategic effect.
+
+**Standing decision:** if the client funds this editor, that funding is the
+migration's starting gun — build it natively on the custom backend, never on
+WP. The "interim thin WP editor" path in §2 remains documented only for the
+case where migration is explicitly ruled out *and* authoring friction is a
+stated, recurring pain — and even then, reconfirm against this section first.
+
 ---
 
 ## 3. Prerequisite — author auth on EM & IS (does not exist today)

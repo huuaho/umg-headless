@@ -4,6 +4,13 @@ Tracked issues and improvements that are known but not yet actioned (or only
 partially actioned). Each doc states, per issue, whether it is being fixed now
 or deferred — and why.
 
+- [ROADMAP.md](ROADMAP.md) — 🗺️ **living doc**: the zoomed-out priority view of
+  everything below (deadline first, then ease × value). Start here; update it
+  when any item ships or unblocks.
+- [custom-backend-architecture.md](custom-backend-architecture.md) — decided
+  target architecture for the WP → Postgres (Supabase) migration + Vercel/ISR
+  frontend move. **Not scheduled** — executes only on the triggers listed in
+  its §7. Supersedes `claude-context/custom-backend-plan.md`.
 - [alipay-incident-log.md](alipay-incident-log.md) — 🔴 **open incident**: running
   log of the Alipay payment outage (fails ~100% since Jun 30 with
   `partner_payment_not_found`) and the Stripe Support correspondence. Root cause

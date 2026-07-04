@@ -1,0 +1,874 @@
+"use client";
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { currentCompetition } from "@/lib/competitions/current";
+import type { CompetitionDivision } from "@/lib/competitions/types";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { DivisionCard } from "@/components/DivisionCard";
+import { PhotoRequirements } from "@/components/PhotoRequirements";
+import { CompetitionRules } from "@/components/CompetitionRules";
+import {
+  getApplication,
+  saveApplication,
+  submitApplication,
+  uploadPhoto as apiUploadPhoto,
+  removePhoto as apiRemovePhoto,
+} from "@/lib/school/api";
+
+interface PhotoEntry {
+  file: File | null;
+  preview: string;
+  mediaId: string | null;
+  title: string;
+  description: string;
+  isUploading: boolean;
+}
+
+interface SchoolApplicationFormProps {
+  applicationId: number;
+}
+
+function wordCount(text: string): number {
+  return text.trim() ? text.trim().split(/\s+/).length : 0;
+}
+
+export function SchoolApplicationForm({
+  applicationId,
+}: SchoolApplicationFormProps) {
+  const competition = currentCompetition;
+  const { token } = useAuth();
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [divisionId, setDivisionId] = useState(competition.divisions[0].id);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dob, setDob] = useState("");
+  const [address, setAddress] = useState("");
+  const [school, setSchool] = useState("");
+  const [grade, setGrade] = useState("");
+  const [job, setJob] = useState("");
+  const [biography, setBiography] = useState("");
+  const [photos, setPhotos] = useState<PhotoEntry[]>([]);
+
+  const [consentOriginality, setConsentOriginality] = useState(false);
+  const [consentSubjects, setConsentSubjects] = useState(false);
+  const [consentRights, setConsentRights] = useState(false);
+  const [consentRules, setConsentRules] = useState(false);
+  const [consentSocialMedia, setConsentSocialMedia] = useState(false);
+  const [socialLinks, setSocialLinks] = useState("");
+
+  const [status, setStatus] = useState<"draft" | "submitted">("draft");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
+    "idle"
+  );
+  const [error, setError] = useState("");
+
+  const selectedDivision = competition.divisions.find(
+    (d) => d.id === divisionId
+  ) as CompetitionDivision;
+
+  // --- Load ---
+  useEffect(() => {
+    async function load() {
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const app = await getApplication(token, applicationId);
+        setStatus(app.status);
+        const isKnownDivision = competition.divisions.some(
+          (d) => d.id === app.division
+        );
+        setDivisionId(
+          isKnownDivision ? app.division : competition.divisions[0].id
+        );
+        setFirstName(app.first_name || "");
+        setLastName(app.last_name || "");
+        setDob(app.dob || "");
+        setAddress(app.address || "");
+        setSchool(app.school || "");
+        setGrade(app.grade || "");
+        setJob(app.job || "");
+        setBiography(app.biography || "");
+        setConsentOriginality(app.consent_originality || false);
+        setConsentSubjects(app.consent_subjects || false);
+        setConsentRights(app.consent_rights || false);
+        setConsentRules(app.consent_rules || false);
+        setConsentSocialMedia(app.consent_social_media || false);
+        setSocialLinks(app.social_links || "");
+        if (app.photos?.length) {
+          setPhotos(
+            app.photos.map((p) => ({
+              file: null,
+              preview: p.url,
+              mediaId: String(p.media_id),
+              title: p.title || "",
+              description: p.description || "",
+              isUploading: false,
+            }))
+          );
+        }
+      } catch {
+        setError("Could not load this application.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, [token, applicationId, competition.divisions]);
+
+  // --- Autosave (debounced) ---
+  const save = useCallback(async () => {
+    if (status === "submitted" || isLoading || !token) return;
+    setSaveStatus("saving");
+    try {
+      await saveApplication(token, applicationId, {
+        division: divisionId,
+        first_name: firstName,
+        last_name: lastName,
+        dob,
+        address,
+        school,
+        grade,
+        job,
+        biography,
+        photos: photos
+          .filter((p) => p.mediaId)
+          .map((p) => ({
+            media_id: Number(p.mediaId),
+            title: p.title,
+            description: p.description,
+          })),
+        consent_originality: consentOriginality,
+        consent_subjects: consentSubjects,
+        consent_rights: consentRights,
+        consent_rules: consentRules,
+        consent_social_media: consentSocialMedia,
+        social_links: socialLinks,
+      });
+      setSaveStatus("saved");
+    } catch {
+      setSaveStatus("idle");
+    }
+  }, [
+    token,
+    applicationId,
+    status,
+    isLoading,
+    divisionId,
+    firstName,
+    lastName,
+    dob,
+    address,
+    school,
+    grade,
+    job,
+    biography,
+    photos,
+    consentOriginality,
+    consentSubjects,
+    consentRights,
+    consentRules,
+    consentSocialMedia,
+    socialLinks,
+  ]);
+
+  const photoMetaKey = photos
+    .map((p) => `${p.title}|${p.description}`)
+    .join(",");
+
+  useEffect(() => {
+    if (isLoading || status === "submitted") return;
+    if (!firstName && !lastName && !dob && photos.length === 0) return;
+    setSaveStatus("idle");
+    const timer = setTimeout(() => save(), 2000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    divisionId,
+    firstName,
+    lastName,
+    dob,
+    address,
+    school,
+    grade,
+    job,
+    biography,
+    consentOriginality,
+    consentSubjects,
+    consentRights,
+    consentSocialMedia,
+    socialLinks,
+    photoMetaKey,
+  ]);
+
+  // --- Photo handlers ---
+  const handleAddPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !token) return;
+
+    const validTypes = ["image/jpeg", "image/jpg"];
+    if (!validTypes.includes(file.type)) {
+      setError("Only JPEG/JPG files are accepted.");
+      return;
+    }
+    if (file.size > competition.maxFileSizeMB * 1024 * 1024) {
+      setError(`File exceeds ${competition.maxFileSizeMB}MB limit.`);
+      return;
+    }
+
+    setError("");
+    const preview = URL.createObjectURL(file);
+    setPhotos((prev) => [
+      ...prev,
+      { file, preview, mediaId: null, title: "", description: "", isUploading: true },
+    ]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    try {
+      const result = await apiUploadPhoto(token, applicationId, file);
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.preview === preview
+            ? { ...p, mediaId: String(result.id), isUploading: false }
+            : p
+        )
+      );
+    } catch (err) {
+      setPhotos((prev) => {
+        const photo = prev.find((p) => p.preview === preview);
+        if (photo?.file) URL.revokeObjectURL(photo.preview);
+        return prev.filter((p) => p.preview !== preview);
+      });
+      setError(
+        err instanceof Error ? err.message : "Photo upload failed."
+      );
+    }
+  };
+
+  const handleRemovePhoto = async (index: number) => {
+    const photo = photos[index];
+    if (photo.mediaId && token) {
+      try {
+        await apiRemovePhoto(token, applicationId, Number(photo.mediaId));
+      } catch {
+        // still remove from UI if server delete fails
+      }
+    }
+    setPhotos((prev) => {
+      if (prev[index].file) URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const updatePhoto = (
+    index: number,
+    field: "title" | "description",
+    value: string
+  ) => {
+    setPhotos((prev) =>
+      prev.map((p, i) => (i === index ? { ...p, [field]: value } : p))
+    );
+  };
+
+  // --- Submit ---
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) return;
+    setIsSubmitting(true);
+    setError("");
+    try {
+      await save();
+      await submitApplication(token, applicationId);
+      router.push("/school-registration");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Submission failed. Please try again."
+      );
+      setIsSubmitting(false);
+    }
+  };
+
+  const hasRequiredPhotos = photos.length >= 1;
+  const photosValid = photos.every(
+    (p) =>
+      p.title.trim() &&
+      p.description.trim() &&
+      wordCount(p.description) <= selectedDivision.maxDescriptionWords &&
+      !p.isUploading
+  );
+  const biographyValid =
+    !selectedDivision.biographyRequired || biography.trim().length > 0;
+  const allConsentsChecked =
+    consentOriginality && consentSubjects && consentRights && consentRules;
+  const personalInfoValid =
+    firstName.trim() &&
+    lastName.trim() &&
+    dob &&
+    address.trim() &&
+    school.trim() &&
+    grade;
+
+  const canSubmit =
+    personalInfoValid &&
+    hasRequiredPhotos &&
+    photosValid &&
+    biographyValid &&
+    allConsentsChecked &&
+    !isSubmitting;
+
+  if (isLoading) {
+    return <p className="text-center text-gray-500 py-12">Loading...</p>;
+  }
+
+  if (status === "submitted") {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <button
+          type="button"
+          onClick={() => router.push("/school-registration")}
+          className="text-sm text-[#1565A0] hover:underline mb-6"
+        >
+          &larr; Back to applications
+        </button>
+        <div className="border border-green-200 bg-green-50 p-4 mb-8">
+          <p className="text-sm text-green-800 font-medium">
+            This application has been submitted and can no longer be edited.
+          </p>
+        </div>
+
+        {/* Division */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+            Division
+          </p>
+          <p className="text-[#212223] font-medium">
+            {selectedDivision.name}{" "}
+            <span className="text-gray-500 font-normal">
+              (Ages {selectedDivision.ageRange})
+            </span>
+          </p>
+        </div>
+
+        {/* Personal Info */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Student Information
+          </p>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <div>
+              <span className="text-gray-500">Name:</span>{" "}
+              <span className="text-[#212223]">
+                {firstName} {lastName}
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-500">Date of Birth:</span>{" "}
+              <span className="text-[#212223]">{dob}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Address:</span>{" "}
+              <span className="text-[#212223]">{address}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">School:</span>{" "}
+              <span className="text-[#212223]">{school}</span>
+            </div>
+            <div>
+              <span className="text-gray-500">Grade:</span>{" "}
+              <span className="text-[#212223]">{grade}</span>
+            </div>
+            {job && (
+              <div>
+                <span className="text-gray-500">Major / Concentration:</span>{" "}
+                <span className="text-[#212223]">{job}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Biography */}
+        {biography && (
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Biography
+            </p>
+            <p className="text-sm text-[#212223] whitespace-pre-wrap">
+              {biography}
+            </p>
+          </div>
+        )}
+
+        {/* Social links */}
+        {socialLinks && (
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Social Links
+            </p>
+            <p className="text-sm text-[#212223] whitespace-pre-wrap">
+              {socialLinks}
+            </p>
+          </div>
+        )}
+
+        {/* Consents */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Consent &amp; Agreements
+          </p>
+          <ul className="text-sm text-gray-600 space-y-1">
+            <li>
+              {consentOriginality ? "✓" : "✗"} Originality
+              confirmation
+            </li>
+            <li>
+              {consentSubjects ? "✓" : "✗"} Subject consent
+              confirmation
+            </li>
+            <li>
+              {consentRights ? "✓" : "✗"} Rights &amp; usage
+              agreement
+            </li>
+            <li>
+              {consentRules ? "✓" : "✗"} Competition rules
+              acknowledgement
+            </li>
+            <li>
+              {consentSocialMedia ? "✓" : "✗"} Social media
+              sharing consent (optional)
+            </li>
+          </ul>
+        </div>
+
+        {/* Photos */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Photos ({photos.length})
+          </p>
+          <div className="space-y-4">
+            {photos.length === 0 && (
+              <p className="text-sm text-gray-400">No photos uploaded.</p>
+            )}
+            {photos.map((photo, i) => (
+              <div key={i} className="border border-gray-200 p-4">
+                <div className="flex gap-4">
+                  <div className="shrink-0 w-24 h-24 bg-gray-100">
+                    <img
+                      src={photo.preview}
+                      alt={photo.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#212223]">
+                      {photo.title || "Untitled"}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {photo.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <button
+          type="button"
+          onClick={() => router.push("/school-registration")}
+          className="text-sm text-[#1565A0] hover:underline"
+        >
+          &larr; Back to applications
+        </button>
+        <div className="flex items-center gap-3">
+          {saveStatus === "saving" && (
+            <span className="text-xs text-gray-400">Saving...</span>
+          )}
+          {saveStatus === "saved" && (
+            <span className="text-xs text-green-600">Draft saved</span>
+          )}
+        </div>
+      </div>
+
+      {/* Division Selection */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Division
+        </legend>
+        <div className="grid grid-cols-2 gap-3">
+          {competition.divisions.map((division) => (
+            <label
+              key={division.id}
+              className={`flex flex-col p-4 border cursor-pointer transition-colors ${
+                divisionId === division.id
+                  ? "border-[#212223] bg-gray-50"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <input
+                type="radio"
+                name="division"
+                value={division.id}
+                checked={divisionId === division.id}
+                onChange={() => setDivisionId(division.id)}
+                className="sr-only"
+              />
+              <span className="font-semibold text-[#212223]">
+                {division.name}
+              </span>
+              <span className="text-sm text-gray-500">
+                Ages {division.ageRange}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <DivisionCard divisionId={divisionId} />
+      <PhotoRequirements />
+
+      <hr className="border-gray-200 my-8" />
+
+      {/* Personal Information */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Student Information
+        </legend>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-[#212223] mb-1">
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+              />
+            </div>
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-[#212223] mb-1">
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="dob" className="block text-sm font-medium text-[#212223] mb-1">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="dob"
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+              />
+            </div>
+            <div>
+              <label htmlFor="job" className="block text-sm font-medium text-[#212223] mb-1">
+                Major / Concentration
+              </label>
+              <input
+                id="job"
+                type="text"
+                value={job}
+                onChange={(e) => setJob(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="address" className="block text-sm font-medium text-[#212223] mb-1">
+              Address <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="address"
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="school" className="block text-sm font-medium text-[#212223] mb-1">
+                School <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="school"
+                type="text"
+                value={school}
+                onChange={(e) => setSchool(e.target.value)}
+                required
+                placeholder="e.g. Lincoln High School"
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400"
+              />
+            </div>
+            <div>
+              <label htmlFor="grade" className="block text-sm font-medium text-[#212223] mb-1">
+                Grade <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="grade"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] bg-white"
+              >
+                <option value="" disabled>Select grade</option>
+                <option value="5th Grade">5th Grade</option>
+                <option value="6th Grade">6th Grade</option>
+                <option value="7th Grade">7th Grade</option>
+                <option value="8th Grade">8th Grade</option>
+                <option value="9th Grade">9th Grade</option>
+                <option value="10th Grade">10th Grade</option>
+                <option value="11th Grade">11th Grade</option>
+                <option value="12th Grade">12th Grade</option>
+                <option value="Undergraduate Student">Undergraduate Student</option>
+                <option value="Graduate Student">Graduate Student</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      {/* Photo Uploads */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Photos ({photos.length}/{selectedDivision.maxPhotos})
+        </legend>
+
+        {photos.map((photo, index) => (
+          <div key={index} className="border border-gray-200 p-4 mb-4">
+            <div className="flex gap-4">
+              <div className="shrink-0 w-24 h-24 bg-gray-100 relative">
+                {photo.isUploading && (
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+                <img
+                  src={photo.preview}
+                  alt={photo.title || `Photo ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 space-y-3">
+                <div className="flex items-start justify-between">
+                  <span className="text-sm font-medium text-gray-500">
+                    Photo {index + 1}
+                    {photo.isUploading && (
+                      <span className="text-xs text-gray-400 ml-2">Uploading...</span>
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePhoto(index)}
+                    className="text-xs text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={photo.title}
+                  onChange={(e) => updatePhoto(index, "title", e.target.value)}
+                  placeholder="Photo title"
+                  required
+                  className="w-full px-3 py-1.5 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400"
+                />
+                <div>
+                  <textarea
+                    value={photo.description}
+                    onChange={(e) => updatePhoto(index, "description", e.target.value)}
+                    placeholder="Describe your photo..."
+                    required
+                    rows={3}
+                    className="w-full px-3 py-1.5 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400 resize-none"
+                  />
+                  <p
+                    className={`text-xs mt-1 ${
+                      wordCount(photo.description) > selectedDivision.maxDescriptionWords
+                        ? "text-red-500"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {wordCount(photo.description)}/{selectedDivision.maxDescriptionWords} words
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {photos.length < selectedDivision.maxPhotos && (
+          <label className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors cursor-pointer">
+            <div className="text-center">
+              <svg className="w-6 h-6 text-gray-400 mx-auto mb-1" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span className="text-sm text-gray-500">
+                Add photo (JPEG/JPG, max {competition.maxFileSizeMB}MB)
+              </span>
+            </div>
+            <input ref={fileInputRef} type="file" accept=".jpg,.jpeg" onChange={handleAddPhoto} className="sr-only" />
+          </label>
+        )}
+      </fieldset>
+
+      {/* Biography */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Biography{" "}
+          {selectedDivision.biographyRequired ? (
+            <span className="text-red-500">*</span>
+          ) : (
+            <span className="text-gray-400 font-normal normal-case">(optional)</span>
+          )}
+        </legend>
+        <textarea
+          value={biography}
+          onChange={(e) => setBiography(e.target.value)}
+          placeholder="Tell us about the student..."
+          required={selectedDivision.biographyRequired}
+          rows={4}
+          className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400 resize-none"
+        />
+      </fieldset>
+
+      <CompetitionRules />
+
+      {/* Social Media Consent */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Social Media Consent Agreement
+        </legend>
+        <label className="flex items-start gap-3 cursor-pointer mb-4">
+          <input
+            type="checkbox"
+            checked={consentSocialMedia}
+            onChange={(e) => setConsentSocialMedia(e.target.checked)}
+            className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+          />
+          <span className="text-sm text-gray-600">
+            I grant United Media Group, LLC permission to share the submitted
+            photograph(s) on its official social media channels, including but
+            not limited to Instagram, Facebook, LinkedIn, and X (Twitter), with
+            appropriate credit given for purposes of promoting the
+            International Youth Photography Competition.
+          </span>
+        </label>
+        <div>
+          <label className="block text-sm font-medium text-[#212223] mb-1">
+            Social links <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <textarea
+            value={socialLinks}
+            onChange={(e) => setSocialLinks(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400 resize-none"
+            placeholder="e.g. instagram.com/handle"
+          />
+        </div>
+      </fieldset>
+
+      {/* Consent Checkboxes */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Consent & Agreements
+        </legend>
+        <div className="space-y-4">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentOriginality}
+              onChange={(e) => setConsentOriginality(e.target.checked)}
+              required
+              className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+            />
+            <span className="text-sm text-gray-600">{competition.originalityStatement}</span>
+          </label>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentSubjects}
+              onChange={(e) => setConsentSubjects(e.target.checked)}
+              required
+              className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+            />
+            <span className="text-sm text-gray-600">{competition.consentStatement}</span>
+          </label>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentRights}
+              onChange={(e) => setConsentRights(e.target.checked)}
+              required
+              className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+            />
+            <span className="text-sm text-gray-600">{competition.rightsStatement}</span>
+          </label>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentRules}
+              onChange={(e) => setConsentRules(e.target.checked)}
+              required
+              className="mt-0.5 w-4 h-4 shrink-0 border-gray-300 text-[#212223] focus:ring-gray-400"
+            />
+            <span className="text-sm text-gray-600">
+              I acknowledge that I have reviewed and agree to the Official
+              Competition Rules and Terms &amp; Conditions on behalf of this
+              student, and waive any right to contest the outcome or
+              administration of the competition.
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={!canSubmit}
+        className="w-full px-4 py-3 text-sm font-medium text-white bg-[#212223] hover:bg-[#3a3a3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isSubmitting ? "Submitting..." : "Submit This Application"}
+      </button>
+
+      <p className="text-xs text-gray-400 text-center mt-3">
+        Once submitted, this application is final and cannot be edited.
+        You&apos;ll return to your applications list, where payment for each
+        student happens separately.
+      </p>
+    </form>
+  );
+}

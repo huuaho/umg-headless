@@ -18,6 +18,7 @@ require_once UMGPC_PATH . 'includes/payment.php';
 require_once UMGPC_PATH . 'includes/draft.php';
 require_once UMGPC_PATH . 'includes/submission.php';
 require_once UMGPC_PATH . 'includes/school.php';
+require_once UMGPC_PATH . 'includes/admin-tools.php';
 require_once UMGPC_PATH . 'includes/cleanup.php';
 
 /* =========================================================

@@ -9,11 +9,22 @@
  * single-draft-per-user lookup in draft.php (umgpc_find_draft_id), which is
  * intentionally left untouched by this file.
  *
- * 1. GET    /umg/v1/school/applications           — list caller's applications
- * 2. POST   /umg/v1/school/applications            — create a new blank application
- * 3. GET    /umg/v1/school/application/(?P<id>\d+)  — full detail
- * 4. PUT    /umg/v1/school/application/(?P<id>\d+)  — upsert fields
- * 5. DELETE /umg/v1/school/application/(?P<id>\d+)  — delete (not if submitted)
+ * 1. GET    /umg/v1/school/applications                        — list caller's applications
+ * 2. POST   /umg/v1/school/applications                         — create a new blank application
+ * 3. GET    /umg/v1/school/application/(?P<id>\d+)               — full detail
+ * 4. PUT    /umg/v1/school/application/(?P<id>\d+)               — upsert fields
+ * 5. DELETE /umg/v1/school/application/(?P<id>\d+)               — delete (not if submitted)
+ * 6. POST   /umg/v1/school/application/(?P<id>\d+)/photo         — upload a photo
+ * 7. DELETE /umg/v1/school/application/(?P<id>\d+)/photo/(?P<mediaId>\d+) — remove a photo
+ * 8. POST   /umg/v1/school/application/(?P<id>\d+)/submit        — finalize
+ * 9. POST   /umg/v1/school/application/(?P<id>\d+)/retitle       — recompute wp-admin title
+ *                                                                   (bypasses the submitted lock;
+ *                                                                   cosmetic only, never touches
+ *                                                                   application content)
+ * 10. POST  /umg/v1/school/checkout                              — create one Stripe Checkout
+ *                                                                   Session covering every
+ *                                                                   submitted-unpaid application
+ *                                                                   the caller owns
  */
 
 if (!defined('ABSPATH')) exit;
@@ -73,6 +84,20 @@ add_action('rest_api_init', function () {
     register_rest_route('umg/v1', '/school/application/(?P<id>\d+)/submit', array(
         'methods'             => 'POST',
         'callback'            => 'umgpc_school_submit_application',
+        'permission_callback' => '__return_true',
+    ));
+
+    // POST /umg/v1/school/application/{id}/retitle
+    register_rest_route('umg/v1', '/school/application/(?P<id>\d+)/retitle', array(
+        'methods'             => 'POST',
+        'callback'            => 'umgpc_school_retitle_application',
+        'permission_callback' => '__return_true',
+    ));
+
+    // POST /umg/v1/school/checkout
+    register_rest_route('umg/v1', '/school/checkout', array(
+        'methods'             => 'POST',
+        'callback'            => 'umgpc_school_create_checkout',
         'permission_callback' => '__return_true',
     ));
 });
@@ -185,10 +210,18 @@ function umgpc_school_create_application(WP_REST_Request $request) {
     if (is_wp_error($user_id)) return $user_id;
 
     $user = get_user_by('id', $user_id);
+    $email = $user ? $user->user_email : $user_id;
+    // Numbered per-account so multiple applications are distinguishable in
+    // wp-admin; umgpc_school_update_application appends the student's name
+    // once known, reusing this same number (stored in umgpc_school_seq)
+    // rather than recomputing it, so the number stays stable across edits.
+    $seq = count(umgpc_school_find_applications($user_id)) + 1;
+    $title = "School Application #{$seq} - {$email}";
+
     $post_id = wp_insert_post(array(
         'post_type'   => 'umg_submission',
         'post_status' => 'publish',
-        'post_title'  => 'School Application - ' . ($user ? $user->user_email : $user_id),
+        'post_title'  => $title,
     ), true);
 
     if (is_wp_error($post_id)) {
@@ -198,6 +231,7 @@ function umgpc_school_create_application(WP_REST_Request $request) {
     update_post_meta($post_id, 'umgpc_user_id', (string) $user_id);
     update_post_meta($post_id, 'umgpc_status', 'draft');
     update_post_meta($post_id, 'umgpc_school_batch', '1');
+    update_post_meta($post_id, 'umgpc_school_seq', (string) $seq);
     update_post_meta($post_id, 'umgpc_payment_status', 'unpaid');
 
     return rest_ensure_response(array('id' => (int) $post_id));
@@ -316,10 +350,75 @@ function umgpc_school_update_application(WP_REST_Request $request) {
         }
     }
 
-    // Touch post_modified for orphan cleanup tracking (matches draft.php).
-    wp_update_post(array('ID' => $post_id));
+    // Retitle to "School Application #N {Name} - {email}" once a name is
+    // known; also touches post_modified for orphan cleanup tracking
+    // (matches draft.php).
+    $title = umgpc_school_compute_title($post_id, $user_id);
+    if ($title !== null) {
+        wp_update_post(array('ID' => $post_id, 'post_title' => $title));
+    } else {
+        wp_update_post(array('ID' => $post_id));
+    }
 
     return rest_ensure_response(array('success' => true));
+}
+
+/**
+ * Compute the "School Application #N {Name} - {email}" title for a post
+ * from its currently-stored name meta, backfilling umgpc_school_seq if it
+ * predates that field (assigned by position among the user's applications,
+ * oldest first, so numbering stays sensible for a mix of old and new
+ * records). Returns null if no name is stored yet (nothing to retitle to).
+ *
+ * @param int $post_id
+ * @param int $user_id
+ * @return string|null
+ */
+function umgpc_school_compute_title($post_id, $user_id) {
+    $full_name = trim(
+        get_post_meta($post_id, 'umgpc_first_name', true) . ' '
+        . get_post_meta($post_id, 'umgpc_last_name', true)
+    );
+    if ($full_name === '') return null;
+
+    $seq = get_post_meta($post_id, 'umgpc_school_seq', true);
+    if ($seq === '') {
+        $siblings = umgpc_school_find_applications($user_id);
+        $position = array_search($post_id, $siblings, true);
+        $seq = $position !== false ? ($position + 1) : count($siblings);
+        update_post_meta($post_id, 'umgpc_school_seq', (string) $seq);
+    }
+
+    $user = get_user_by('id', $user_id);
+    $email = $user ? $user->user_email : $user_id;
+
+    return "School Application #{$seq} {$full_name} - {$email}";
+}
+
+/**
+ * POST /umg/v1/school/application/{id}/retitle
+ *
+ * Recompute the wp-admin display title from currently-stored fields.
+ * Deliberately bypasses the "already_submitted" edit lock — this only
+ * touches cosmetic post_title metadata, never application content, so it's
+ * safe to run on submitted applications (e.g. to retroactively fix titles
+ * created before this endpoint existed).
+ */
+function umgpc_school_retitle_application(WP_REST_Request $request) {
+    $user_id = umgpc_get_user_from_request($request);
+    if (is_wp_error($user_id)) return $user_id;
+
+    $post_id = umgpc_school_get_owned_application($request->get_param('id'), $user_id);
+    if (is_wp_error($post_id)) return $post_id;
+
+    $title = umgpc_school_compute_title($post_id, $user_id);
+    if ($title === null) {
+        return rest_ensure_response(array('success' => true, 'retitled' => false));
+    }
+
+    wp_update_post(array('ID' => $post_id, 'post_title' => $title));
+
+    return rest_ensure_response(array('success' => true, 'retitled' => true, 'title' => $title));
 }
 
 /**
@@ -508,4 +607,170 @@ function umgpc_school_submit_application(WP_REST_Request $request) {
     update_post_meta($post_id, 'umgpc_submitted_at', current_time('mysql'));
 
     return rest_ensure_response(array('success' => true));
+}
+
+/**
+ * Find all school-batch application post IDs owned by a user that are
+ * submitted and not yet paid — the set a Checkout Session should cover.
+ *
+ * @param int $user_id
+ * @return int[] Post IDs
+ */
+function umgpc_school_find_unpaid_submitted_applications($user_id) {
+    $q = new WP_Query(array(
+        'post_type'      => 'umg_submission',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+        'orderby'        => 'date',
+        'order'          => 'ASC',
+        'meta_query'     => array(
+            'relation' => 'AND',
+            array(
+                'key'   => 'umgpc_user_id',
+                'value' => (string) $user_id,
+            ),
+            array(
+                'key'   => 'umgpc_school_batch',
+                'value' => '1',
+            ),
+            array(
+                'key'   => 'umgpc_status',
+                'value' => 'submitted',
+            ),
+            array(
+                'key'     => 'umgpc_payment_status',
+                'value'   => 'paid',
+                'compare' => '!=',
+            ),
+        ),
+        'no_found_rows' => true,
+    ));
+
+    return $q->posts;
+}
+
+/**
+ * POST /umg/v1/school/checkout
+ *
+ * Create ONE Stripe Checkout Session covering every submitted-but-unpaid
+ * application the caller owns. The quantity is computed here, server-side,
+ * from the caller's own data — never trusted from the client — so Stripe's
+ * own price x quantity total is guaranteed correct with no reconciliation
+ * risk. The batch's application IDs are embedded in the session's own
+ * metadata so the webhook (payment.php) can credit all of them from one
+ * settlement event. Uses UMGPC_STRIPE_SECRET_KEY (restricted, Checkout
+ * Sessions: write only) — distinct from UMGPC_STRIPE_WEBHOOK_SECRET, which
+ * only verifies inbound events and can't make outbound calls.
+ */
+function umgpc_school_create_checkout(WP_REST_Request $request) {
+    $user_id = umgpc_get_user_from_request($request);
+    if (is_wp_error($user_id)) return $user_id;
+
+    if (!UMGPC_STRIPE_SECRET_KEY) {
+        return new WP_Error('stripe_not_configured', 'Payment is not configured.', array('status' => 500));
+    }
+
+    $post_ids = umgpc_school_find_unpaid_submitted_applications($user_id);
+    if (empty($post_ids)) {
+        return new WP_Error('nothing_to_pay', 'No submitted, unpaid applications found.', array('status' => 400));
+    }
+
+    $quantity = count($post_ids);
+    $application_ids = implode(',', $post_ids);
+
+    // Only redirect back to a known-good origin; never trust an arbitrary
+    // client-supplied Origin header for the Stripe redirect target.
+    $origin = $request->get_header('origin');
+    $allowed_origins = umgpc_allowed_origins();
+    $base_url = in_array($origin, $allowed_origins, true) ? $origin : 'https://www.unitedmediadc.com';
+
+    // Product name/description/image and the billing-address/phone/tax
+    // settings below are matched to the existing individual entry-fee
+    // Payment Link (read directly from Stripe, 2026-07-03) so the two
+    // checkout experiences look and behave consistently. automatic_tax in
+    // particular is a functional match, not just cosmetic — the individual
+    // link already calculates tax on every entry fee, so the school batch
+    // checkout does too, for consistency.
+    // Booleans below are the literal strings 'true'/'false', not PHP
+    // booleans: wp_remote_post()'s array body gets serialized via
+    // http_build_query(), which turns PHP true into "1" — Stripe's form
+    // parser rejects "1" as an invalid boolean and wants the literal word.
+    $body = array(
+        'mode'                       => 'payment',
+        'billing_address_collection' => 'required',
+        'phone_number_collection'    => array(
+            'enabled' => 'true',
+        ),
+        'automatic_tax'              => array(
+            'enabled' => 'true',
+        ),
+        'line_items'                 => array(
+            array(
+                'price_data' => array(
+                    'currency'     => 'usd',
+                    'unit_amount'  => 5000,
+                    'product_data' => array(
+                        'name'        => 'My Hometown, My Lens: International Youth Photography Competition',
+                        'description' => sprintf(
+                            'School batch entry fee — %d student%s at $50 each. Participants may submit up to three photographs per entry. Submissions are non-refundable unless an event outlined in the Competition Rules, Terms, and Conditions occurs. Winners will be announced and notified in October 2026.',
+                            $quantity,
+                            $quantity === 1 ? '' : 's'
+                        ),
+                        'images'      => array(
+                            'https://files.stripe.com/links/MDB8YWNjdF8xVDJkbklQVVRpRk1sR2VofGZsX3Rlc3Rfa1h0aG9GMmxGZkFsendlcmtpcG5wcTgx005AqrrS03',
+                        ),
+                    ),
+                ),
+                'quantity' => $quantity,
+            ),
+        ),
+        'metadata'                   => array(
+            'purpose'          => 'school_bulk_entry',
+            'application_ids'  => $application_ids,
+        ),
+        'success_url'                => $base_url . '/school-registration/?checkout=success',
+        'cancel_url'                 => $base_url . '/school-registration/?checkout=cancelled',
+    );
+
+    $response = wp_remote_post('https://api.stripe.com/v1/checkout/sessions', array(
+        'headers' => array(
+            'Authorization' => 'Bearer ' . UMGPC_STRIPE_SECRET_KEY,
+            'Content-Type'  => 'application/x-www-form-urlencoded',
+        ),
+        'body'    => $body,
+        'timeout' => 15,
+    ));
+
+    if (is_wp_error($response)) {
+        error_log('[umgpc school checkout] Stripe request failed: ' . $response->get_error_message());
+        return new WP_Error('stripe_request_failed', 'Could not reach Stripe. Please try again.', array('status' => 502));
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+    $raw_body = wp_remote_retrieve_body($response);
+    $data = json_decode($raw_body, true);
+
+    if ($status_code >= 300 || empty($data['url'])) {
+        // If $data is empty/null, this wasn't valid Stripe JSON at all —
+        // e.g. an HTML page from a host-level firewall/proxy rather than a
+        // real Stripe response. Surface the raw body in that case so it's
+        // not hidden behind a generic "Unknown Stripe error".
+        $error_message = isset($data['error']['message'])
+            ? $data['error']['message']
+            : ('Non-JSON or empty response: ' . substr($raw_body, 0, 300));
+        error_log(sprintf(
+            '[umgpc school checkout] Stripe API error (status %d): %s',
+            $status_code,
+            $error_message
+        ));
+        return new WP_Error('stripe_error', 'Could not create checkout session.', array('status' => 502));
+    }
+
+    return rest_ensure_response(array(
+        'url'             => $data['url'],
+        'application_ids' => $post_ids,
+        'quantity'        => $quantity,
+        'total'           => $quantity * 50,
+    ));
 }

@@ -355,6 +355,12 @@ export default function HowToEnterPage() {
           >
             Apply Now
           </a>
+          <p className="mt-4 normal-case text-sm text-[#1565A0]">
+            Registering on behalf of a school?{" "}
+            <a href="/school-registration" className="underline font-semibold hover:text-[#124f82]">
+              Apply as a school
+            </a>
+          </p>
         </div>
       </section>
 

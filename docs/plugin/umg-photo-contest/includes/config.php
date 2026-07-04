@@ -36,6 +36,19 @@ if (!defined('UMGPC_STRIPE_WEBHOOK_SECRET')) {
     define('UMGPC_STRIPE_WEBHOOK_SECRET', '');
 }
 
+/**
+ * Stripe API secret key, used only to create school-batch Checkout
+ * Sessions (POST /umg/v1/school/checkout in school.php). Restricted key,
+ * Checkout Sessions: write only — see
+ * claude-context/current-work/bulk-registration/stripe-secret-key-setup.md.
+ * Distinct from UMGPC_STRIPE_WEBHOOK_SECRET above, which only verifies
+ * inbound webhooks and can't make outbound API calls.
+ * Define UMGPC_STRIPE_SECRET_KEY in wp-config.php.
+ */
+if (!defined('UMGPC_STRIPE_SECRET_KEY')) {
+    define('UMGPC_STRIPE_SECRET_KEY', '');
+}
+
 /* =========================================================
    CORS Configuration
    ========================================================= */

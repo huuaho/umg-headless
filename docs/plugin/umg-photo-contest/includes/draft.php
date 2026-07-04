@@ -8,6 +8,9 @@
  * 4. DELETE /umg/v1/draft/photo/(?P<id>\d+) — remove photo from draft
  * 5. POST   /umg/v1/draft/student-proof  — upload student proof document
  * 6. DELETE /umg/v1/draft/student-proof  — remove student proof document
+ * 7. POST   /umg/v1/draft/retitle        — recompute wp-admin title (bypasses
+ *                                           the submitted lock; cosmetic only,
+ *                                           never touches application content)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -55,6 +58,13 @@ add_action('rest_api_init', function () {
         'callback'            => 'umgpc_remove_student_proof',
         'permission_callback' => '__return_true',
     ));
+
+    // POST /umg/v1/draft/retitle
+    register_rest_route('umg/v1', '/draft/retitle', array(
+        'methods'             => 'POST',
+        'callback'            => 'umgpc_retitle_draft',
+        'permission_callback' => '__return_true',
+    ));
 });
 
 /* =========================================================
@@ -63,6 +73,12 @@ add_action('rest_api_init', function () {
 
 /**
  * Find the umg_submission CPT post for a user.
+ *
+ * Excludes school-batch applications (umgpc_school_batch = '1', see
+ * includes/school.php) — those are independent applications managed
+ * through the school endpoints, not this account's individual draft.
+ * Existing individual-flow posts have no umgpc_school_batch meta at all,
+ * so this exclusion is a no-op for them (NOT EXISTS matches "no such key").
  *
  * @param int $user_id WordPress user ID
  * @return int Post ID or 0 if not found
@@ -77,6 +93,10 @@ function umgpc_find_draft_id($user_id) {
             array(
                 'key'   => 'umgpc_user_id',
                 'value' => (string) $user_id,
+            ),
+            array(
+                'key'     => 'umgpc_school_batch',
+                'compare' => 'NOT EXISTS',
             ),
         ),
         'no_found_rows' => true,
@@ -286,10 +306,66 @@ function umgpc_save_draft(WP_REST_Request $request) {
         }
     }
 
-    // Touch post_modified for orphan cleanup tracking
-    wp_update_post(array('ID' => $post_id));
+    // Retitle to "Name - email" once a name is known (falls back to the
+    // "Submission - email" placeholder from creation until then); also
+    // touches post_modified for orphan cleanup tracking.
+    $title = umgpc_compute_draft_title($post_id, $user_id);
+    if ($title !== null) {
+        wp_update_post(array('ID' => $post_id, 'post_title' => $title));
+    } else {
+        wp_update_post(array('ID' => $post_id));
+    }
 
     return rest_ensure_response(array('success' => true));
+}
+
+/**
+ * Compute the "{Name} - {email}" title for a draft/submission from its
+ * currently-stored name meta. Returns null if no name is stored yet.
+ *
+ * @param int $post_id
+ * @param int $user_id
+ * @return string|null
+ */
+function umgpc_compute_draft_title($post_id, $user_id) {
+    $full_name = trim(
+        get_post_meta($post_id, 'umgpc_first_name', true) . ' '
+        . get_post_meta($post_id, 'umgpc_last_name', true)
+    );
+    if ($full_name === '') return null;
+
+    $user = get_user_by('id', $user_id);
+    $email = $user ? $user->user_email : $user_id;
+
+    return "{$full_name} - {$email}";
+}
+
+/**
+ * POST /umg/v1/draft/retitle
+ *
+ * Recompute the wp-admin display title from currently-stored fields.
+ * Deliberately bypasses the "already_submitted" edit lock — this only
+ * touches cosmetic post_title metadata, never application content, so it's
+ * safe to run on submitted entries (e.g. to retroactively fix titles
+ * created before this endpoint existed).
+ */
+function umgpc_retitle_draft(WP_REST_Request $request) {
+    $user_id = umgpc_get_user_from_request($request);
+    if (is_wp_error($user_id)) return $user_id;
+
+    $post_id = umgpc_find_draft_id($user_id);
+    if (!$post_id) {
+        return new WP_Error('no_draft', 'No draft found.', array('status' => 404));
+    }
+
+    $title = umgpc_compute_draft_title($post_id, $user_id);
+    if ($title === null) {
+        return rest_ensure_response(array('success' => true, 'retitled' => false));
+    }
+
+    wp_update_post(array('ID' => $post_id, 'post_title' => $title));
+
+    return rest_ensure_response(array('success' => true, 'retitled' => true, 'title' => $title));
 }
 
 /**
@@ -328,6 +404,9 @@ function umgpc_upload_photo(WP_REST_Request $request) {
     // Validate file type (JPEG only)
     $allowed_types = array('image/jpeg', 'image/jpg');
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($finfo === false) {
+        return new WP_Error('mime_check_failed', 'Could not verify file type. Please try again.', array('status' => 500));
+    }
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
 
@@ -479,6 +558,9 @@ function umgpc_upload_student_proof(WP_REST_Request $request) {
     // Validate file type (JPEG, PNG, or PDF)
     $allowed_types = array('image/jpeg', 'image/jpg', 'image/png', 'application/pdf');
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($finfo === false) {
+        return new WP_Error('mime_check_failed', 'Could not verify file type. Please try again.', array('status' => 500));
+    }
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
 

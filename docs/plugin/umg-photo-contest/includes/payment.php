@@ -4,7 +4,12 @@
  *
  * 1. GET  /umg/v1/payment-status  — return payment status for authenticated user
  * 2. POST /umg/v1/stripe-webhook  — handle Stripe checkout settlement events
- *    (checkout.session.completed [paid] and checkout.session.async_payment_succeeded)
+ *    (checkout.session.completed [paid] and checkout.session.async_payment_succeeded).
+ *    Branches on session metadata.purpose: "school_bulk_entry" credits every
+ *    application listed in metadata.application_ids (see
+ *    umgpc_mark_school_batch_paid, and POST /school/checkout in school.php
+ *    which creates these sessions); empty/"entry_fee" is the original
+ *    single-user individual-flow path, unchanged.
  */
 
 if (!defined('ABSPATH')) exit;
@@ -131,11 +136,21 @@ function umgpc_stripe_webhook(WP_REST_Request $request) {
         return rest_ensure_response(array('received' => true));
     }
 
+    $purpose = isset($session['metadata']['purpose']) ? $session['metadata']['purpose'] : '';
+
+    // School-batch checkouts (school.php's POST /school/checkout) credit
+    // every application listed in the session's own metadata from this one
+    // event, instead of resolving a single WP user via client_reference_id.
+    // Kept as a fully separate branch so the individual-flow path below is
+    // never touched.
+    if ($purpose === 'school_bulk_entry') {
+        return umgpc_mark_school_batch_paid($session);
+    }
+
     // Only act on entry-fee checkouts. Sessions without purpose metadata are
     // treated as entry fees (the current entry-fee link predates the metadata);
     // any other purpose (e.g. a future donations link) is acknowledged and
     // skipped so its payers are never flagged as paid contest entrants.
-    $purpose = isset($session['metadata']['purpose']) ? $session['metadata']['purpose'] : '';
     if ($purpose !== '' && $purpose !== 'entry_fee') {
         return rest_ensure_response(array('received' => true));
     }
@@ -183,6 +198,97 @@ function umgpc_stripe_webhook(WP_REST_Request $request) {
     update_user_meta($user->ID, 'umgpc_payment_status', 'paid');
     update_user_meta($user->ID, 'umgpc_stripe_payment_id', sanitize_text_field($session['id'] ?? ''));
     update_user_meta($user->ID, 'umgpc_payment_date', current_time('mysql'));
+
+    return rest_ensure_response(array('received' => true));
+}
+
+/**
+ * Mark every application listed in a school-batch Checkout Session's
+ * metadata.application_ids as paid, from a single settlement event.
+ *
+ * Each ID is independently re-validated as a real, school-owned, submitted
+ * umg_submission post before being credited — the metadata is produced
+ * server-side by umgpc_school_create_checkout() (school.php), never
+ * client-supplied, but every ID is checked anyway rather than trusted
+ * blindly, matching this file's existing pattern of never crediting
+ * unverified data. An invalid ID is skipped and logged; it does not fail
+ * the whole batch (the other valid IDs still get credited).
+ *
+ * @param array $session Stripe Checkout Session object (event payload)
+ * @return WP_REST_Response
+ */
+function umgpc_mark_school_batch_paid($session) {
+    $raw_ids = isset($session['metadata']['application_ids']) ? $session['metadata']['application_ids'] : '';
+    $session_id = isset($session['id']) ? sanitize_text_field($session['id']) : '';
+
+    if ($raw_ids === '') {
+        error_log(sprintf(
+            '[umgpc webhook] school_bulk_entry event with no application_ids metadata: session=%s',
+            $session_id ?: '(none)'
+        ));
+        return rest_ensure_response(array('received' => true));
+    }
+
+    $ids = array_filter(array_map('intval', explode(',', $raw_ids)));
+    $credited = array();
+    $skipped = array();
+    $owner_id = 0;
+
+    foreach ($ids as $post_id) {
+        $is_valid_school_post = get_post_type($post_id) === 'umg_submission'
+            && get_post_meta($post_id, 'umgpc_school_batch', true) === '1'
+            && get_post_meta($post_id, 'umgpc_status', true) === 'submitted';
+
+        if (!$is_valid_school_post) {
+            $skipped[] = $post_id;
+            continue;
+        }
+
+        update_post_meta($post_id, 'umgpc_payment_status', 'paid');
+        update_post_meta($post_id, 'umgpc_stripe_payment_id', $session_id);
+        update_post_meta($post_id, 'umgpc_payment_date', current_time('mysql'));
+        $credited[] = $post_id;
+
+        if (!$owner_id) {
+            $owner_id = (int) get_post_meta($post_id, 'umgpc_user_id', true);
+        }
+    }
+
+    // Release school.php's checkout-in-progress lock now that this batch is
+    // paid, so the account isn't blocked from starting a fresh checkout for
+    // a future batch until the TTL expires. Resolved once per batch (every
+    // application in one checkout shares the same owner), not once per
+    // post. Only released if the stored lock is still THIS session's —
+    // Stripe can redeliver an already-processed event (e.g. the first ack
+    // was missed), and an unconditional release would otherwise be able to
+    // wipe out a different, still-in-flight checkout's lock for the same
+    // account, reopening the double-charge window this lock exists to close.
+    if ($owner_id) {
+        $lock_session = get_user_meta($owner_id, 'umgpc_school_checkout_lock_session', true);
+        if ($lock_session === $session_id) {
+            delete_user_meta($owner_id, 'umgpc_school_checkout_lock_at');
+            delete_user_meta($owner_id, 'umgpc_school_checkout_lock_session');
+        }
+    } elseif (!empty($credited)) {
+        // Shouldn't happen — every school application gets umgpc_user_id at
+        // creation — but if it ever did, the account's checkout lock would
+        // otherwise sit stuck until UMGPC_SCHOOL_CHECKOUT_LOCK_TTL expires
+        // with no visible cause. Log it rather than fail silently.
+        error_log(sprintf(
+            '[umgpc webhook] school_bulk_entry event credited posts with no resolvable umgpc_user_id: session=%s credited=%s',
+            $session_id ?: '(none)',
+            implode(',', $credited)
+        ));
+    }
+
+    if (!empty($skipped)) {
+        error_log(sprintf(
+            '[umgpc webhook] school_bulk_entry event skipped invalid application id(s): session=%s skipped=%s credited=%s',
+            $session_id ?: '(none)',
+            implode(',', $skipped),
+            implode(',', $credited)
+        ));
+    }
 
     return rest_ensure_response(array('received' => true));
 }

@@ -3,7 +3,7 @@
 **Purpose:** Plugin bootstrap for "UMG Photo Contest" — loads all includes and wires activation/deactivation hooks.
 
 ## Responsibilities
-Entry point of the photo competition plugin (deployed to `wp-content/plugins/umg-photo-contest/` on api.unitedmediadc.com). Defines `UMGPC_PATH`, requires every file in `includes/` in dependency order (config → cors → post-types → jwt → auth → payment → draft → submission → cleanup), and registers activation/deactivation handlers.
+Entry point of the photo competition plugin (deployed to `wp-content/plugins/umg-photo-contest/` on api.unitedmediadc.com). Defines `UMGPC_PATH`, requires every file in `includes/` in dependency order (config → cors → post-types → jwt → auth → payment → draft → submission → school → admin-tools → cleanup), and registers activation/deactivation handlers.
 
 ## Key exports
 - `UMGPC_PATH` (constant) — plugin directory path.
@@ -11,7 +11,7 @@ Entry point of the photo competition plugin (deployed to `wp-content/plugins/umg
 - `register_deactivation_hook` closure — clears the `umgpc_cleanup_orphaned_drafts` cron and flushes rewrite rules.
 
 ## Dependencies
-- Internal: [includes/config.php](includes/config.php.md), [includes/cors.php](includes/cors.php.md), [includes/post-types.php](includes/post-types.php.md), [includes/jwt.php](includes/jwt.php.md), [includes/auth.php](includes/auth.php.md), [includes/payment.php](includes/payment.php.md), [includes/draft.php](includes/draft.php.md), [includes/submission.php](includes/submission.php.md), [includes/cleanup.php](includes/cleanup.php.md)
+- Internal: [includes/config.php](includes/config.php.md), [includes/cors.php](includes/cors.php.md), [includes/post-types.php](includes/post-types.php.md), [includes/jwt.php](includes/jwt.php.md), [includes/auth.php](includes/auth.php.md), [includes/payment.php](includes/payment.php.md), [includes/draft.php](includes/draft.php.md), [includes/submission.php](includes/submission.php.md), [includes/school.php](includes/school.php.md), [includes/admin-tools.php](includes/admin-tools.php.md), [includes/cleanup.php](includes/cleanup.php.md)
 - External: WordPress plugin API (`register_activation_hook`, `wp_schedule_event`, `flush_rewrite_rules`).
 
 ## Used by
@@ -22,4 +22,4 @@ WordPress core loads this file as the plugin main file. All `/wp-json/umg/v1/*` 
 - Version 1.0.0; no settings UI — all configuration via constants in `wp-config.php` (see [includes/config.php](includes/config.php.md)).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit e5821d4.*

@@ -17,6 +17,7 @@ Next.js App Router tree for the UMG site. The root layout supplies fonts, site m
 | [how-to-enter/](how-to-enter/README.md) | folder | Photo-competition landing page + Event & FAQ schema. |
 | [judges-panel/](judges-panel/README.md) | folder | Judge bios with hash-anchor scrolling. |
 | [photo-submission/](photo-submission/README.md) | folder | Authenticated entry flow (sign-in → submit → pay). |
+| [school-registration/](school-registration/README.md) | folder | School/bulk-registration flow: manage a batch of student applications, pay once for the whole batch. |
 | [search/](search/README.md) | folder | Search route (shared UI). |
 | icon.svg, old-icon.png | assets | Favicon/app icon files (App Router metadata convention); not documented individually. |
 
@@ -39,11 +40,14 @@ graph LR
   ps["photo-submission/"] --> auth["lib/auth/*"]
   ps --> comp
   ps --> cmp
+  sr["school-registration/"] --> auth
+  sr --> schoolLib["lib/school/*"]
   auth -.REST /wp-json/umg/v1.-> plugin["WP photo-contest plugin"]
+  schoolLib -.REST /wp-json/umg/v1/school.-> plugin
 ```
 
 ## Entry points
-Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×8), `/search`, `/how-to-enter`, `/judges-panel`, `/photo-submission`, plus `/sitemap.xml`, `/robots.txt`, and the 404 page. All are statically exported (`output: "export"`).
+Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×8), `/search`, `/how-to-enter`, `/judges-panel`, `/photo-submission`, `/school-registration` (+ `/school-registration/application`), plus `/sitemap.xml`, `/robots.txt`, and the 404 page. All are statically exported (`output: "export"`).
 
 ---
-*Documented at commit 60deaa3.*
+*Documented at commit e5821d4.*

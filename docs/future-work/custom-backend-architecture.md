@@ -184,5 +184,5 @@ deletes two-thirds of the ingestor; only the DW import remains.
    endgame per §9 Q1.
 
 ---
-*Plan based on codebase at commit `27a1dfc` (2026-07-04). If plugins, deploy
+*Plan based on codebase at commit `adb65a1` (2026-07-04). If plugins, deploy
 workflows, or providers have changed since, re-verify before executing.*

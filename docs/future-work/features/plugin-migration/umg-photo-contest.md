@@ -66,5 +66,5 @@ logic; everything else is CRUD reconfigured as schema + policies.
 - [ ] Off-season only; plugin left installed-but-idle one season post-cutover
 
 ---
-*Plan based on codebase at commit `27a1dfc` (2026-07-04). If plugins, deploy
+*Plan based on codebase at commit `83f5ebc` (2026-07-05). If plugins, deploy
 workflows, or providers have changed since, re-verify before executing.*

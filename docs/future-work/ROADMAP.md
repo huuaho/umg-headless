@@ -78,5 +78,5 @@ caboose, do not start sooner.
   inventory — 2026-07-04 (docs only; execution trigger-gated)
 
 ---
-*Priorities as of commit `27a1dfc` (2026-07-04). Living doc — advance this
+*Priorities as of commit `83f5ebc` (2026-07-05). Living doc — advance this
 stamp whenever statuses change.*

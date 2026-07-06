@@ -40,5 +40,5 @@ One caller — the footer/newsletter form posts `email_address` to
 - [ ] No data migration — the list never leaves Mailchimp
 
 ---
-*Plan based on codebase at commit `27a1dfc` (2026-07-04). If plugins, deploy
+*Plan based on codebase at commit `adb65a1` (2026-07-04). If plugins, deploy
 workflows, or providers have changed since, re-verify before executing.*

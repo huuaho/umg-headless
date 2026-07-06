@@ -57,5 +57,5 @@ config, not code.
 - [ ] Flip UMG deploy env; leave WP ingestor running (idle consumer) for a settling period, then disable its crons
 
 ---
-*Plan based on codebase at commit `27a1dfc` (2026-07-04). If plugins, deploy
+*Plan based on codebase at commit `adb65a1` (2026-07-04). If plugins, deploy
 workflows, or providers have changed since, re-verify before executing.*

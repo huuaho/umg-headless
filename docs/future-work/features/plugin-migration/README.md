@@ -75,5 +75,5 @@ re-verify its claims against the code and advance its stamp to the current
 commit.
 
 ---
-*Plan based on codebase at commit `27a1dfc` (2026-07-04). If plugins, deploy
+*Plan based on codebase at commit `adb65a1` (2026-07-04). If plugins, deploy
 workflows, or providers have changed since, re-verify before executing.*

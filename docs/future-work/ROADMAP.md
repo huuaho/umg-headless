@@ -16,7 +16,7 @@ Effort key: XS < S < M < L < XL.
 
 | # | Item | Deadline / driver | Effort | Status | Plan doc |
 | --- | --- | --- | --- | --- | --- |
-| 1 | **Judge panel feedback iteration** | ⏰ **mid-Aug 2026** (jury Sept 1) | M | Parked awaiting client answers (5 UX questions) | [`claude-context/paused-work/judge-panel-parked.md`](../../claude-context/paused-work/judge-panel-parked.md) |
+| 1 | **Judge panel feedback iteration** | ⏰ **mid-Oct 2026** (jury Nov 1 — deadline extended 2026-07-05) | M | Parked awaiting client answers (5 UX questions) | [`claude-context/paused-work/judge-panel-parked.md`](../../claude-context/paused-work/judge-panel-parked.md) |
 | 2 | Judge diff code review + docs sync | rides with #1 | S | Never run | same doc, "engineering follow-ups" |
 | 3 | **Alipay outage** | open incident | — (Stripe-side) | Escalated to Stripe; UnionPay/card workaround live | [`alipay-incident-log.md`](alipay-incident-log.md) |
 | 4 | School bulk-reg leftovers (`school.php` redeploy, polish commit, review, docs) | none — just finish it | S | Shipped 2026-07-03, cleanup pending | `claude-context/finished-work/bulk-registration/` |

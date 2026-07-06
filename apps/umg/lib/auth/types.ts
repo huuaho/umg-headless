@@ -37,6 +37,8 @@ export interface DraftData {
   grade: string;
   job: string;
   biography: string;
+  // Optional: only present once the plugin's recommender update is deployed.
+  recommender?: string;
   photos: DraftPhoto[];
   student_proof: DraftStudentProof | null;
   consent_originality: boolean;
@@ -58,6 +60,7 @@ export interface SaveDraftPayload {
   grade: string;
   job: string;
   biography: string;
+  recommender: string;
   photos: Array<{
     media_id: number;
     title: string;

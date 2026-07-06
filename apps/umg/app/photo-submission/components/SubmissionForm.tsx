@@ -58,6 +58,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
   const [grade, setGrade] = useState("");
   const [job, setJob] = useState("");
   const [biography, setBiography] = useState("");
+  const [recommender, setRecommender] = useState("");
   const [photos, setPhotos] = useState<PhotoEntry[]>([]);
   const [studentProof, setStudentProof] = useState<StudentProofEntry | null>(
     null,
@@ -106,6 +107,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
           setGrade(draft.grade || "");
           setJob(draft.job || "");
           setBiography(draft.biography || "");
+          setRecommender(draft.recommender || "");
 
           setConsentOriginality(draft.consent_originality || false);
           setConsentSubjects(draft.consent_subjects || false);
@@ -160,6 +162,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
         grade,
         job,
         biography,
+        recommender,
         photos: photos
           .filter((p) => p.mediaId)
           .map((p) => ({
@@ -191,6 +194,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
     grade,
     job,
     biography,
+    recommender,
     photos,
     consentOriginality,
     consentSubjects,
@@ -229,6 +233,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
     grade,
     job,
     biography,
+    recommender,
     consentOriginality,
     consentSubjects,
     consentRights,
@@ -410,6 +415,7 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
         grade,
         job,
         biography,
+        recommender,
         photos: photos
           .filter((p) => p.mediaId)
           .map((p) => ({
@@ -784,6 +790,16 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
               Biography
             </p>
             <p className="text-sm text-gray-600">{biography}</p>
+          </div>
+        )}
+
+        {/* Recommender */}
+        {recommender && (
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Recommender
+            </p>
+            <p className="text-sm text-gray-600">{recommender}</p>
           </div>
         )}
 
@@ -1260,6 +1276,23 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
           required={selectedDivision.biographyRequired}
           rows={4}
           className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400 resize-none"
+        />
+      </fieldset>
+
+      {/* Recommender */}
+      <fieldset className="mb-8">
+        <legend className="text-sm font-semibold text-[#212223] uppercase tracking-wide mb-3">
+          Recommender{" "}
+          <span className="text-gray-400 font-normal normal-case">
+            (optional)
+          </span>
+        </legend>
+        <input
+          type="text"
+          value={recommender}
+          onChange={(e) => setRecommender(e.target.value)}
+          placeholder="Name of the person who recommended you, if any"
+          className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 text-[#212223] placeholder-gray-400"
         />
       </fieldset>
 

@@ -10,6 +10,8 @@ export interface EntryIdentity {
   last_name: string;
   school: string;
   grade: string;
+  // Optional: only present once the plugin's recommender update is deployed.
+  recommender?: string;
 }
 
 export type ScoreStatus = "unscored" | "draft" | "final";

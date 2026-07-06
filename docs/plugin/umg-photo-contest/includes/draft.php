@@ -211,6 +211,7 @@ function umgpc_get_draft(WP_REST_Request $request) {
         'grade'               => get_post_meta($post_id, 'umgpc_grade', true) ?: '',
         'job'                 => get_post_meta($post_id, 'umgpc_job', true) ?: '',
         'biography'           => get_post_meta($post_id, 'umgpc_biography', true) ?: '',
+        'recommender'         => get_post_meta($post_id, 'umgpc_recommender', true) ?: '',
         'photos'              => umgpc_build_photos_array($post_id),
         'student_proof'       => umgpc_build_student_proof($post_id),
         'consent_originality' => (bool) get_post_meta($post_id, 'umgpc_consent_originality', true),
@@ -260,6 +261,7 @@ function umgpc_save_draft(WP_REST_Request $request) {
         'grade'        => 'umgpc_grade',
         'job'         => 'umgpc_job',
         'biography'   => 'umgpc_biography',
+        'recommender' => 'umgpc_recommender',
         'social_links' => 'umgpc_social_links',
     );
 

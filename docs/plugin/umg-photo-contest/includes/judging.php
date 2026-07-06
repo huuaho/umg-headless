@@ -123,6 +123,9 @@ function umgpc_entry_identity($post_id) {
         'last_name'  => get_post_meta($post_id, 'umgpc_last_name', true) ?: '',
         'school'     => get_post_meta($post_id, 'umgpc_school', true) ?: '',
         'grade'      => get_post_meta($post_id, 'umgpc_grade', true) ?: '',
+        // Identity-gated on purpose: a named recommender could bias scoring,
+        // so blind judging must hide it along with the entrant's name.
+        'recommender' => get_post_meta($post_id, 'umgpc_recommender', true) ?: '',
     );
 }
 

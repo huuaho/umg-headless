@@ -202,6 +202,18 @@ export function EntryScoring() {
                 </p>
               </div>
             )}
+
+            {/* Identity-gated: absent under blind judging, admins only */}
+            {entry.identity?.recommender && (
+              <div>
+                <h2 className="text-lg font-bold text-[#212223] mb-2">
+                  Recommender
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {entry.identity.recommender}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Right: the scoring form */}

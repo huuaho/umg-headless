@@ -27,22 +27,22 @@ export const currentCompetition: Competition = {
     },
     {
       label: "Submission Deadline",
-      date: "August 31, 2026",
+      date: "October 31, 2026",
       description: "Final deadline for all entries",
     },
     {
       label: "Jury Review",
-      date: "September 1 – October 15, 2026",
+      date: "November 1 – December 15, 2026",
       description: "Jury review and evaluation process",
     },
     {
       label: "Winners Announced",
-      date: "October 16, 2026",
+      date: "December 16, 2026",
       description: "Official announcement of award recipients",
     },
     {
       label: "Exhibition Showcases",
-      date: "December 2026 – March 2027",
+      date: "January – May 2027",
       description: "Multiple exhibition showings at the cited locations",
     },
   ],

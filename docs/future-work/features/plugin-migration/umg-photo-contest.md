@@ -9,7 +9,9 @@
 
 ## Target schema
 
-`entries`, `entry_photos` (≤3/entry, title + description), `entry_documents`
+`entries` (incl. optional `recommender`, added 2026-07-05 as `umgpc_recommender`
+meta — identity-gated in judging responses), `entry_photos` (≤3/entry, title +
+description), `entry_documents`
 (student proofs, private bucket, UUID keys), `entry_consents` (immutable,
 versioned statements — I-4), `transactions` (Stripe), `scores`
 (per-judge × per-criterion, unique on `(entry_id, judge_id)`), plus shared

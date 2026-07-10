@@ -8,6 +8,7 @@ import {
   createCheckoutSession,
   deleteApplication,
   listApplications,
+  unsubmitApplication,
 } from "@/lib/school/api";
 import type { ApplicationSummary } from "@/lib/school/types";
 
@@ -100,6 +101,19 @@ export function ApplicationsCart() {
     } catch {
       setError("Could not delete this application. Please try again.");
     } finally {
+      setPendingId(null);
+    }
+  };
+
+  const handleReopen = async (id: number) => {
+    if (!token) return;
+    setPendingId(id);
+    setError("");
+    try {
+      await unsubmitApplication(token, id);
+      router.push(`/school-registration/application?id=${id}`);
+    } catch {
+      setError("Could not reopen this application. Please try again.");
       setPendingId(null);
     }
   };
@@ -226,6 +240,17 @@ export function ApplicationsCart() {
                   >
                     {app.status === "submitted" ? "View" : "Edit"}
                   </button>
+                  {app.status === "submitted" &&
+                    app.payment_status !== "paid" && (
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => handleReopen(app.id)}
+                        className="text-sm text-[#1565A0] hover:underline disabled:opacity-50"
+                      >
+                        {isBusy ? "Reopening..." : "Reopen to edit"}
+                      </button>
+                    )}
                   {app.status === "draft" && (
                     <button
                       type="button"
@@ -262,6 +287,13 @@ export function ApplicationsCart() {
             ? "Starting checkout..."
             : `Pay $${owed} total (${unpaidSubmitted.length} student${unpaidSubmitted.length === 1 ? "" : "s"})`}
         </button>
+      )}
+
+      {unpaidSubmitted.length > 0 && (
+        <p className="text-xs text-gray-400 text-center mb-3">
+          Submitted applications can still be reopened and edited until they
+          are paid — once paid, they are final.
+        </p>
       )}
 
       <button

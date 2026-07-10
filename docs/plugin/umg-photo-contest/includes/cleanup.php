@@ -36,9 +36,10 @@ function umgpc_run_cleanup() {
     ));
 
     foreach ($q->posts as $post) {
-        // Never delete a paid user's draft — an entry un-submitted for edits
+        // Never delete a paid entry's draft — an entry un-submitted for edits
         // around the moment its payment settled would otherwise be lost.
-        if (get_user_meta($post->post_author, 'umgpc_payment_status', true) === 'paid') {
+        // Covers both payment models (school post meta, individual user meta).
+        if (umgpc_entry_is_paid($post->ID)) {
             continue;
         }
 

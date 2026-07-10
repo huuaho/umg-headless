@@ -17,6 +17,9 @@
  * 6. POST   /umg/v1/school/application/(?P<id>\d+)/photo         — upload a photo
  * 7. DELETE /umg/v1/school/application/(?P<id>\d+)/photo/(?P<mediaId>\d+) — remove a photo
  * 8. POST   /umg/v1/school/application/(?P<id>\d+)/submit        — finalize
+ * 8b. POST  /umg/v1/school/application/(?P<id>\d+)/unsubmit      — revert to draft for edits
+ *                                                                   (blocked once paid; guards
+ *                                                                   in entry-state.php)
  * 9. POST   /umg/v1/school/application/(?P<id>\d+)/retitle       — recompute wp-admin title
  *                                                                   (bypasses the submitted lock;
  *                                                                   cosmetic only, never touches
@@ -113,6 +116,13 @@ add_action('rest_api_init', function () {
     register_rest_route('umg/v1', '/school/application/(?P<id>\d+)/submit', array(
         'methods'             => 'POST',
         'callback'            => 'umgpc_school_submit_application',
+        'permission_callback' => '__return_true',
+    ));
+
+    // POST /umg/v1/school/application/{id}/unsubmit
+    register_rest_route('umg/v1', '/school/application/(?P<id>\d+)/unsubmit', array(
+        'methods'             => 'POST',
+        'callback'            => 'umgpc_school_unsubmit_application',
         'permission_callback' => '__return_true',
     ));
 
@@ -800,13 +810,29 @@ function umgpc_school_submit_application(WP_REST_Request $request) {
     $post_id = umgpc_school_get_owned_application($request->get_param('id'), $user_id);
     if (is_wp_error($post_id)) return $post_id;
 
-    $current_status = get_post_meta($post_id, 'umgpc_status', true);
-    if ($current_status === 'submitted') {
-        return new WP_Error('already_submitted', 'Application has already been submitted.', array('status' => 400));
-    }
+    $result = umgpc_entry_submit($post_id);
+    if (is_wp_error($result)) return $result;
 
-    update_post_meta($post_id, 'umgpc_status', 'submitted');
-    update_post_meta($post_id, 'umgpc_submitted_at', current_time('mysql'));
+    return rest_ensure_response(array('success' => true));
+}
+
+/**
+ * POST /umg/v1/school/application/{id}/unsubmit
+ *
+ * Revert a submitted application to draft so the school can edit it before
+ * paying. Guards (not-paid, must-be-submitted) live in entry-state.php.
+ * Note: an application inside a checkout session that settles after the
+ * revert still gets credited by the webhook — resubmitting reconciles it.
+ */
+function umgpc_school_unsubmit_application(WP_REST_Request $request) {
+    $user_id = umgpc_get_user_from_request($request);
+    if (is_wp_error($user_id)) return $user_id;
+
+    $post_id = umgpc_school_get_owned_application($request->get_param('id'), $user_id);
+    if (is_wp_error($post_id)) return $post_id;
+
+    $result = umgpc_entry_unsubmit($post_id);
+    if (is_wp_error($result)) return $result;
 
     return rest_ensure_response(array('success' => true));
 }

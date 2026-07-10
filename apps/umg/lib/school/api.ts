@@ -105,6 +105,20 @@ export async function submitApplication(
   await handleResponse<{ success: boolean }>(response);
 }
 
+export async function unsubmitApplication(
+  token: string,
+  id: number
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE}/school/application/${id}/unsubmit`,
+    {
+      method: "POST",
+      headers: authHeaders(token),
+    }
+  );
+  await handleResponse<{ success: boolean }>(response);
+}
+
 export async function uploadPhoto(
   token: string,
   id: number,

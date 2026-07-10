@@ -12,6 +12,7 @@ define('UMGPC_PATH', plugin_dir_path(__FILE__));
 require_once UMGPC_PATH . 'includes/config.php';
 require_once UMGPC_PATH . 'includes/cors.php';
 require_once UMGPC_PATH . 'includes/post-types.php';
+require_once UMGPC_PATH . 'includes/entry-state.php';
 require_once UMGPC_PATH . 'includes/jwt.php';
 require_once UMGPC_PATH . 'includes/roles.php';
 require_once UMGPC_PATH . 'includes/auth.php';

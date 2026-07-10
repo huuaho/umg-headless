@@ -60,6 +60,9 @@ export function SchoolApplicationForm({
   const [socialLinks, setSocialLinks] = useState("");
 
   const [status, setStatus] = useState<"draft" | "submitted">("draft");
+  const [paymentStatus, setPaymentStatus] = useState<"unpaid" | "paid">(
+    "unpaid"
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,6 +86,7 @@ export function SchoolApplicationForm({
     try {
       const app = await getApplication(token, applicationId);
       setStatus(app.status);
+      setPaymentStatus(app.payment_status);
       const isKnownDivision = competition.divisions.some(
         (d) => d.id === app.division
       );
@@ -369,7 +373,9 @@ export function SchoolApplicationForm({
         </button>
         <div className="border border-green-200 bg-green-50 p-4 mb-8">
           <p className="text-sm text-green-800 font-medium">
-            This application has been submitted and can no longer be edited.
+            {paymentStatus === "paid"
+              ? "This application has been submitted and paid — it is final and can no longer be edited."
+              : "This application has been submitted. To make changes before paying, reopen it from your applications list."}
           </p>
         </div>
 
@@ -896,9 +902,9 @@ export function SchoolApplicationForm({
       </button>
 
       <p className="text-xs text-gray-400 text-center mt-3">
-        Once submitted, this application is final and cannot be edited.
-        You&apos;ll return to your applications list, where payment for each
-        student happens separately.
+        You&apos;ll return to your applications list, where payment happens
+        per student. Submitted applications can still be reopened and edited
+        until they are paid — once paid, they are final.
       </p>
     </form>
   );

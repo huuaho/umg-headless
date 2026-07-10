@@ -36,6 +36,12 @@ function umgpc_run_cleanup() {
     ));
 
     foreach ($q->posts as $post) {
+        // Never delete a paid user's draft — an entry un-submitted for edits
+        // around the moment its payment settled would otherwise be lost.
+        if (get_user_meta($post->post_author, 'umgpc_payment_status', true) === 'paid') {
+            continue;
+        }
+
         // Delete attached photos from Media Library
         for ($i = 1; $i <= 3; $i++) {
             $media_id = (int) get_post_meta($post->ID, "umgpc_photo_{$i}_id", true);

@@ -163,3 +163,11 @@ export async function submitEntry(token: string): Promise<void> {
   });
   await handleResponse<{ success: boolean }>(response);
 }
+
+export async function unsubmitEntry(token: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/unsubmit`, {
+    method: "POST",
+    headers: authHeaders(token),
+  });
+  await handleResponse<{ success: boolean }>(response);
+}

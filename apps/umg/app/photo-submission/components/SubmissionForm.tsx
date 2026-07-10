@@ -15,6 +15,7 @@ import {
   uploadStudentProof as apiUploadStudentProof,
   removeStudentProof as apiRemoveStudentProof,
   submitEntry as apiSubmitEntry,
+  unsubmitEntry as apiUnsubmitEntry,
 } from "@/lib/auth/api";
 
 interface PhotoEntry {
@@ -80,6 +81,8 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
   const [error, setError] = useState("");
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [paymentPollError, setPaymentPollError] = useState("");
+  const [isUnsubmitting, setIsUnsubmitting] = useState(false);
+  const [unsubmitError, setUnsubmitError] = useState("");
 
   const selectedDivision = competition.divisions.find(
     (d) => d.id === divisionId,
@@ -532,6 +535,26 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
     }
   };
 
+  const handleBackToEdit = async () => {
+    if (!token) return;
+    setIsUnsubmitting(true);
+    setUnsubmitError("");
+
+    try {
+      await apiUnsubmitEntry(token);
+      setIsSubmitted(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setUnsubmitError(
+        err instanceof Error
+          ? err.message
+          : "Could not reopen your submission. Please try again.",
+      );
+    } finally {
+      setIsUnsubmitting(false);
+    }
+  };
+
   // --- Loading State ---
   if (isLoadingDraft) {
     return (
@@ -623,6 +646,27 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
                 {paymentPollError}
               </p>
             )}
+
+            <button
+              onClick={handleBackToEdit}
+              disabled={isUnsubmitting}
+              className="w-full px-4 py-2.5 text-sm font-medium border border-gray-300 text-[#212223] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-3"
+            >
+              {isUnsubmitting
+                ? "Reopening your submission..."
+                : "← Back to edit my submission"}
+            </button>
+
+            {unsubmitError && (
+              <p className="text-sm text-amber-600 text-center mt-2">
+                {unsubmitError}
+              </p>
+            )}
+
+            <p className="text-xs text-gray-400 text-center mt-2">
+              You can still make changes before paying — you&apos;ll need to
+              resubmit your entry afterwards.
+            </p>
 
             <p className="text-xs text-gray-400 text-center mt-3">
               Payment status updates automatically. You can also click above to
@@ -1408,8 +1452,9 @@ export function SubmissionForm({ user, onLogout, onStepChange }: SubmissionFormP
       </button>
 
       <p className="text-xs text-gray-400 text-center mt-3">
-        Once submitted, your entry is final and cannot be edited. You will
-        proceed to payment (${entryFee}) after submission.
+        You will proceed to payment (${entryFee}) after submission. You can
+        still go back and make changes until your payment is completed — once
+        paid, your entry is final and can no longer be edited.
       </p>
     </form>
   );

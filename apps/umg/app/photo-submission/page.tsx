@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState, useCallback } from "react";
+import { notFound } from "next/navigation";
 import { HostingCommittees } from "@/components/HostingCommittees";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthForm } from "./components/AuthForm";
@@ -121,6 +122,9 @@ function PhotoSubmissionContent() {
 }
 
 export default function PhotoSubmissionPage() {
+  // Competition postponed indefinitely (client request, 2026-08-13) — page
+  // hidden. Delete the next line to restore it.
+  notFound();
   return (
     <Suspense
       fallback={

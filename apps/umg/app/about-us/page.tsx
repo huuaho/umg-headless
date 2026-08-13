@@ -1,4 +1,5 @@
-import Link from "next/link";
+// Link import unused while the competition section below is commented out.
+// import Link from "next/link";
 import { HostingCommittees } from "@/components/HostingCommittees";
 
 export const metadata = {
@@ -165,8 +166,10 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* Section 4 — My Hometown, My Lens */}
-      <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
+      {/* Section 4 — My Hometown, My Lens.
+          Competition postponed indefinitely (client request, 2026-08-13) —
+          whole section commented out until it resumes. */}
+      {/* <section className="max-w-280 mx-auto px-6 py-12 md:py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-10">
           My Hometown, My Lens
         </h2>
@@ -199,7 +202,7 @@ export default function AboutUsPage() {
             Enter the Competition &rarr;
           </Link>
         </div>
-      </section>
+      </section> */}
 
       {/* Section 5 — What Drives Us */}
       <section className="bg-gray-50 border-y border-gray-200">

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { judges } from "@/lib/competitions/judges";
 import { HashScroller } from "./HashScroller";
 
@@ -9,6 +10,9 @@ export const metadata = {
 };
 
 export default function JudgesPanelPage() {
+  // Competition postponed indefinitely (client request, 2026-08-13) — page
+  // hidden. Delete the next line to restore it.
+  notFound();
   return (
     <main className="min-h-screen bg-white">
       <HashScroller />

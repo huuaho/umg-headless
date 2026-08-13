@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { currentCompetition } from "@/lib/competitions/current";
 import { judges } from "@/lib/competitions/judges";
 import { CompetitionDivisions } from "@/components/CompetitionDivisions";
@@ -100,6 +101,9 @@ const venueImages: Record<string, string> = {
 };
 
 export default function HowToEnterPage() {
+  // Competition postponed indefinitely (client request, 2026-08-13) — page
+  // hidden. Delete the next line to restore it.
+  notFound();
   return (
     <main className="min-h-screen bg-white">
       <script

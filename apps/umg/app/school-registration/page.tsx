@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 // Reused as-is per the school-registration stopgap plan — same passwordless
 // login, no school-specific auth code. Worth relocating out of
@@ -62,6 +63,9 @@ function SchoolRegistrationContent() {
 }
 
 export default function SchoolRegistrationPage() {
+  // Competition postponed indefinitely (client request, 2026-08-13) — page
+  // hidden. Delete the next line to restore it.
+  notFound();
   return (
     <Suspense
       fallback={

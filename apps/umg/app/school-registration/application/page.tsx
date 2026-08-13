@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { notFound, useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { SchoolApplicationForm } from "../components/SchoolApplicationForm";
 
@@ -43,6 +43,9 @@ function ApplicationContent() {
 }
 
 export default function SchoolApplicationPage() {
+  // Competition postponed indefinitely (client request, 2026-08-13) — page
+  // hidden. Delete the next line to restore it.
+  notFound();
   return (
     <Suspense
       fallback={

@@ -101,13 +101,15 @@ export default function RootLayout({
           logoAlt="United Media Group"
           categories={categories}
           bannerCompanies={mediaCompanies}
-          extraLinks={[
-            { label: "2026 International Youth Photography Competition", href: "/how-to-enter" },
-          ]}
-          announcementBanner={{
-            text: "2026 International Youth Photography Competition: My Hometown, My Lens",
-            href: "/how-to-enter",
-          }}
+          // Competition postponed indefinitely (client request, 2026-08-13).
+          // Restore the nav link + announcement banner by uncommenting:
+          // extraLinks={[
+          //   { label: "2026 International Youth Photography Competition", href: "/how-to-enter" },
+          // ]}
+          // announcementBanner={{
+          //   text: "2026 International Youth Photography Competition: My Hometown, My Lens",
+          //   href: "/how-to-enter",
+          // }}
         />
         {children}
         <Footer

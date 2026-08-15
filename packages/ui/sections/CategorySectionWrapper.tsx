@@ -27,6 +27,12 @@ interface CategorySectionWrapperProps {
   categoryIcon?: string;
   titleClassName?: string;
   priority?: number;
+  /**
+   * Recency mode: fetch the newest posts across all categories instead of
+   * filtering by `slug`. `slug` is then only used as the section's DOM id and
+   * the label is rendered unlinked (there is no /category/<slug> page).
+   */
+  latest?: boolean;
 }
 
 // Articles needed per section type
@@ -48,6 +54,7 @@ export default function CategorySectionWrapper({
   categoryIcon,
   titleClassName,
   priority,
+  latest = false,
 }: CategorySectionWrapperProps) {
   const needed = ARTICLES_NEEDED[sectionType];
   const [fetchCount, setFetchCount] = useState(() =>
@@ -55,9 +62,12 @@ export default function CategorySectionWrapper({
   );
 
   const { articles, isLoading, error, refetch } = useArticles({
-    category: slug,
+    category: latest ? undefined : slug,
     count: fetchCount,
   });
+
+  // No /category/<slug> page exists for a recency section
+  const noLabelLink = latest;
 
   const seen = useSeenArticles();
 
@@ -123,6 +133,7 @@ export default function CategorySectionWrapper({
         <SectionType1
           slug={slug}
           category={category}
+          noLabelLink={noLabelLink}
           categoryColor={categoryColor}
           categoryTextColor={categoryTextColor}
           categoryUnderlineColor={categoryUnderlineColor}
@@ -139,6 +150,7 @@ export default function CategorySectionWrapper({
         <SectionType2
           slug={slug}
           category={category}
+          noLabelLink={noLabelLink}
           categoryColor={categoryColor}
           categoryTextColor={categoryTextColor}
           categoryUnderlineColor={categoryUnderlineColor}
@@ -155,6 +167,7 @@ export default function CategorySectionWrapper({
         <SectionType3
           slug={slug}
           category={category}
+          noLabelLink={noLabelLink}
           categoryColor={categoryColor}
           categoryTextColor={categoryTextColor}
           categoryUnderlineColor={categoryUnderlineColor}
@@ -171,6 +184,7 @@ export default function CategorySectionWrapper({
         <SectionType4
           slug={slug}
           category={category}
+          noLabelLink={noLabelLink}
           categoryColor={categoryColor}
           categoryTextColor={categoryTextColor}
           categoryUnderlineColor={categoryUnderlineColor}
@@ -186,6 +200,7 @@ export default function CategorySectionWrapper({
         <SectionType4
           slug={slug}
           category={category}
+          noLabelLink={noLabelLink}
           categoryColor={categoryColor}
           categoryTextColor={categoryTextColor}
           categoryUnderlineColor={categoryUnderlineColor}

@@ -5,7 +5,8 @@ import type { ApiArticle } from "../types";
 import { fetchArticles } from "../client";
 
 interface UseArticlesOptions {
-  category: string;
+  /** Category slug. Omit to fetch the most recent articles across all categories. */
+  category?: string;
   count?: number;
 }
 
@@ -17,7 +18,8 @@ interface UseArticlesResult {
 }
 
 /**
- * Hook to fetch articles for a category with loading and error states
+ * Hook to fetch articles for a category (or the newest site-wide when no
+ * category is given) with loading and error states
  */
 export function useArticles({
   category,

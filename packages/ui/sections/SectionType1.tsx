@@ -26,6 +26,8 @@ function SecondaryArticleCard({ article }: { article: SecondaryArticle }) {
 interface SectionType1Props extends SectionData {
   slug: string;
   category: string;
+  /** Render the category label as plain text instead of a link to /category/<slug> */
+  noLabelLink?: boolean;
   categoryColor?: string;
   categoryTextColor?: string;
   categoryUnderlineColor?: string;
@@ -36,6 +38,7 @@ interface SectionType1Props extends SectionData {
 export default function SectionType1({
   slug,
   category,
+  noLabelLink = false,
   categoryColor,
   categoryTextColor,
   categoryUnderlineColor,
@@ -108,7 +111,7 @@ export default function SectionType1({
 
   return (
     <section id={slug} className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300">
-      <CategoryLabel category={category} slug={slug} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} slug={noLabelLink ? undefined : slug} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Main content wrapper
           SM/MD: stacked vertically

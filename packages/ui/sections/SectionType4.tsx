@@ -101,6 +101,8 @@ function ArticleCard({
 interface SectionType4Props extends SectionType4Data {
   slug: string;
   category: string;
+  /** Render the category label as plain text instead of a link to /category/<slug> */
+  noLabelLink?: boolean;
   categoryColor?: string;
   categoryTextColor?: string;
   categoryUnderlineColor?: string;
@@ -112,6 +114,7 @@ interface SectionType4Props extends SectionType4Data {
 export default function SectionType4({
   slug,
   category,
+  noLabelLink = false,
   categoryColor,
   categoryTextColor,
   categoryUnderlineColor,
@@ -125,7 +128,7 @@ export default function SectionType4({
       id={slug}
       className="pt-6 pb-6 scroll-mt-24 border-b border-gray-300"
     >
-      <CategoryLabel category={category} slug={slug} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
+      <CategoryLabel category={category} slug={noLabelLink ? undefined : slug} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />
 
       {/* Articles - SM: stacked, MD: 2x2 grid, LG: 4 columns */}
       <div className="md:grid md:grid-cols-2 lg:grid-cols-4">

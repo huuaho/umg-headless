@@ -1,11 +1,11 @@
 # app/school-registration/ — overview
 
-Route segment for `/school-registration` — the school/bulk-registration flow: sign in (same passwordless email code as the individual flow) → manage a batch of student applications one at a time → pay once for the whole batch via a single Stripe Checkout Session. **Feature complete and live-verified**, including a real payment that credited two applications from one checkout.
+Route segment for `/school-registration` — the school/bulk-registration flow: sign in (same passwordless email code as the individual flow) → manage a batch of student applications one at a time → pay once for the whole batch via a single Stripe Checkout Session. **Feature complete and live-verified**, including a real payment that credited two applications from one checkout; submitted applications can be reopened for edits until paid ("added school app edits before payments"). **Currently hidden — both pages 404 while the competition is postponed** (see Status).
 
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [layout.tsx](layout.tsx.md) | file | Wraps the segment in `AuthProvider` (reused from the individual flow). |
+| [layout.tsx](layout.tsx.md) | file | Wraps the segment in `AuthProvider` (reused from the individual flow); metadata commented out while hidden. |
 | [page.tsx](page.tsx.md) | file | Sign-in or `ApplicationsCart`, depending on auth state. |
 | [application/](application/README.md) | folder | Per-application create/edit/view route, addressed by `?id=`. |
 | [components/](components/README.md) | folder | `ApplicationsCart` (batch manager + combined payment) and `SchoolApplicationForm` (per-student entry). |
@@ -26,7 +26,7 @@ graph LR
 ```
 
 ## Entry points
-- Route: `/school-registration` — reached from a secondary "Apply as a school" link on `/how-to-enter`.
+- Route: `/school-registration` — reached from a secondary "Apply as a school" link on `/how-to-enter` (itself currently 404).
 - Flow: AuthForm (reused, no school-specific auth) → `ApplicationsCart` (create/edit/delete applications one at a time via `SchoolApplicationForm`) → once one or more are submitted, "Pay $Z total (N students)" → one Stripe Checkout Session → webhook credits every covered application from that single event → cart polls and reflects `paid`.
 - `application/?id=<n>` is not linked externally — only reached via the cart's own edit/view/add-another actions.
 
@@ -35,5 +35,8 @@ graph LR
 - An earlier plan for the payment step used N separate individual-flow Payment Link payments (one per student) — rejected mid-build because it didn't deliver "one payment for the batch," the actual point of the feature. See `claude-context/current-work/bulk-registration/school-bulk-registration-plan.md` for the full history.
 - Full build/test log, including the real end-to-end payment verification: `claude-context/current-work/bulk-registration/implementation-checklist.md`.
 
+## Status
+**Competition postponed indefinitely (client request, 2026-08-13):** [page.tsx](page.tsx.md) and [application/page.tsx](application/page.tsx.md) each call `notFound()` first, so both routes render the 404 page. Delete the guard lines and uncomment the layout metadata (grep "Competition postponed indefinitely") to restore.
+
 ---
-*Documented at commit e5821d4.*
+*Documented at commit bde729d.*

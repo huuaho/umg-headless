@@ -1,6 +1,6 @@
 # packages/api/hooks/useArticles.ts
 
-**Purpose:** Client-side React hook that fetches articles for a category with loading/error state and a refetch function.
+**Purpose:** Client-side React hook that fetches articles for a category (or the newest articles site-wide when no category is given) with loading/error state and a refetch function.
 
 ## Responsibilities
 - Wraps `fetchArticles()` from [client.ts](../client.ts.md) in `useState`/`useEffect`/`useCallback`.
@@ -8,7 +8,7 @@
 - Normalizes thrown values into `Error` instances.
 
 ## Key exports
-- `useArticles({ category, count = 5 }) -> { articles, isLoading, error, refetch }` — `articles` is `ApiArticle[]` (the response `items`; pagination metadata is discarded).
+- `useArticles({ category?, count = 5 }) -> { articles, isLoading, error, refetch }` — `articles` is `ApiArticle[]` (the response `items`; pagination metadata is discarded). `category` is optional: when omitted/empty, `fetchArticles` sends no category filter and WP returns posts newest-first across all categories — this powers the IS homepage "Latest" section.
 
 ## Dependencies
 - Internal: [../client.ts](../client.ts.md) (`fetchArticles`), [../types.ts](../types.ts.md) (types)
@@ -24,4 +24,4 @@
 - Always page 1; pagination is handled separately by [CategoryContent](../../ui/CategoryContent.tsx.md) / [SearchContent](../../ui/SearchContent.tsx.md), which call the client directly instead.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

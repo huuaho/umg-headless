@@ -18,5 +18,8 @@ graph LR
 ## Entry points
 - Route: `/judges-panel` (plus `#<judge-id>` anchors, linked from the how-to-enter judges grid).
 
+## Status
+**Competition postponed indefinitely (client request, 2026-08-13):** the page component calls `notFound()` first, so this route currently renders the 404 page; the sitemap entry and inbound links are commented out. Delete the guard line (grep "Competition postponed indefinitely") to restore.
+
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

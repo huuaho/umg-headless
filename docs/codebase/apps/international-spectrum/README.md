@@ -30,7 +30,7 @@ graph LR
 - Backend: WordPress REST via `@umg/api`; per-site headless behavior is configured by the [is-headless-config.php](../../plugin/is-headless-config.php.md) WP plugin.
 
 ## Notes
-- **vs echo-media:** the apps differ only in `lib/` config (7 vs 3 categories; sibling list swaps EM↔IS), branding (logos, yellow vs blue `--banner-border-color`, footer background, metadata/domains), About Us copy, homepage section-type map (uses all five layouts incl. `type4`/`type4-text`), and the article page (IS passes `videoUrl` to `ArticleLayout` for YouTube embeds; EM does not). All config files except `next.config.ts` hostnames and the package name are byte-identical.
+- **vs echo-media:** the apps differ only in `lib/` config (7 vs 3 categories; sibling list swaps EM↔IS), branding (logos, yellow vs blue `--banner-border-color`, footer background, metadata/domains), About Us copy, homepage (IS adds a recency-based "Latest" section at the top and its section-type map uses all five layouts incl. `type4`/`type4-text`), and the article page (IS passes `videoUrl` to `ArticleLayout` for YouTube embeds; EM does not). All config files except `next.config.ts` hostnames and the package name are byte-identical.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

@@ -7,7 +7,7 @@ Wraps the photo-submission subtree in `AuthProvider` from `lib/auth/AuthContext`
 
 ## Key exports
 - `default PhotoSubmissionLayout({ children }) -> JSX`
-- `metadata` — title "Photo Submission" + description (covers the client-component page, which can't export metadata itself).
+- ~~`metadata`~~ — the title "Photo Submission" + description export is **commented out** while the competition is postponed, so the 404 now served at this route doesn't carry competition SEO text. Uncomment to restore (it covers the client-component page, which can't export metadata itself).
 
 ## Dependencies
 - Internal: [lib/auth/AuthContext](../../lib/auth/AuthContext.tsx.md)
@@ -17,7 +17,9 @@ Wraps the photo-submission subtree in `AuthProvider` from `lib/auth/AuthContext`
 App Router — wraps [photo-submission/page.tsx](page.tsx.md).
 
 ## Notes
+**Competition postponed indefinitely (client request, 2026-08-13):** [page.tsx](page.tsx.md) calls `notFound()`, so this layout currently only wraps a 404; the `AuthProvider` still mounts. Grep "Competition postponed indefinitely" for the full set of hidden pieces.
+
 If other routes ever need auth (e.g. a "my entry" page), move the provider up or duplicate this layout.
 
 ---
-*Documented at commit 60deaa3.*
+*Documented at commit bde729d.*

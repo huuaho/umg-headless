@@ -17,5 +17,8 @@ graph LR
 ## Entry points
 Not linked directly — reached only via [../components/ApplicationsCart.tsx](../components/ApplicationsCart.tsx.md)'s per-application "Edit"/"View" links and its "Add another application" flow.
 
+## Status
+Hidden while the competition is postponed (2026-08-13): [page.tsx](page.tsx.md) calls `notFound()` first. Grep "Competition postponed indefinitely" to restore.
+
 ---
-*Documented at commit e5821d4.*
+*Documented at commit bde729d.*

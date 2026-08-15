@@ -11,6 +11,7 @@ Builds `API_BASE` from `NEXT_PUBLIC_WP_API_URL` (fallback `https://www.api.unite
 - Draft: `loadDraft(token) -> DraftData | null` (404 → null), `saveDraft(token, payload)` (`PUT /draft`), `uploadPhoto(token, file) -> {id, url}` (multipart `POST /draft/photo`), `removePhoto(token, mediaId)` (`DELETE /draft/photo/:id`).
 - Student proof: `uploadStudentProof(token, file)`, `removeStudentProof(token)` (`POST`/`DELETE /draft/student-proof`).
 - `submitEntry(token)` — `POST /submit`, finalizes the entry.
+- `unsubmitEntry(token)` — `POST /unsubmit`, reverts a submitted-but-unpaid entry to draft so the entrant can edit and resubmit ("editable until paid").
 
 ## Dependencies
 - Internal: [types](types.ts.md)
@@ -20,7 +21,7 @@ Builds `API_BASE` from `NEXT_PUBLIC_WP_API_URL` (fallback `https://www.api.unite
 [AuthContext.tsx](AuthContext.tsx.md) (auth endpoints) and [SubmissionForm](../../app/photo-submission/components/SubmissionForm.tsx.md) (draft/upload/submit endpoints).
 
 ## Notes
-Server-side counterparts in the plugin docs: [auth.php](../../../../plugin/umg-photo-contest/includes/auth.php.md) (OTP request/verify, `/me`), [jwt.php](../../../../plugin/umg-photo-contest/includes/jwt.php.md) (token validation), [draft.php](../../../../plugin/umg-photo-contest/includes/draft.php.md) (draft CRUD + uploads), [submission.php](../../../../plugin/umg-photo-contest/includes/submission.php.md) (finalize), [cors.php](../../../../plugin/umg-photo-contest/includes/cors.php.md) (allows the static frontends). Network/IO module — no React; uploads do not report progress.
+Server-side counterparts in the plugin docs: [auth.php](../../../../plugin/umg-photo-contest/includes/auth.php.md) (OTP request/verify, `/me`), [jwt.php](../../../../plugin/umg-photo-contest/includes/jwt.php.md) (token validation), [draft.php](../../../../plugin/umg-photo-contest/includes/draft.php.md) (draft CRUD + uploads), [submission.php](../../../../plugin/umg-photo-contest/includes/submission.php.md) (finalize + unsubmit; state transitions in the plugin's `entry-state.php`), [cors.php](../../../../plugin/umg-photo-contest/includes/cors.php.md) (allows the static frontends). Network/IO module — no React; uploads do not report progress. Judge/admin endpoints are *not* here — see [lib/judging/api.ts](../judging/api.ts.md), which reuses the same JWT.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

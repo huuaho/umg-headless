@@ -5,7 +5,7 @@ React hooks for the `@umg/api` package. Currently a single hook that wraps the m
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [useArticles.ts](useArticles.ts.md) | file | `useArticles({ category, count })` — fetch articles for a category with `isLoading` / `error` / `refetch`. |
+| [useArticles.ts](useArticles.ts.md) | file | `useArticles({ category?, count })` — fetch articles for a category (or newest site-wide when `category` is omitted) with `isLoading` / `error` / `refetch`. |
 
 ## Connections
 ```mermaid
@@ -19,4 +19,4 @@ graph LR
 - `useArticles` — re-exported from the package barrel ([../index.ts](../index.ts.md)); consumed by `@umg/ui`'s [CategorySectionWrapper](../../ui/sections/CategorySectionWrapper.tsx.md) to power homepage sections.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

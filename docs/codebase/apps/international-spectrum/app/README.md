@@ -6,7 +6,7 @@ Next.js App Router tree for the International Spectrum site. The pages here are 
 | Item | Type | Summary |
 |------|------|---------|
 | [layout.tsx](layout.tsx.md) | file | Root layout — Geist fonts, site metadata, shared Header/Footer with International Spectrum branding. |
-| [page.tsx](page.tsx.md) | file | Homepage — one `CategorySectionWrapper` per category (all five section types incl. `type4`/`type4-text`), with cross-section dedup. |
+| [page.tsx](page.tsx.md) | file | Homepage — a recency-based "Latest" section (`CategorySectionWrapper latest`, no dedup) followed by one `CategorySectionWrapper` per category (all five section types incl. `type4`/`type4-text`) with cross-section dedup. |
 | [globals.css](globals.css.md) | file | Tailwind v4 CSS-first config, IS theme variables (yellow `#feb70c` accent, light purple footer), marquee animation. |
 | [not-found.tsx](not-found.tsx.md) | file | 404 boundary — re-exports `NotFoundPage` from `@umg/ui`. |
 | [about-us/](about-us/README.md) | folder | Static About Us page (culture/lifestyle positioning + contact). |
@@ -42,4 +42,4 @@ graph LR
 - 404 — any other URL or `notFound()` call
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

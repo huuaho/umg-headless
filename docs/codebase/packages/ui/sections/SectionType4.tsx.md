@@ -3,13 +3,13 @@
 **Purpose:** Homepage section layout #4 — four equal-weight article cards, with image or text-only variants (no featured article).
 
 ## Responsibilities
-- Renders the section shell with a linked [CategoryLabel](CategoryLabel.tsx.md) and 4 `ArticleCard`s: SM stacked rows, MD 2x2 grid, LG 4 columns.
+- Renders the section shell with a [CategoryLabel](CategoryLabel.tsx.md) (linked unless `noLabelLink` is set) and 4 `ArticleCard`s: SM stacked rows, MD 2x2 grid, LG 4 columns.
 - With images (`textOnly={false}`): image takes 1/3 width beside text on SM/MD, full-width above text on LG. `next/image` with `fill` over a black box, portrait detection (`object-contain`), and hide-on-error.
 - Text-only variant skips images entirely.
 - Per-card border/padding logic varies by index and breakpoint so column dividers line up.
 
 ## Key exports
-- `SectionType4({ slug, category, articles, textOnly?, ...labelProps, titleClassName? })` (default) — `articles` is `Type4Article[]`.
+- `SectionType4({ slug, category, noLabelLink?, articles, textOnly?, ...labelProps, titleClassName? })` (default) — `articles` is `Type4Article[]`.
 
 ## Dependencies
 - Internal: [../ArticleLink.tsx](../ArticleLink.tsx.md), [CategoryLabel.tsx](CategoryLabel.tsx.md), `@umg/api` types ([types.ts](../../api/types.ts.md))
@@ -22,4 +22,4 @@
 - `"use client"`. The only section type without FeaturedMedia or title auto-fit.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

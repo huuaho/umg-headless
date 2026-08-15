@@ -23,7 +23,7 @@ graph LR
 ```
 
 ## Entry points
-Not routed directly — both are rendered by [../page.tsx](../page.tsx.md) depending on auth state.
+Not routed directly — both are rendered by [../page.tsx](../page.tsx.md) depending on auth state. `AuthForm` is also imported as-is by [../../school-registration/page.tsx](../../school-registration/page.tsx.md) and [../../admin/AdminGuard.tsx](../../admin/AdminGuard.tsx.md) (same passwordless login for schools and judges). `SubmissionForm` now has an optional Recommender field and a "Back to edit my submission" (unsubmit) action on the payment view — entries are editable until paid.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

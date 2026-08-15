@@ -1,6 +1,6 @@
 # lib/ — overview
 
-Non-UI modules for the UMG app: site-wide data (categories, media companies) and the photo-competition domains (config, individual-flow auth/API, school-flow API).
+Non-UI modules for the UMG app: site-wide data (categories, media companies) and the photo-competition domains (config, individual-flow auth/API, school-flow API, judge-panel API).
 
 ## Contents
 | Item | Type | Summary |
@@ -10,6 +10,7 @@ Non-UI modules for the UMG app: site-wide data (categories, media companies) and
 | [competitions/](competitions/README.md) | folder | Competition config-as-code: types, current competition, judges. |
 | [auth/](auth/README.md) | folder | Individual-flow auth context + REST client for the WP plugin. |
 | [school/](school/README.md) | folder | School-flow REST client (no dedicated auth context — reuses `auth/`'s). |
+| [judging/](judging/README.md) | folder | Judge-panel REST client + types for `/admin/*` endpoints (reuses `auth/`'s JWT and `CompetitionApiError`). |
 
 ## Connections
 ```mermaid
@@ -22,6 +23,11 @@ graph LR
   submission["photo-submission flow"] --> auth["auth/"]
   schoolFlow["school-registration flow"] --> auth
   schoolFlow --> school["school/"]
+  adminFlow["app/admin (judge panel)"] --> auth
+  adminFlow --> judging["judging/"]
+  adminFlow --> competitions
+  judging --> auth
+  judging -.REST /admin/*.-> plugin
   auth -.REST.-> plugin["WP photo-contest plugin"]
   school -.REST /school/*.-> plugin
 ```
@@ -30,4 +36,4 @@ graph LR
 No routes — imported via the `@/lib/...` alias throughout `app/` and `components/`.
 
 ---
-*Documented at commit e5821d4.*
+*Documented at commit bde729d.*

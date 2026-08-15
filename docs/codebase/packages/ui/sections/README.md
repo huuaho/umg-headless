@@ -5,7 +5,7 @@ The homepage section system: four presentational layout variants (featured + sec
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [CategorySectionWrapper.tsx](CategorySectionWrapper.tsx.md) | file | Smart orchestrator: `useArticles` fetch → seen-articles dedup → transformer → SectionType1–4 / skeleton / error. |
+| [CategorySectionWrapper.tsx](CategorySectionWrapper.tsx.md) | file | Smart orchestrator: `useArticles` fetch → seen-articles dedup → transformer → SectionType1–4 / skeleton / error. `latest` prop = recency mode (newest posts site-wide, unlinked label). |
 | [SectionType1.tsx](SectionType1.tsx.md) | file | Hero layout: featured (gallery) + 4 secondary; title auto-fit at 2XL. |
 | [SectionType2.tsx](SectionType2.tsx.md) | file | Featured + 4 secondary; 4-col grid at 2XL; title auto-fit at LG+. |
 | [SectionType3.tsx](SectionType3.tsx.md) | file | Featured + 3 secondary (type2 variant). |
@@ -44,6 +44,7 @@ graph LR
 ## Entry points
 - Apps use `CategorySectionWrapper` (with `SectionType`) per homepage category; the section types, skeleton, error, and FeaturedMedia are also individually exported from [../index.ts](../index.ts.md).
 - Cross-section dedup requires wrapping the page in [SeenArticlesProvider](../SeenArticlesContext.tsx.md) and passing `priority` props.
+- A `CategorySectionWrapper latest` renders a "Latest" (newest-across-all-categories) section; IS uses one at the top of its homepage, without `priority` so it stays out of dedup. All four SectionType components accept `noLabelLink` for this case.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

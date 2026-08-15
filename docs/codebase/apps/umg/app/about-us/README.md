@@ -17,5 +17,8 @@ graph LR
 ## Entry points
 - Route: `/about-us` (linked from Header/Footer nav).
 
+## Status
+The "My Hometown, My Lens" competition promo section is commented out in [page.tsx](page.tsx.md) while the competition is postponed (2026-08-13); grep "Competition postponed indefinitely" to restore.
+
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit bde729d.*

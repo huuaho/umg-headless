@@ -24,7 +24,7 @@ graph LR
 ```
 
 ## Entry points
-Not routed directly — `ApplicationsCart` is rendered by [../page.tsx](../page.tsx.md), `SchoolApplicationForm` by [../application/page.tsx](../application/page.tsx.md).
+Not routed directly — `ApplicationsCart` is rendered by [../page.tsx](../page.tsx.md), `SchoolApplicationForm` by [../application/page.tsx](../application/page.tsx.md) (both routes currently 404 while the competition is postponed). Since "added school app edits before payments", the cart offers "Reopen to edit" (`POST /school/application/{id}/unsubmit`) on submitted-but-unpaid rows and the form's read-only banner distinguishes paid (final) from unpaid (reopenable).
 
 ---
-*Documented at commit e5821d4.*
+*Documented at commit bde729d.*

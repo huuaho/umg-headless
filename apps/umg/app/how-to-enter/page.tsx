@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { currentCompetition } from "@/lib/competitions/current";
 import { judges } from "@/lib/competitions/judges";
 import { CompetitionDivisions } from "@/components/CompetitionDivisions";
@@ -10,10 +9,21 @@ import { HostingCommittees } from "@/components/HostingCommittees";
 
 const competition = currentCompetition;
 
-export const metadata = {
-  title: `${competition.title} — ${competition.subtitle}`,
-  description: `${competition.subtitle} from United Media Group, open to photographers ages 10–30 worldwide. First Prize $${competition.awards[0].amount.toLocaleString()} per division. Winners exhibited at ${competition.exhibitionVenues.slice(0, 2).join(" and ")} in Washington, DC.`,
-};
+// Competition postponed indefinitely (client request, 2026-08-13). The page now
+// shows an on-hold announcement (added 2026-08-23). Set to false to restore the
+// full competition page and its original metadata below.
+const COMPETITION_ON_HOLD = true;
+
+export const metadata = COMPETITION_ON_HOLD
+  ? {
+      title: "My Hometown My Lens Competition Update",
+      description:
+        "My Hometown My Lens International Youth Photography Competition is temporarily on hold. All current applicants will be processed for a full refund.",
+    }
+  : {
+      title: `${competition.title} — ${competition.subtitle}`,
+      description: `${competition.subtitle} from United Media Group, open to photographers ages 10–30 worldwide. First Prize $${competition.awards[0].amount.toLocaleString()} per division. Winners exhibited at ${competition.exhibitionVenues.slice(0, 2).join(" and ")} in Washington, DC.`,
+    };
 
 // Facts below derive from lib/competitions/current.ts so schema and visible
 // copy can't drift from the competition config (AEO tickets 07/08).
@@ -101,9 +111,64 @@ const venueImages: Record<string, string> = {
 };
 
 export default function HowToEnterPage() {
-  // Competition postponed indefinitely (client request, 2026-08-13) — page
-  // hidden. Delete the next line to restore it.
-  notFound();
+  if (COMPETITION_ON_HOLD) {
+    return (
+      <main className="min-h-screen bg-white">
+        {/* Hero Banner */}
+        <section className="w-full bg-linear-to-r from-[#7EC8E3] via-[#A8D5E8] to-[#C5B8D9] px-6 py-16 md:py-24">
+          <div className="max-w-280 mx-auto flex justify-center">
+            <h1 className="font-[family-name:var(--font-libre-franklin)] font-semibold uppercase leading-[0.95] inline-grid">
+              <span className="block text-4xl md:text-7xl lg:text-8xl text-[#1565A0]">
+                My Hometown
+              </span>
+              <span className="flex items-end justify-between mt-1">
+                <span className="text-4xl md:text-7xl lg:text-8xl text-white">
+                  My Lens
+                </span>
+                <span className="text-[8px] md:text-base lg:text-2xl normal-case font-normal leading-tight text-right mb-2">
+                  <span className="text-[#1565A0]">International Youth</span>
+                  <br />
+                  <span className="text-white">Photography Competition</span>
+                </span>
+              </span>
+            </h1>
+          </div>
+        </section>
+
+        {/* On-hold announcement */}
+        <section className="max-w-160 mx-auto px-6 py-12 md:py-16">
+          <h2 className="font-[family-name:var(--font-libre-franklin)] text-2xl md:text-3xl font-semibold text-[#1565A0] mb-6">
+            Competition Update
+          </h2>
+          <div className="space-y-5 text-base md:text-lg leading-relaxed text-gray-800">
+            <p>
+              My Hometown My Lens International Youth Photography Competition is
+              temporarily on hold. We’re working on developing scholarship
+              opportunities to make this competition more accessible and
+              inclusive for participants worldwide.
+            </p>
+            <p>
+              All applicants who have submitted to the current competition will
+              be processed for a full refund. We appreciate your interest and
+              look forward to welcoming you back when we reopen with expanded
+              opportunities.
+            </p>
+            <p>
+              For questions about refunds or future competition details, please
+              contact us at{" "}
+              <a
+                href="mailto:info@unitedmediadc.com"
+                className="text-[#1565A0] underline hover:opacity-80"
+              >
+                info@unitedmediadc.com
+              </a>
+            </p>
+            <p>Thank you for your patience and support!</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
   return (
     <main className="min-h-screen bg-white">
       <script

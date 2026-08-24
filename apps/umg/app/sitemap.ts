@@ -15,7 +15,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/about-us", changeFrequency: "monthly", priority: 0.8 },
     { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
     // Competition postponed indefinitely (client request, 2026-08-13) — routes hidden.
-    // { path: "/how-to-enter", changeFrequency: "weekly", priority: 0.9 },
+    // /how-to-enter is live again as the on-hold announcement (2026-08-23).
+    { path: "/how-to-enter", changeFrequency: "monthly", priority: 0.5 },
     // { path: "/judges-panel", changeFrequency: "monthly", priority: 0.6 },
     // { path: "/photo-submission", changeFrequency: "monthly", priority: 0.7 },
     { path: "/search", changeFrequency: "monthly", priority: 0.3 },

@@ -102,7 +102,7 @@ export default function RootLayout({
           categories={categories}
           bannerCompanies={mediaCompanies}
           // Competition postponed indefinitely (client request, 2026-08-13).
-          // Restore the nav link + announcement banner by uncommenting:
+          // Restore the nav link + original banner by uncommenting:
           // extraLinks={[
           //   { label: "2026 International Youth Photography Competition", href: "/how-to-enter" },
           // ]}
@@ -110,6 +110,12 @@ export default function RootLayout({
           //   text: "2026 International Youth Photography Competition: My Hometown, My Lens",
           //   href: "/how-to-enter",
           // }}
+          // On-hold notice (2026-08-23): banner points to the competition
+          // update announcement on /how-to-enter.
+          announcementBanner={{
+            text: "My Hometown My Lens Competition Update",
+            href: "/how-to-enter",
+          }}
         />
         {children}
         <Footer

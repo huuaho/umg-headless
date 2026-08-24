@@ -10,7 +10,7 @@ Declares the package as `@umg/api` v0.0.0 (private), with `main`/`types` pointin
 
 ## Dependencies
 - Internal: none
-- External: devDependencies `@types/node` ^22, `@types/react` ^19; peerDependency `react` ^18 || ^19 (for the [useArticles](hooks/useArticles.ts.md) hook).
+- External: devDependencies `@types/node` ^22.20.1, `@types/react` ^19.2.18; peerDependency `react` ^18 || ^19 (for the [useArticles](hooks/useArticles.ts.md) hook).
 
 ## Used by
 All three apps depend on `@umg/api` via `workspace:*` and transpile it through `transpilePackages` in their `next.config.ts`. Also a dependency of [@umg/ui](../ui/package.json.md) and [@umg/config](../config/package.json.md).
@@ -20,4 +20,4 @@ All three apps depend on `@umg/api` via `workspace:*` and transpile it through `
 - No runtime dependencies at all (native `fetch` only).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit b9a61ff.*

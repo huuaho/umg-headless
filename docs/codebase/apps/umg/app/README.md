@@ -1,6 +1,6 @@
 # app/ — overview
 
-Next.js App Router tree for the UMG site. The root layout supplies fonts, site metadata (OpenGraph/Twitter), and an Organization JSON-LD plus the shared Header/Footer; news routes (`/`, `/category/*`, `/search`) are thin wrappers over `@umg/ui` aggregator components, while the competition routes (`/how-to-enter`, `/judges-panel`, `/photo-submission`, `/school-registration`) and the judge panel (`/admin`) are app-specific. **Competition postponed indefinitely (client request, 2026-08-13):** every public competition route currently returns the 404 page via a `notFound()` guard at the top of its page component, their sitemap entries and the Header nav link/announcement banner are commented out, and the about-us promo section is commented out — grep the repo for "Competition postponed indefinitely" to find and reverse every piece. `/admin` was deliberately left live. Several routes carry per-page metadata and structured data (Event/FAQ/ContactPage JSON-LD) for AEO.
+Next.js App Router tree for the UMG site. The root layout supplies fonts, site metadata (OpenGraph/Twitter), and an Organization JSON-LD plus the shared Header/Footer; news routes (`/`, `/category/*`, `/search`) are thin wrappers over `@umg/ui` aggregator components, while the competition routes (`/how-to-enter`, `/judges-panel`, `/photo-submission`, `/school-registration`) and the judge panel (`/admin`) are app-specific. **Competition postponed indefinitely (client request, 2026-08-13):** `/judges-panel`, `/photo-submission`, and `/school-registration` return the 404 page via `notFound()` guards, their sitemap entries and the competition-era Header nav link are commented out, and the about-us promo section is commented out — grep the repo for "Competition postponed indefinitely" to find and reverse every piece. Since 2026-08-23, `/how-to-enter` instead shows an on-hold announcement (behind a `COMPETITION_ON_HOLD` flag) and the Header carries an announcement banner pointing to it. `/admin` was deliberately left live. Several routes carry per-page metadata and structured data (Event/FAQ/ContactPage JSON-LD) for AEO.
 
 ## Contents
 | Item | Type | Summary |
@@ -15,7 +15,7 @@ Next.js App Router tree for the UMG site. The root layout supplies fonts, site m
 | [admin/](admin/README.md) | folder | Judge panel / judging dashboard (`/admin`, `/admin/entry?id=`, `/admin/results`) — judge-gated, noindex, left live. |
 | [contact/](contact/README.md) | folder | `/contact` page + ContactPage schema (new). |
 | [category/](category/README.md) | folder | Statically generated `/category/[slug]` listing pages. |
-| [how-to-enter/](how-to-enter/README.md) | folder | Photo-competition landing page + Event & FAQ schema. **Currently 404** (`notFound()` guard). |
+| [how-to-enter/](how-to-enter/README.md) | folder | Photo-competition landing page + Event & FAQ schema. **Currently shows the competition on-hold announcement** (`COMPETITION_ON_HOLD` flag). |
 | [judges-panel/](judges-panel/README.md) | folder | Judge bios with hash-anchor scrolling. **Currently 404.** |
 | [photo-submission/](photo-submission/README.md) | folder | Authenticated entry flow (sign-in → submit → pay; editable until paid). **Currently 404.** |
 | [school-registration/](school-registration/README.md) | folder | School/bulk-registration flow: manage a batch of student applications, pay once for the whole batch; applications reopenable until paid. **Currently 404.** |
@@ -52,7 +52,7 @@ graph LR
 ```
 
 ## Entry points
-Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×8), `/search`, `/admin` (+ `/admin/entry?id=`, `/admin/results`), plus `/sitemap.xml`, `/robots.txt`, and the 404 page. Hidden while the competition is postponed (page files still exist, guarded by `notFound()`): `/how-to-enter`, `/judges-panel`, `/photo-submission`, `/school-registration` (+ `/school-registration/application`). All are statically exported (`output: "export"`).
+Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×8), `/search`, `/how-to-enter` (on-hold announcement), `/admin` (+ `/admin/entry?id=`, `/admin/results`), plus `/sitemap.xml`, `/robots.txt`, and the 404 page. Hidden while the competition is postponed (page files still exist, guarded by `notFound()`): `/judges-panel`, `/photo-submission`, `/school-registration` (+ `/school-registration/application`). All are statically exported (`output: "export"`).
 
 ---
-*Documented at commit bde729d.*
+*Documented at commit b9a61ff.*

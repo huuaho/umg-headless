@@ -14,7 +14,7 @@ Job: `build-and-deploy` (ubuntu-latest, Node 22, pnpm via `packageManager`).
 
 ## Dependencies
 - Internal: root [package.json](../../package.json.md), [turbo.json](../../turbo.json.md); builds [apps/echo-media](../../apps/echo-media/README.md)
-- External: actions/checkout@v6, actions/setup-node@v6, pnpm/action-setup@v6, SamKirkland/FTP-Deploy-Action@v4.4.0, appleboy/ssh-action@v1
+- External: actions/checkout@v7, actions/setup-node@v7, pnpm/action-setup@v6, SamKirkland/FTP-Deploy-Action@v4.4.0, appleboy/ssh-action@v1
 
 ## Used by
 GitHub Actions on push/dispatch; the EM headless-config WordPress plugin ([plugin/em-headless-config.php](../../plugin/em-headless-config.php.md)) sends the `repository_dispatch` event.
@@ -23,4 +23,4 @@ GitHub Actions on push/dispatch; the EM headless-config WordPress plugin ([plugi
 Secrets: `EM_WP_API_URL`, `EM_FTP_SERVER/USERNAME/PASSWORD`, `EM_SSH_HOST/USERNAME/KEY`. Concurrency group `deploy-echo-media` with cancel-in-progress prevents build pileups from rapid post edits.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit b9a61ff.*

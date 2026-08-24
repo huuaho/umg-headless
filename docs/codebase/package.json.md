@@ -3,7 +3,7 @@
 **Purpose:** Root workspace manifest — pins the package manager and provides the developer-facing `dev` scripts for each app.
 
 ## Responsibilities
-Defines the monorepo root (`umg-workspace`, private, never published). Pins **pnpm 11.5.2** via the `packageManager` field (enforced by corepack/CI) and declares the only root dev dependency, **turbo ^2.9.16**, which orchestrates all builds.
+Defines the monorepo root (`umg-workspace`, private, never published). Pins **pnpm 11.5.2** via the `packageManager` field (enforced by corepack/CI) and declares the only root dev dependency, **turbo ^2.10.10**, which orchestrates all builds.
 
 ## Key exports
 Scripts (all delegate to Turborepo with an app filter):
@@ -23,4 +23,4 @@ Scripts (all delegate to Turborepo with an app filter):
 There is no root `build`/`lint` script — CI invokes `pnpm turbo run build` directly. The pnpm version here is the source of truth for tooling (CI's `pnpm/action-setup@v6` reads `packageManager`).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit b9a61ff.*

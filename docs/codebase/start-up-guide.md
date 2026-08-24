@@ -8,9 +8,9 @@ How to run the three sites locally, build the static exports, and deploy. Everyt
 |------|---------|--------|
 | Node | 22 | `.github/workflows/deploy-*.yml` (`setup-node` `node-version: "22"`); not pinned in `package.json` `engines` or `.nvmrc` |
 | pnpm | 11.5.2 | `packageManager` in root [package.json](package.json.md) (corepack/`pnpm/action-setup@v6` read this) |
-| turbo | ^2.9.16 | root devDependency — installed by `pnpm install`, no global install needed |
+| turbo | ^2.10.10 | root devDependency — installed by `pnpm install`, no global install needed |
 
-Native build scripts for `sharp` and `unrs-resolver` are pre-approved in [pnpm-workspace.yaml](pnpm-workspace.yaml.md) (`allowBuilds`) — pnpm 10+ blocks install scripts otherwise.
+Native build scripts for `sharp` and `unrs-resolver` are pre-approved in [pnpm-workspace.yaml](pnpm-workspace.yaml.md) (`allowBuilds`) — pnpm 10+ blocks install scripts otherwise. The same file sets `minimumReleaseAge: 10080`, so installs/updates refuse package versions published less than 7 days ago, and security `overrides` for postcss/sharp.
 
 ## Environment setup
 
@@ -93,4 +93,4 @@ There is no test suite in the repo.
 - **Images point at the wrong domain:** WP must define `WP_HOME`/`WP_SITEURL` as the `api.` subdomain, otherwise REST responses embed old-domain upload URLs.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit b9a61ff.*

@@ -10,7 +10,7 @@ Declares `@umg/ui` v0.0.0 (private) with `main`/`types` at [index.ts](index.ts.m
 
 ## Dependencies
 - Internal: [@umg/api](../api/package.json.md)
-- External: peers `next`, `react`; devDependency `@types/react` ^19.
+- External: peers `next`, `react`; devDependency `@types/react` ^19.2.18.
 
 ## Used by
 All three apps depend on `@umg/ui` via `workspace:*` and list it in `transpilePackages` in `next.config.ts`.
@@ -19,4 +19,4 @@ All three apps depend on `@umg/ui` via `workspace:*` and list it in `transpilePa
 - Ships raw TSX; styling assumes the consuming app's Tailwind setup scans this package's files.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit b9a61ff.*

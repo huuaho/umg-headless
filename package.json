@@ -10,6 +10,6 @@
     "dev:is": "turbo run dev --filter=international-spectrum"
   },
   "devDependencies": {
-    "turbo": "^2.9.16"
+    "turbo": "^2.10.10"
   }
 }

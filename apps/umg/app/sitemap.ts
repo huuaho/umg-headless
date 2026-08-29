@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { categories } from "@/lib/categories";
+import { pageCategories as categories } from "@/lib/categories";
 
 export const dynamic = "force-static";
 

@@ -187,6 +187,17 @@ function um_upsert_article($site, $remote_post) {
             $featured_image = esc_url_raw($remote_post['_embedded']['wp:featuredmedia'][0]['source_url']);
         }
 
+        // Video URL — International Spectrum "Video Interviews" expose a `video_url`
+        // post meta through REST (see is-headless-config.php). Those posts usually
+        // have no featured image, so fall back to the YouTube thumbnail for cards.
+        $video_url = '';
+        if (!empty($remote_post['meta']['video_url']) && is_string($remote_post['meta']['video_url'])) {
+            $video_url = esc_url_raw($remote_post['meta']['video_url']);
+        }
+        if (!$featured_image && $video_url) {
+            $featured_image = um_youtube_thumbnail_url($video_url);
+        }
+
         // Extract ALL images from the article
         $all_image_urls = array();
 
@@ -283,6 +294,13 @@ function um_upsert_article($site, $remote_post) {
         }
         if ($author_name) {
             update_post_meta($post_id, 'um_author_name', $author_name);
+        }
+
+        // Store video URL (delete on re-ingest if the source removed it)
+        if ($video_url) {
+            update_post_meta($post_id, 'um_video_url', $video_url);
+        } else {
+            delete_post_meta($post_id, 'um_video_url');
         }
 
         // Store all image URLs as JSON array

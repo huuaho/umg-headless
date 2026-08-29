@@ -33,6 +33,12 @@ interface CategorySectionWrapperProps {
    * the label is rendered unlinked (there is no /category/<slug> page).
    */
   latest?: boolean;
+  /**
+   * Render nothing (instead of the "No articles found" error card) when the
+   * category exists but has no articles yet. Use for sections whose content
+   * depends on a backend change that may ship after the frontend.
+   */
+  hideWhenEmpty?: boolean;
 }
 
 // Articles needed per section type
@@ -55,6 +61,7 @@ export default function CategorySectionWrapper({
   titleClassName,
   priority,
   latest = false,
+  hideWhenEmpty = false,
 }: CategorySectionWrapperProps) {
   const needed = ARTICLES_NEEDED[sectionType];
   const [fetchCount, setFetchCount] = useState(() =>
@@ -104,6 +111,11 @@ export default function CategorySectionWrapper({
   // Loading state (only on initial load, not re-fetches for backfill)
   if (isLoading && articles.length === 0) {
     return <SectionSkeleton slug={slug} category={category} categoryColor={categoryColor} categoryTextColor={categoryTextColor} categoryUnderlineColor={categoryUnderlineColor} categoryIcon={categoryIcon} />;
+  }
+
+  // Empty category that is expected to fill in later — render nothing
+  if (!error && articles.length === 0 && hideWhenEmpty) {
+    return null;
   }
 
   // Error state

@@ -1,4 +1,4 @@
-import { categories } from "../../../lib/categories";
+import { pageCategories as categories } from "../../../lib/categories";
 import { CategoryContent } from "@umg/ui";
 
 export const dynamicParams = false;

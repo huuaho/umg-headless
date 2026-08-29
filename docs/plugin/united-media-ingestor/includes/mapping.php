@@ -42,6 +42,7 @@ function um_category_parents() {
         'education-youth'     => 'Education & Youth',
         'local-community'     => 'Local Community',
         'wellbeing-env-tech'  => 'Wellbeing, Environment, Technology',
+        'video-interviews'    => 'Video Interviews',
     );
 }
 
@@ -99,6 +100,9 @@ function um_category_children_spec() {
         'dw-technology'          => array('parent'=>'wellbeing-env-tech', 'name'=>'Diplomatic Watch: Technology'),
         'em-nature'              => array('parent'=>'wellbeing-env-tech', 'name'=>'Echo Media: Nature'),
         'dw-health'              => array('parent'=>'wellbeing-env-tech', 'name'=>'Diplomatic Watch: Health'),
+
+        // Video Interviews (own bucket so the UMG homepage can show a dedicated section)
+        'is-video-interviews'    => array('parent'=>'video-interviews', 'name'=>'International Spectrum: Video Interviews'),
     );
 }
 
@@ -156,6 +160,7 @@ function um_source_category_map() {
             'Leadership & Youth Engagement' => 'is-leadership-youth',
             'Social Impact & Justice'       => 'is-social-impact',
             'Community & Public Programs'   => 'is-community-programs',
+            'Video Interviews'              => 'is-video-interviews',
         ),
     );
 }

@@ -2,11 +2,12 @@
 /**
  * Plugin Name: United Media Ingestor
  * Description: Aggregates posts from multiple WP sites + headless CORS/cache/redirect config.
- * Version: 0.9.0
+ * Version: 0.10.0
  */
 
 if (!defined('ABSPATH')) exit;
 
+define('UMI_VERSION', '0.10.0');
 define('UMI_PATH', plugin_dir_path(__FILE__));
 define('UMI_URL', plugin_dir_url(__FILE__));
 
@@ -76,6 +77,17 @@ function um_activate_plugin() {
     // Flush rewrite rules
     flush_rewrite_rules();
 }
+
+/**
+ * Upgrade hook: when the plugin files are replaced without a deactivate/activate
+ * cycle, re-seed any um_category terms added to mapping.php since the last run.
+ * um_populate_category_terms() is idempotent (skips existing terms).
+ */
+add_action('admin_init', function () {
+    if (get_option('um_ingestor_version') === UMI_VERSION) return;
+    um_populate_category_terms();
+    update_option('um_ingestor_version', UMI_VERSION, false);
+});
 
 /**
  * Populate all um_category terms from mapping definitions

@@ -17,6 +17,21 @@ export const categories: Category[] = [
   { name: "Wellbeing, Environment, Technology", slug: "wellbeing-env-tech", color: "#6366F1" },
 ];
 
+/**
+ * Video Interviews (International Spectrum, mapped by the ingestor to the
+ * `video-interviews` UM category). Client request 2026-08-28: show on the
+ * homepage but NOT in the top nav — so it is kept out of `categories` and
+ * only added where a page/route needs it.
+ */
+export const videoInterviewsCategory: Category = {
+  name: "Video Interviews",
+  slug: "video-interviews",
+  color: "#EF4444",
+};
+
+/** Every category that has a /category/<slug> page (nav categories + Video Interviews). */
+export const pageCategories: Category[] = [...categories, videoInterviewsCategory];
+
 // Header navigation splits
 export const mainCategories = categories.slice(0, 2); // Always visible on MD+
 export const lgOnlyCategories = categories.slice(2, 4); // Economy & Business, Diplomacy - visible on LG+

@@ -150,3 +150,17 @@ function um_get_full_size_image_url($url) {
     // Examples: image-400x284.jpg, photo-1024x683.png
     return preg_replace('/-\d+x\d+(\.[a-zA-Z]{3,4})$/', '$1', $url);
 }
+
+/**
+ * Derive a YouTube thumbnail URL from a watch/short/embed URL.
+ * Uses hqdefault.jpg because it exists for every video (maxresdefault does not).
+ *
+ * @param string $video_url
+ * @return string Thumbnail URL, or '' when the URL is not a recognisable YouTube link
+ */
+function um_youtube_thumbnail_url($video_url) {
+    if (!preg_match('#(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})#', (string)$video_url, $m)) {
+        return '';
+    }
+    return 'https://img.youtube.com/vi/' . $m[1] . '/hqdefault.jpg';
+}

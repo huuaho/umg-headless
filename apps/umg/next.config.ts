@@ -30,6 +30,11 @@ const nextConfig: NextConfig = {
         hostname: "www.internationalspectrum.org",
       },
       {
+        // Video Interviews cards use YouTube thumbnails (set by the ingestor)
+        protocol: "https",
+        hostname: "img.youtube.com",
+      },
+      {
         protocol: "https",
         hostname: "www.unitedmediadc.com",
       },

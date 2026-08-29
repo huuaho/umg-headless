@@ -170,6 +170,7 @@ function um_rest_get_articles(WP_REST_Request $request) {
             'featured_image'  => get_post_meta($p->ID, 'um_featured_image_url', true),
             'images'          => json_decode(get_post_meta($p->ID, 'um_image_urls', true), true) ?: array(),
             'author_name'     => get_post_meta($p->ID, 'um_author_name', true),
+            'video_url'       => get_post_meta($p->ID, 'um_video_url', true) ?: '',
             'category'        => $parent_category,            // Parent category (unified bucket) for cards
             'categories'      => $categories,                 // Full array for advanced use
             'read_time_minutes' => $read_time_minutes,       // Estimated read time

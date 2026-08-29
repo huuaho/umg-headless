@@ -311,7 +311,7 @@ function um_render_control_page() {
         <!-- Re-sync Source Category -->
         <div class="card" style="max-width: none; margin-bottom: 20px;">
             <h2>Re-sync Source Category</h2>
-            <p>Re-fetch every post in one source-site category and run the normal upsert again (title, excerpt, images, video URL, UM category mapping). Use this after adding a mapping in <code>mapping.php</code> so already-ingested posts pick up the new UM category without a full backfill.</p>
+            <p>Re-fetch every post in one source-site category (or the whole site when the slug is left blank) and run the normal upsert again (title, excerpt, author, images, video URL, UM category mapping). Use this after adding a mapping in <code>mapping.php</code>, or after the source site changed something the incremental cron never re-reads (e.g. post authors), without a full backfill.</p>
             <?php
             $resync_notice = isset($_GET['um_resync']) ? sanitize_text_field(wp_unslash($_GET['um_resync'])) : '';
             if ($resync_notice !== ''): ?>
@@ -327,10 +327,10 @@ function um_render_control_page() {
                     <?php endforeach; ?>
                 </select>
                 <label for="um-resync-slug"><strong>Source category slug</strong></label>
-                <input type="text" name="category_slug" id="um-resync-slug" placeholder="video-interviews" required style="margin-right: 10px;">
+                <input type="text" name="category_slug" id="um-resync-slug" placeholder="video-interviews (blank = whole site)" style="margin-right: 10px;">
                 <button type="submit" class="button button-primary">🔁 Re-sync Category</button>
             </form>
-            <p class="description" style="margin-top: 8px;">The slug is the source site's own WordPress category slug (e.g. <code>video-interviews</code> on International Spectrum). Runs synchronously, up to <?php echo (int) UM_RESYNC_MAX_POSTS; ?> posts per click.</p>
+            <p class="description" style="margin-top: 8px;">The slug is the source site's own WordPress category slug (e.g. <code>video-interviews</code> on International Spectrum); leave it blank to re-sync every post on that site. Runs synchronously, up to <?php echo (int) UM_RESYNC_MAX_POSTS; ?> posts per click (newest first).</p>
         </div>
 
         <!-- Incremental Controls -->
@@ -874,11 +874,12 @@ add_action('admin_post_um_backfill_reset', function () {
 define('UM_RESYNC_MAX_POSTS', 500);
 
 /**
- * Re-fetch all posts of one remote category and upsert them.
+ * Re-fetch all posts of one remote category (or the whole site when
+ * $category_slug is empty) and upsert them.
  *
  * @return array { ok: bool, message: string }
  */
-function um_resync_source_category($site_id, $category_slug) {
+function um_resync_source_category($site_id, $category_slug = '') {
     $site = null;
     foreach (um_sites_config() as $s) {
         if ($s['id'] === $site_id) { $site = $s; break; }
@@ -889,17 +890,21 @@ function um_resync_source_category($site_id, $category_slug) {
 
     $base = rtrim($site['base'], '/');
 
-    // Resolve the remote category ID from its slug
-    $cat_url = $base . '/wp-json/wp/v2/categories?' . http_build_query(array(
-        'slug'    => $category_slug,
-        '_fields' => 'id,name,count',
-    ), '', '&', PHP_QUERY_RFC3986);
-    $cat_res = um_http_get($cat_url);
-    if (!$cat_res['ok'] || empty($cat_res['data'][0]['id'])) {
-        return array('ok' => false, 'message' => 'Category "' . $category_slug . '" not found on ' . $site['label'] . ($cat_res['error'] ? ' (' . $cat_res['error'] . ')' : ''));
+    // Resolve the remote category ID from its slug (blank slug = whole site)
+    $cat_id   = 0;
+    $cat_name = 'all posts';
+    if ($category_slug !== '') {
+        $cat_url = $base . '/wp-json/wp/v2/categories?' . http_build_query(array(
+            'slug'    => $category_slug,
+            '_fields' => 'id,name,count',
+        ), '', '&', PHP_QUERY_RFC3986);
+        $cat_res = um_http_get($cat_url);
+        if (!$cat_res['ok'] || empty($cat_res['data'][0]['id'])) {
+            return array('ok' => false, 'message' => 'Category "' . $category_slug . '" not found on ' . $site['label'] . ($cat_res['error'] ? ' (' . $cat_res['error'] . ')' : ''));
+        }
+        $cat_id   = intval($cat_res['data'][0]['id']);
+        $cat_name = isset($cat_res['data'][0]['name']) ? html_entity_decode($cat_res['data'][0]['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') : $category_slug;
     }
-    $cat_id   = intval($cat_res['data'][0]['id']);
-    $cat_name = isset($cat_res['data'][0]['name']) ? html_entity_decode($cat_res['data'][0]['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') : $category_slug;
 
     $per_page = 50;
     $page     = 1;
@@ -909,14 +914,15 @@ function um_resync_source_category($site_id, $category_slug) {
     $seen     = 0;
 
     while ($seen < UM_RESYNC_MAX_POSTS) {
-        $url = um_build_posts_url($base, array(
-            'categories' => $cat_id,
-            'per_page'   => $per_page,
-            'page'       => $page,
-            'orderby'    => 'date',
-            'order'      => 'desc',
-            '_embed'     => 1,
-        ));
+        $params = array(
+            'per_page' => $per_page,
+            'page'     => $page,
+            'orderby'  => 'date',
+            'order'    => 'desc',
+            '_embed'   => 1,
+        );
+        if ($cat_id) $params['categories'] = $cat_id;
+        $url = um_build_posts_url($base, $params);
         $res = um_http_get($url);
 
         // WP returns HTTP 400 (rest_post_invalid_page_number) once we run past the last page
@@ -942,7 +948,7 @@ function um_resync_source_category($site_id, $category_slug) {
         $page++;
     }
 
-    um_log(sprintf('Re-sync %s/%s: %d seen, %d inserted, %d updated, %d failed', $site_id, $category_slug, $seen, $inserted, $updated, $failed));
+    um_log(sprintf('Re-sync %s/%s: %d seen, %d inserted, %d updated, %d failed', $site_id, $category_slug !== '' ? $category_slug : '*', $seen, $inserted, $updated, $failed));
 
     return array(
         'ok'      => true,
@@ -957,8 +963,8 @@ add_action('admin_post_um_resync_category', function () {
     $site_id       = isset($_POST['site_id']) ? sanitize_key(wp_unslash($_POST['site_id'])) : '';
     $category_slug = isset($_POST['category_slug']) ? sanitize_title(wp_unslash($_POST['category_slug'])) : '';
 
-    if ($site_id === '' || $category_slug === '') {
-        $result = array('ok' => false, 'message' => 'Source site and category slug are required.');
+    if ($site_id === '') {
+        $result = array('ok' => false, 'message' => 'Source site is required.');
     } else {
         // Make sure any newly added mapping terms exist before re-assigning
         um_populate_category_terms();

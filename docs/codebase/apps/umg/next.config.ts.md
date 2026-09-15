@@ -17,8 +17,8 @@ Next.js CLI (`next dev` / `next build`).
 
 ## Notes
 - `images.unoptimized: true` — every `next/image` renders as a plain `<img>`; the eslint config also disables `no-img-element` for the same reason.
-- Allowed remote image hosts: picsum.photos, diplomaticwatch.com (+www), www.echo-media.info, www.internationalspectrum.org, unitedmediadc.com (+www).
+- Allowed remote image hosts: picsum.photos, diplomaticwatch.com (+www), www.echo-media.info, www.internationalspectrum.org, img.youtube.com (YouTube thumbnails used as featured images on Video Interviews cards, set by the ingestor), unitedmediadc.com (+www).
 - Static export means all routes must be pre-renderable; the category route pins this with `dynamicParams = false` (see [app/category/[slug]/page.tsx](app/category/[slug]/page.tsx.md)).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 2354375.*

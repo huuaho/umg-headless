@@ -24,4 +24,4 @@ GitHub Actions on push/dispatch. The WordPress side triggers it via `POST /repos
 Secrets: `UMG_WP_API_URL`, `UMG_FTP_SERVER/USERNAME/PASSWORD`, `UMG_SSH_HOST/USERNAME/KEY`. Unlike older revisions, no `dangerous-clean-slate` — the FTP action diffs and syncs. The purge step is what makes deploys visible immediately despite SiteGround's full-page cache.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

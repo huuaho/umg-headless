@@ -19,4 +19,4 @@ pnpm workspace root and Turborepo task graph; the deploy-umg GitHub Actions work
 `private: true`; version is a placeholder (0.1.0). No test script.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

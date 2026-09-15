@@ -3,7 +3,7 @@
 **Purpose:** Category listing route — statically generated page per category slug.
 
 ## Responsibilities
-Generates one static page per entry in `lib/categories` via `generateStaticParams`, with `dynamicParams = false` so unknown slugs 404 (required for the static-export build). `generateMetadata` returns the bare category name as `title` (the root layout's title template appends "| United Media Group") plus a per-category `description`. The page body delegates entirely to `CategoryContent` from `@umg/ui` with `externalOnly` (article links go to the source media-company sites).
+Generates one static page per entry in `pageCategories` from `lib/categories` (the 8 nav categories + Video Interviews) via `generateStaticParams`, with `dynamicParams = false` so unknown slugs 404 (required for the static-export build). `generateMetadata` returns the bare category name as `title` (the root layout's title template appends "| United Media Group") plus a per-category `description`. The page body delegates entirely to `CategoryContent` from `@umg/ui` with `externalOnly` (article links go to the source media-company sites).
 
 ## Key exports
 - `default CategoryPage({ params }) -> JSX` — the `/category/[slug]` route (async; awaits `params`).
@@ -16,10 +16,10 @@ Generates one static page per entry in `lib/categories` via `generateStaticParam
 - External: none
 
 ## Used by
-App Router — routes `/category/world-news-politics`, `/category/diplomacy`, etc. (8 total); linked from Header nav and homepage section titles.
+App Router — routes `/category/world-news-politics`, `/category/diplomacy`, etc. (9 total, including `/category/video-interviews`); linked from Header nav and homepage section titles (Video Interviews only from its homepage section, not the nav).
 
 ## Notes
-Uses Next 15+ async `params` (Promise). Adding a category to `lib/categories.ts` automatically adds a route here.
+Uses Next 15+ async `params` (Promise). Adding a category to `lib/categories.ts` automatically adds a route here (it must end up in `pageCategories`).
 
 ---
-*Documented at commit 60deaa3.*
+*Documented at commit 2354375.*

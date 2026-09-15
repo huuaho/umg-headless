@@ -23,4 +23,4 @@ Scripts (all delegate to Turborepo with an app filter):
 There is no root `build`/`lint` script — CI invokes `pnpm turbo run build` directly. The pnpm version here is the source of truth for tooling (CI's `pnpm/action-setup@v6` reads `packageManager`).
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

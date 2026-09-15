@@ -23,4 +23,4 @@ GitHub Actions on push/dispatch; the IS headless-config WordPress plugin ([plugi
 Secrets: `IS_WP_API_URL`, `IS_FTP_SERVER/USERNAME/PASSWORD`, `IS_SSH_HOST/USERNAME/KEY`. The `NEXT_PUBLIC_ARTICLE_META: author` flag is unique to this workflow.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

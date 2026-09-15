@@ -35,11 +35,11 @@ graph LR
 Cross-tree docs: shared UI at [../../packages/ui/](../../packages/ui/README.md) (Header, Footer, CategoryContent, SearchContent, sections), API client at [../../packages/api/client.ts.md](../../packages/api/client.ts.md), WP plugin at [../../plugin/umg-photo-contest/](../../plugin/umg-photo-contest/umg-photo-contest.php.md).
 
 ## Entry points
-- **News + info routes:** `/` (per-category sections), `/category/<slug>` (×8, statically generated), `/search`, `/about-us`, `/contact` — article data fetched client-side from the WP REST API via `@umg/ui` + `@umg/api`, with `externalOnly` links out to the source publications.
+- **News + info routes:** `/` (Latest + Video Interviews + per-category sections), `/category/<slug>` (×9, statically generated — 8 nav categories + `video-interviews`, an IS-sourced bucket kept out of the top nav), `/search`, `/about-us`, `/contact` — article data fetched client-side from the WP REST API via `@umg/ui` + `@umg/api`, with `externalOnly` links out to the source publications.
 - **AEO:** Organization JSON-LD in the layout; Event + FAQPage schema on `/how-to-enter`; FAQPage on `/about-us`; ContactPage on `/contact`; per-page OpenGraph/Twitter metadata; `/sitemap.xml` and `/robots.txt` (named AI crawlers).
 - **Competition routes (on hold):** `/how-to-enter` (currently the on-hold announcement; when restored, brochure from [lib/competitions/current.ts](lib/competitions/current.ts.md); deadline now Oct 31, 2026), `/judges-panel` (bios + hash anchors), `/photo-submission` (OTP sign-in → autosaved draft → submit → $50 Stripe payment, status polled via `GET /me`; entries can be reopened for edits until paid), `/school-registration` (+ `/application?id=`; a school manages many student applications and pays once via Stripe Checkout; applications reopenable until paid). Backend is the umg-photo-contest WP plugin at `/wp-json/umg/v1/`.
 - **Judge panel (live):** `/admin` — same OTP login; `AdminGuard` requires `user.is_judge`; blind-by-default entry grid → `/admin/entry?id=` scoring (1–10 per criterion, draft/final) → admin-only `/admin/results` rankings. Client in [lib/judging/](lib/judging/README.md), routes in [app/admin/](app/admin/README.md); plugin side `judging.php`/`roles.php`. Parked for client UX feedback.
 - **Build:** `pnpm dev` / `pnpm build` (static export to `out/`); `NEXT_PUBLIC_WP_API_URL` selects the WP backend at build time.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

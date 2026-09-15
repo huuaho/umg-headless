@@ -3,13 +3,14 @@
 **Purpose:** Plugin bootstrap for "United Media Ingestor" — loads all includes, provides UMG's headless config (CORS/cache/redirect), and handles activation.
 
 ## Responsibilities
-Entry point of the aggregation plugin on api.unitedmediadc.com. Defines `UMI_PATH`/`UMI_URL`, requires the 12 includes (config → helpers → http → normalize → mapping → storage → backfill → incremental → cron → admin-endpoints → rest-api → search), and embeds the headless config that the other two sites get from standalone plugins: whitelisted CORS, REST no-cache headers, and a 301 redirect of all non-`/wp-json` front-end traffic to `https://www.unitedmediadc.com`.
+Entry point of the aggregation plugin on api.unitedmediadc.com (version 0.11.0). Defines `UMI_VERSION`/`UMI_PATH`/`UMI_URL`, requires the 12 includes (config → helpers → http → normalize → mapping → storage → backfill → incremental → cron → admin-endpoints → rest-api → search), and embeds the headless config that the other two sites get from standalone plugins: whitelisted CORS, REST no-cache headers, and a 301 redirect of all non-`/wp-json` front-end traffic to `https://www.unitedmediadc.com`.
 
 ## Key exports
-- `UMI_PATH`, `UMI_URL` (constants).
+- `UMI_VERSION`, `UMI_PATH`, `UMI_URL` (constants).
 - Headless config hooks: `rest_api_init` (origin-whitelisted CORS via `um_allowed_origins()`), `rest_post_dispatch` (no-cache headers on all REST responses), `template_redirect` (301 to `UMI_REDIRECT_URL`).
 - `um_activate_plugin() -> void` (activation hook) — schedules cron events (`um_schedule_cron_events()`), seeds the `um_category` taxonomy from the mapping spec, flushes rewrite rules.
-- `um_populate_category_terms() -> void` — inserts parent terms from `um_category_parents()` then child terms from `um_category_children_spec()` (with parent linkage), logging failures via `um_log()`.
+- `um_populate_category_terms() -> void` — inserts parent terms from `um_category_parents()` then child terms from `um_category_children_spec()` (with parent linkage), logging failures via `um_log()`. Idempotent: `term_exists` guards mean it only *creates missing* terms — it never renames or deletes existing ones.
+- Upgrade hook on `admin_init` — when `UMI_VERSION` differs from the stored `um_ingestor_version` option, re-runs `um_populate_category_terms()` and updates the option, so terms added to mapping.php get seeded even when plugin files are replaced without a deactivate/activate cycle.
 - Deactivation hook: `um_unschedule_cron_events`.
 
 ## Dependencies
@@ -20,8 +21,8 @@ Entry point of the aggregation plugin on api.unitedmediadc.com. Defines `UMI_PAT
 WordPress core as plugin main file. The `um/v1/articles` route it ultimately exposes is consumed by the shared API client ([packages/api/client.ts](../../packages/api/client.ts.md)) for the UMG site.
 
 ## Notes
-- Category terms are only seeded on activation — adding new mappings later requires re-activating the plugin (or terms get auto-created as unmapped go untracked); `um_resolve_categories` assumes terms exist.
+- Category terms are seeded on activation and, since 0.10.0, on the version-bump `admin_init` upgrade hook — so bumping `UMI_VERSION` alongside a new mapping is enough; no re-activation needed. Seeding never *renames* terms, though: when a child's display name changes in mapping.php (as in the 0.11.0 International Spectrum renames), existing UMG-side terms must be renamed manually in wp-admin.
 - The `template_redirect` 301 means the WP install serves nothing publicly except `/wp-json` and wp-admin — including the Divi search template path in [includes/search.php](includes/search.php.md), which is therefore mostly legacy (it can only render for logged-in admin contexts or if the redirect is removed).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 2354375.*

@@ -93,4 +93,4 @@ There is no test suite in the repo.
 - **Images point at the wrong domain:** WP must define `WP_HOME`/`WP_SITEURL` as the `api.` subdomain, otherwise REST responses embed old-domain upload URLs.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

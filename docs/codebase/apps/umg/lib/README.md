@@ -5,7 +5,7 @@ Non-UI modules for the UMG app: site-wide data (categories, media companies) and
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [categories.ts](categories.ts.md) | file | The 8 content categories + nav/footer slices; drives homepage sections and static category routes. |
+| [categories.ts](categories.ts.md) | file | The 8 nav categories + Video Interviews (homepage/page-only, not in nav) + nav/footer slices; drives homepage sections, sitemap, and static category routes. |
 | [mediaCompanies.ts](mediaCompanies.ts.md) | file | The 3 media companies (name, URL, color/B&W logos) for the marquee banner and footer. |
 | [competitions/](competitions/README.md) | folder | Competition config-as-code: types, current competition, judges. |
 | [auth/](auth/README.md) | folder | Individual-flow auth context + REST client for the WP plugin. |
@@ -36,4 +36,4 @@ graph LR
 No routes — imported via the `@/lib/...` alias throughout `app/` and `components/`.
 
 ---
-*Documented at commit bde729d.*
+*Documented at commit 2354375.*

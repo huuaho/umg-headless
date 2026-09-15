@@ -23,4 +23,4 @@ GitHub Actions on push/dispatch; the EM headless-config WordPress plugin ([plugi
 Secrets: `EM_WP_API_URL`, `EM_FTP_SERVER/USERNAME/PASSWORD`, `EM_SSH_HOST/USERNAME/KEY`. Concurrency group `deploy-echo-media` with cancel-in-progress prevents build pileups from rapid post edits.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

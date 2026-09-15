@@ -6,8 +6,8 @@ Next.js App Router tree for the UMG site. The root layout supplies fonts, site m
 | Item | Type | Summary |
 |------|------|---------|
 | [layout.tsx](layout.tsx.md) | file | Root layout: fonts, OG/Twitter metadata, Organization JSON-LD, `@umg/ui` Header/Footer (socials, `contactHref`; competition nav link + banner commented out). |
-| [page.tsx](page.tsx.md) | file | Homepage: sr-only H1 + one `CategorySectionWrapper` per category, deduped via SeenArticlesProvider. |
-| [sitemap.ts](sitemap.ts.md) | file | Build-time `/sitemap.xml` — static routes + categories from `lib/categories` (competition routes commented out). |
+| [page.tsx](page.tsx.md) | file | Homepage: sr-only H1 + a Latest section, a Video Interviews section (`hideWhenEmpty`, not in nav), and one `CategorySectionWrapper` per category, deduped via SeenArticlesProvider. |
+| [sitemap.ts](sitemap.ts.md) | file | Build-time `/sitemap.xml` — static routes + categories from `pageCategories` in `lib/categories` (competition routes commented out). |
 | [robots.ts](robots.ts.md) | file | Build-time `/robots.txt` — allows all + named AI crawlers, points at the sitemap. |
 | [globals.css](globals.css.md) | file | Tailwind 4 entry, `@source` scan of packages/ui, marquee animation, brand color variables. |
 | [not-found.tsx](not-found.tsx.md) | file | Re-exports the shared 404 page. |
@@ -52,7 +52,7 @@ graph LR
 ```
 
 ## Entry points
-Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×8), `/search`, `/how-to-enter` (on-hold announcement), `/admin` (+ `/admin/entry?id=`, `/admin/results`), plus `/sitemap.xml`, `/robots.txt`, and the 404 page. Hidden while the competition is postponed (page files still exist, guarded by `notFound()`): `/judges-panel`, `/photo-submission`, `/school-registration` (+ `/school-registration/application`). All are statically exported (`output: "export"`).
+Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×9, incl. `video-interviews`), `/search`, `/how-to-enter` (on-hold announcement), `/admin` (+ `/admin/entry?id=`, `/admin/results`), plus `/sitemap.xml`, `/robots.txt`, and the 404 page. Hidden while the competition is postponed (page files still exist, guarded by `notFound()`): `/judges-panel`, `/photo-submission`, `/school-registration` (+ `/school-registration/application`). All are statically exported (`output: "export"`).
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

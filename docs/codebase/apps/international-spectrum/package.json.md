@@ -21,4 +21,4 @@ pnpm workspace + Turborepo (run via the root `package.json` / `turbo.json` pipel
 - **Difference vs echo-media:** only the `name` field (`echo-media`); every version and script is identical.
 
 ---
-*Documented at commit b9a61ff.*
+*Documented at commit 2354375.*

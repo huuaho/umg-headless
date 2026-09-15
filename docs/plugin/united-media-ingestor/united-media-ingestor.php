@@ -2,12 +2,12 @@
 /**
  * Plugin Name: United Media Ingestor
  * Description: Aggregates posts from multiple WP sites + headless CORS/cache/redirect config.
- * Version: 0.10.0
+ * Version: 0.11.0
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('UMI_VERSION', '0.10.0');
+define('UMI_VERSION', '0.11.0');
 define('UMI_PATH', plugin_dir_path(__FILE__));
 define('UMI_URL', plugin_dir_url(__FILE__));
 

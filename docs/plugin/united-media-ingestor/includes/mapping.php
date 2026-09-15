@@ -68,7 +68,7 @@ function um_category_children_spec() {
         'dw-editorial'           => array('parent'=>'profiles-opinions', 'name'=>'Diplomatic Watch: Editorial'),
         'dw-interview'           => array('parent'=>'profiles-opinions', 'name'=>'Diplomatic Watch: Interview'),
         'dw-opinion'             => array('parent'=>'profiles-opinions', 'name'=>'Diplomatic Watch: Opinion'),
-        'is-history-legacy'      => array('parent'=>'profiles-opinions', 'name'=>'International Spectrum: History & Legacy'),
+        'is-history-legacy'      => array('parent'=>'profiles-opinions', 'name'=>'International Spectrum: Diplomatic and Historic Events'),
 
         // Economy & Business
         'dw-economy'             => array('parent'=>'economy-business', 'name'=>'Diplomatic Watch: Economy'),
@@ -84,17 +84,16 @@ function um_category_children_spec() {
         'dw-fashion-lifestyle'   => array('parent'=>'art-culture', 'name'=>'Diplomatic Watch: Fashion & Lifestyle'),
         'dw-sports'              => array('parent'=>'art-culture', 'name'=>'Diplomatic Watch: Sports'),
         'em-art-culture'         => array('parent'=>'art-culture', 'name'=>'Echo Media: Art & Culture'),
-        'is-arts'                => array('parent'=>'art-culture', 'name'=>'International Spectrum: Arts'),
-        'is-civic-cultural'      => array('parent'=>'art-culture', 'name'=>'International Spectrum: Civic & Cultural Affairs'),
+        'is-arts'                => array('parent'=>'art-culture', 'name'=>'International Spectrum: Arts, Science and Technology'),
+        'is-civic-cultural'      => array('parent'=>'art-culture', 'name'=>'International Spectrum: Cultural and International Affairs'),
 
         // Education & Youth
         'em-education'           => array('parent'=>'education-youth', 'name'=>'Echo Media: Education'),
-        'is-leadership-youth'    => array('parent'=>'education-youth', 'name'=>'International Spectrum: Leadership & Youth Engagement'),
 
         // Local Community
         'dw-events'              => array('parent'=>'local-community', 'name'=>'Diplomatic Watch: Events'),
-        'is-social-impact'       => array('parent'=>'local-community', 'name'=>'International Spectrum: Social Impact & Justice'),
-        'is-community-programs'  => array('parent'=>'local-community', 'name'=>'International Spectrum: Community & Public Programs'),
+        'is-social-impact'       => array('parent'=>'local-community', 'name'=>'International Spectrum: Social Impact Events'),
+        'is-community-programs'  => array('parent'=>'local-community', 'name'=>'International Spectrum: Community Events'),
 
         // Wellbeing, Environment, Technology
         'dw-technology'          => array('parent'=>'wellbeing-env-tech', 'name'=>'Diplomatic Watch: Technology'),
@@ -154,13 +153,12 @@ function um_source_category_map() {
             'Nature'        => 'em-nature',
         ),
         'internationalspectrum' => array(
-            'History & Legacy'              => 'is-history-legacy',
-            'Arts'                          => 'is-arts',
-            'Civic & Cultural Affairs'      => 'is-civic-cultural',
-            'Leadership & Youth Engagement' => 'is-leadership-youth',
-            'Social Impact & Justice'       => 'is-social-impact',
-            'Community & Public Programs'   => 'is-community-programs',
-            'Video Interviews'              => 'is-video-interviews',
+            'Diplomatic and Historic Events'     => 'is-history-legacy',
+            'Arts, Science and Technology'       => 'is-arts',
+            'Cultural and International Affairs' => 'is-civic-cultural',
+            'Social Impact Events'               => 'is-social-impact',
+            'Community Events'                   => 'is-community-programs',
+            'Video Interviews'                   => 'is-video-interviews',
         ),
     );
 }

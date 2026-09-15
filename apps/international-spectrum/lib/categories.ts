@@ -5,12 +5,11 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { name: "Community & Public Programs", slug: "communitypublicprograms", color: "#ea1479" },
-  { name: "Civic & Cultural Affairs", slug: "civicandculturalaffairs", color: "#66c2ad" },
-  { name: "Arts", slug: "arts", color: "#655aa8" },
-  { name: "History & Legacy", slug: "historylegacy", color: "#feb70c" },
-  { name: "Social Impact & Justice", slug: "socialimpactjustice", color: "#ea1479" },
-  { name: "Leadership & Youth Engagement", slug: "leadershipyouthengagement", color: "#66c2ad" },
+  { name: "Community Events", slug: "communitypublicprograms", color: "#ea1479" },
+  { name: "Cultural and International Affairs", slug: "civicandculturalaffairs", color: "#66c2ad" },
+  { name: "Arts, Science and Technology", slug: "arts", color: "#655aa8" },
+  { name: "Diplomatic and Historic Events", slug: "historylegacy", color: "#feb70c" },
+  { name: "Social Impact Events", slug: "socialimpactjustice", color: "#ea1479" },
   { name: "Video Interviews", slug: "video-interviews", color: "#655aa8" },
 ];
 

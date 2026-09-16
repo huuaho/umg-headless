@@ -14,6 +14,7 @@ export type { FooterProps } from "./Footer";
 export { default as NewsletterSignup } from "./NewsletterSignup";
 export { default as ArticleLink } from "./ArticleLink";
 export { default as ArticleLayout } from "./article/ArticleLayout";
+export { default as ArticleBody } from "./article/ArticleBody";
 export { default as NotFoundPage } from "./NotFoundPage";
 export { default as ResultCard } from "./ResultCard";
 export { default as ResultsSkeleton } from "./ResultsSkeleton";

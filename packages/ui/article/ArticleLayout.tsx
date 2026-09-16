@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import type { ContentBlock } from "@umg/api";
+import ArticleBody from "./ArticleBody";
 import FeaturedMedia from "../sections/components/FeaturedMedia";
 import CommentsSection from "./CommentsSection";
 import MoreArticles from "./MoreArticles";
@@ -24,8 +26,9 @@ interface ArticleLayoutProps {
   date: string;
   category: string;
   readTime: string;
-  images: string[]; // All images (featured + gallery)
-  content: string; // Sanitized HTML (Divi stripped)
+  images: string[]; // All images (featured + gallery) — legacy fallback only
+  content: string; // Sanitized HTML (Divi stripped) — legacy fallback only
+  blocks?: ContentBlock[]; // Ordered body blocks; images stay where the author put them
   postId?: number; // WP post ID for comments (EM/IS only)
   currentSlug?: string; // Current article slug for More Articles carousel
   categoryColor?: string; // Hex color for category label
@@ -42,6 +45,7 @@ export default function ArticleLayout({
   readTime,
   images,
   content,
+  blocks,
   postId,
   currentSlug,
   categoryColor,
@@ -54,6 +58,9 @@ export default function ArticleLayout({
     month: "long",
     day: "numeric",
   });
+
+  const youTubeId = videoUrl ? getYouTubeId(videoUrl) : null;
+  const hasBlocks = Boolean(blocks && blocks.length > 0);
 
   return (
     <main className="min-h-screen bg-white">
@@ -87,33 +94,45 @@ export default function ArticleLayout({
           <time dateTime={date}>{formattedDate}</time>
         </div>
 
-        {/* YouTube Video or Featured Image / Gallery */}
-        {videoUrl && getYouTubeId(videoUrl) ? (
+        {/* YouTube video takes the hero slot when present */}
+        {youTubeId && (
           <div className="mb-8 -mx-6 md:mx-0">
             <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
               <iframe
                 className="absolute inset-0 w-full h-full rounded-none md:rounded-lg"
-                src={`https://www.youtube.com/embed/${getYouTubeId(videoUrl)}`}
+                src={`https://www.youtube.com/embed/${youTubeId}`}
                 title={title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             </div>
           </div>
-        ) : images.length > 0 ? (
-          <div className="mb-8 -mx-6 md:mx-0">
-            <FeaturedMedia
-              images={images.length > 1 ? images : images[0]}
-              alt={title}
-            />
-          </div>
-        ) : null}
+        )}
 
         {/* Article Body */}
-        <div
-          className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-700 prose-img:rounded-lg"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        {hasBlocks ? (
+          <ArticleBody
+            blocks={blocks!}
+            title={title}
+            leadBlockIsHero={!youTubeId}
+          />
+        ) : (
+          <>
+            {/* Legacy path: every image hoisted into one carousel above the body */}
+            {!youTubeId && images.length > 0 && (
+              <div className="mb-8 -mx-6 md:mx-0">
+                <FeaturedMedia
+                  images={images.length > 1 ? images : images[0]}
+                  alt={title}
+                />
+              </div>
+            )}
+            <div
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-700 prose-img:rounded-lg"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </>
+        )}
 
         {/* Comments Section */}
         {postId != null && <CommentsSection postId={postId} />}

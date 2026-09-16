@@ -8,7 +8,8 @@ import type {
   FetchArticlesOptions,
   SearchArticlesOptions,
 } from "./types";
-import { processContent, toFullSizeUrl } from "./content";
+import type { ContentBlock } from "./content";
+import { parseContentBlocks, processContent, toFullSizeUrl } from "./content";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
@@ -96,11 +97,12 @@ function estimateReadTime(content: string): number {
 }
 
 /**
- * Resolve WP media IDs to source URLs via the media API.
- * Fetches in a single batch request.
+ * Resolve WP media IDs to full-size source URLs via the media API.
+ * Fetches in a single batch request. Returns a lookup so callers can map
+ * URLs back onto the gallery block each ID came from.
  */
-async function resolveMediaIds(ids: number[]): Promise<string[]> {
-  if (ids.length === 0) return [];
+async function resolveMediaMap(ids: number[]): Promise<Map<number, string>> {
+  if (ids.length === 0) return new Map();
 
   const params = new URLSearchParams({
     include: ids.join(","),
@@ -113,14 +115,54 @@ async function resolveMediaIds(ids: number[]): Promise<string[]> {
     headers: { Accept: "application/json" },
   });
 
-  if (!response.ok) return [];
+  if (!response.ok) return new Map();
 
   const media: Array<{ id: number; source_url: string }> =
     await response.json();
 
-  // Return full-size URLs in the same order as the input IDs
-  const urlMap = new Map(media.map((m) => [m.id, toFullSizeUrl(m.source_url)]));
-  return ids.map((id) => urlMap.get(id)).filter(Boolean) as string[];
+  return new Map(media.map((m) => [m.id, toFullSizeUrl(m.source_url)]));
+}
+
+/**
+ * Build the ordered body blocks for an article.
+ *
+ * Divi galleries come out of the parser with IDs only, so they are filled in
+ * from the already-fetched media map. The featured image is prepended as the
+ * hero and then removed from the body wherever it reappears — 44 of 198 posts
+ * repeat it, and a carousel opens on its first slide, so leaving it in a
+ * gallery renders the same photo twice, stacked under the hero.
+ */
+function buildContentBlocks(
+  rawHtml: string,
+  featuredImage: string | null,
+  mediaMap: Map<number, string>,
+  hasVideo: boolean
+): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+
+  // Video posts keep the YouTube embed as their hero, so nothing is deduped
+  const heroImage = hasVideo ? null : featuredImage;
+
+  for (const block of parseContentBlocks(rawHtml)) {
+    if (block.type === "gallery") {
+      const resolved = block.ids
+        ? (block.ids.map((id) => mediaMap.get(id)).filter(Boolean) as string[])
+        : block.images;
+      const images = resolved.filter((src) => src !== heroImage);
+      if (images.length > 0) blocks.push({ type: "gallery", images });
+      continue;
+    }
+
+    if (block.type === "image" && block.src === heroImage) continue;
+
+    blocks.push(block);
+  }
+
+  if (heroImage) {
+    blocks.unshift({ type: "image", src: heroImage });
+  }
+
+  return blocks;
 }
 
 /**
@@ -151,8 +193,11 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
   // Process content: strip Divi shortcodes, extract images + gallery IDs
   const processed = processContent(post.content.rendered);
 
-  // Resolve gallery media IDs to URLs
-  const galleryUrls = await resolveMediaIds(processed.galleryIds);
+  // Resolve gallery media IDs to URLs (one batch request for the whole post)
+  const mediaMap = await resolveMediaMap(processed.galleryIds);
+  const galleryUrls = processed.galleryIds
+    .map((id) => mediaMap.get(id))
+    .filter(Boolean) as string[];
 
   // Combine all images, deduplicated
   const imageSet = new Set<string>();
@@ -183,6 +228,12 @@ async function wpPostToApiArticle(post: WpPost): Promise<ApiArticle> {
     source_url: post.link,
     excerpt: stripContinueReading(stripHtml(post.excerpt.rendered)),
     content: processed.html,
+    blocks: buildContentBlocks(
+      post.content.rendered,
+      featuredImage,
+      mediaMap,
+      Boolean(videoUrl)
+    ),
     featured_image: featuredImage,
     images: allImages,
     author_name: authorName,

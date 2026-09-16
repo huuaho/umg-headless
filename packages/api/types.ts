@@ -1,3 +1,5 @@
+import type { ContentBlock } from "./content";
+
 /**
  * WordPress API Response Types
  * Supports two modes:
@@ -22,6 +24,7 @@ export interface ApiArticle {
   source_url: string;
   excerpt: string;
   content: string; // Full HTML body (Divi stripped)
+  blocks: ContentBlock[]; // Body split into ordered blocks (inline images kept in place)
   featured_image: string | null;
   images: string[]; // All images (featured + gallery + content images)
   author_name: string;

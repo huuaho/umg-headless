@@ -170,3 +170,155 @@ export function processContent(rawHtml: string): {
 
   return { html, images: Array.from(imageSet), galleryIds };
 }
+
+/* =========================================================
+   Ordered content blocks (inline images + end gallery)
+   ========================================================= */
+
+/**
+ * A single piece of an article body, in the order the author wrote it.
+ * - "html"    → prose chunk, rendered via dangerouslySetInnerHTML
+ * - "image"   → a standalone figure (Gutenberg wp-block-image)
+ * - "gallery" → a group rendered as a carousel. Divi galleries arrive with
+ *               `ids` only; wp-client resolves them to `images` via the media API.
+ */
+export type ContentBlock =
+  | { type: "html"; html: string }
+  | { type: "image"; src: string; caption?: string }
+  | { type: "gallery"; images: string[]; ids?: number[] };
+
+/** Marker found in the raw HTML, with its offsets preserved. */
+interface Marker {
+  start: number;
+  end: number;
+  kind: "wp-gallery" | "wp-image" | "divi-gallery";
+}
+
+/**
+ * Find the offset just past the </figure> that closes the <figure> opened at
+ * `openEnd`. Galleries nest image figures, so we depth-count rather than
+ * stopping at the first close tag.
+ */
+function findFigureEnd(html: string, openEnd: number): number {
+  const tag = /<figure\b|<\/figure>/g;
+  tag.lastIndex = openEnd;
+  let depth = 1;
+  let match;
+  while (depth > 0 && (match = tag.exec(html)) !== null) {
+    depth += match[0] === "</figure>" ? -1 : 1;
+  }
+  return depth === 0 ? tag.lastIndex : html.length;
+}
+
+/**
+ * Locate every image marker in the raw HTML, sorted by position.
+ * Markers nested inside an earlier marker (image figures inside a gallery)
+ * are skipped so each image is claimed exactly once.
+ */
+function findMarkers(rawHtml: string): Marker[] {
+  const markers: Marker[] = [];
+
+  const figureRegex =
+    /<figure\b[^>]*class="[^"]*(wp-block-gallery|wp-block-image)[^"]*"[^>]*>/g;
+  let match;
+  let claimedUntil = 0;
+  while ((match = figureRegex.exec(rawHtml)) !== null) {
+    if (match.index < claimedUntil) continue; // nested inside a gallery
+    const end = findFigureEnd(rawHtml, match.index + match[0].length);
+    markers.push({
+      start: match.index,
+      end,
+      kind: match[1] === "wp-block-gallery" ? "wp-gallery" : "wp-image",
+    });
+    claimedUntil = end;
+  }
+
+  // Divi galleries. Matching against the raw string keeps offsets valid —
+  // the encoded quotes (&#8221; etc.) contain no "]", so the bracket match holds.
+  const diviRegex = /\[et_pb_gallery[^\]]*\](?:\s*\[\/et_pb_gallery\])?/g;
+  while ((match = diviRegex.exec(rawHtml)) !== null) {
+    markers.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      kind: "divi-gallery",
+    });
+  }
+
+  return markers.sort((a, b) => a.start - b.start);
+}
+
+/** Pull image URLs (full-size) out of a figure segment, in document order. */
+function segmentImageUrls(segment: string): string[] {
+  const urls: string[] = [];
+  const imgRegex = /<img[^>]*\bsrc="([^"]*)"[^>]*>/g;
+  let match;
+  while ((match = imgRegex.exec(segment)) !== null) {
+    if (match[1]) urls.push(toFullSizeUrl(match[1]));
+  }
+  return urls;
+}
+
+/** First non-empty <figcaption> text in a segment, tags stripped. */
+function segmentCaption(segment: string): string | undefined {
+  const match = segment.match(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/);
+  if (!match) return undefined;
+  const text = match[1].replace(/<[^>]+>/g, "").trim();
+  return text || undefined;
+}
+
+/** True when a chunk has no renderable content once tags/shortcodes are gone. */
+function isBlankHtml(html: string): boolean {
+  return (
+    html
+      .replace(/\[\/?et_pb_[^\]]*\]/g, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim() === ""
+  );
+}
+
+/**
+ * Split raw WordPress content into ordered blocks, preserving the position of
+ * every image the author placed. This is the inverse of stripWpBlockImages():
+ * instead of deleting figures and hoisting their URLs, we keep them in sequence.
+ *
+ * Divi gallery blocks come back with `ids` and an empty `images` array — the
+ * caller resolves them through the WP media API.
+ */
+export function parseContentBlocks(rawHtml: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+
+  const pushHtml = (chunk: string) => {
+    if (isBlankHtml(chunk)) return;
+    const html = stripDiviShortcodes(chunk);
+    if (html) blocks.push({ type: "html", html });
+  };
+
+  let cursor = 0;
+  for (const marker of findMarkers(rawHtml)) {
+    pushHtml(rawHtml.slice(cursor, marker.start));
+
+    const segment = rawHtml.slice(marker.start, marker.end);
+
+    if (marker.kind === "divi-gallery") {
+      const ids = extractGalleryIds(segment);
+      if (ids.length > 0) blocks.push({ type: "gallery", images: [], ids });
+    } else {
+      const urls = segmentImageUrls(segment);
+      if (marker.kind === "wp-image" && urls.length === 1) {
+        blocks.push({
+          type: "image",
+          src: urls[0],
+          caption: segmentCaption(segment),
+        });
+      } else if (urls.length > 0) {
+        blocks.push({ type: "gallery", images: urls });
+      }
+    }
+
+    cursor = marker.end;
+  }
+  pushHtml(rawHtml.slice(cursor));
+
+  return blocks;
+}

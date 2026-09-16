@@ -26,6 +26,52 @@ async function parseJsonResponse<T>(response: Response, url: string): Promise<T>
   return response.json();
 }
 
+/** Backoff between bot-challenge retries. Four attempts total. */
+const CHALLENGE_RETRY_DELAYS_MS = [1000, 3000, 8000];
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * SiteGround's bot protection answers with an HTML CAPTCHA interstitial
+ * (`/.well-known/sgcaptcha/...`) instead of JSON when it doesn't like the
+ * caller's IP. CI hits this regularly — the builds run from GitHub runner IPs
+ * and the whole site build dies on the first challenged request.
+ */
+function isBotChallenge(body: string): boolean {
+  return /sgcaptcha|\/\.well-known\//i.test(body);
+}
+
+/**
+ * GET a WP REST endpoint, retrying through SiteGround bot challenges.
+ *
+ * Returns the raw Response so callers keep their own status handling — one of
+ * them reads pagination headers, another treats 400 as "past the last page".
+ * A challenge arrives as a **200 with an HTML body**, so it cannot be detected
+ * from the status code; only the body is consumed on the non-JSON path, which
+ * leaves the JSON path's body intact for the caller to read.
+ */
+async function fetchWpGet(url: string): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const response = await fetch(url, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) return response;
+
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) return response;
+
+    const body = (await response.text()).slice(0, 200);
+    if (!isBotChallenge(body) || attempt >= CHALLENGE_RETRY_DELAYS_MS.length) {
+      throw new Error(
+        `Expected JSON from ${url} but got ${contentType}: ${body}`
+      );
+    }
+
+    await sleep(CHALLENGE_RETRY_DELAYS_MS[attempt]);
+  }
+}
+
 /**
  * Cache for category slug → WP category ID mapping
  */
@@ -40,9 +86,7 @@ async function getCategoryId(slug: string): Promise<number | null> {
   }
 
   const url = `${API_BASE_URL}/wp/v2/categories?slug=${encodeURIComponent(slug)}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchWpGet(url);
 
   if (!response.ok) {
     throw new Error(`Category lookup failed: ${response.status}`);
@@ -111,9 +155,7 @@ async function resolveMediaMap(ids: number[]): Promise<Map<number, string>> {
   });
 
   const url = `${API_BASE_URL}/wp/v2/media?${params}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchWpGet(url);
 
   if (!response.ok) return new Map();
 
@@ -269,9 +311,7 @@ export async function fetchArticlesWP(
   }
 
   const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchWpGet(url);
 
   if (!response.ok) {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -317,9 +357,7 @@ export async function searchArticlesWP(
   }
 
   const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchWpGet(url);
 
   if (!response.ok) {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -353,9 +391,7 @@ export async function fetchArticleBySlugWP(
   });
 
   const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchWpGet(url);
 
   if (!response.ok) {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -382,9 +418,7 @@ export async function fetchAllSlugsWP(): Promise<string[]> {
     });
 
     const url = `${API_BASE_URL}/wp/v2/posts?${params}`;
-    const response = await fetch(url, {
-      headers: { Accept: "application/json" },
-    });
+    const response = await fetchWpGet(url);
 
     if (!response.ok) {
       if (response.status === 400) break; // Past last page
@@ -419,9 +453,7 @@ export async function fetchCommentsWP(postId: number): Promise<WpComment[]> {
   });
 
   const url = `${API_BASE_URL}/wp/v2/comments?${params}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchWpGet(url);
 
   if (!response.ok) {
     throw new Error(

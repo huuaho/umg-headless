@@ -7,8 +7,9 @@
   - Featured image from `_embedded["wp:featuredmedia"]`, upgraded to full size via `toFullSizeUrl()`.
   - Author resolution order: PublishPress `authors[0].display_name` → `_embedded.author[0].name` → custom `author_display_name` field → `"Unknown"`.
   - Categories from `_embedded["wp:term"][0]`.
-  - Body HTML cleaned through `processContent()` ([content.ts](content.ts.md)) — Divi shortcodes stripped, content images extracted.
-  - Divi gallery media IDs resolved to URLs in one batched `GET /wp/v2/media?include=...` request (`resolveMediaIds()`).
+  - Body HTML cleaned through `processContent()` ([content.ts](content.ts.md)) — Divi shortcodes stripped, content images extracted — and split into ordered blocks by `parseContentBlocks()` for `ApiArticle.blocks`.
+  - Divi gallery media IDs resolved to URLs in one batched `GET /wp/v2/media?include=...` request (`resolveMediaMap()`, which returns a `Map<id, url>` so each URL can be mapped back onto the gallery block it came from).
+  - `buildContentBlocks()` fills Divi galleries from that map, prepends the featured image as the hero block, and removes it from the body wherever it reappears.
   - All images deduplicated into `images[]`; if none exist and the post has a `video_url` meta, falls back to the YouTube `maxresdefault` thumbnail.
   - Excerpt: HTML stripped + WP's auto-generated "Continue reading 'Title'" suffix removed.
   - Read time estimated at ~200 words/min (min 1).
@@ -34,8 +35,11 @@
 ## Notes
 - `API_BASE_URL` comes from `NEXT_PUBLIC_WP_API_URL` (e.g., `https://api.echo-media.info/wp-json`, `https://api.internationalspectrum.org/wp-json`) with a placeholder fallback.
 - The category-ID cache is module-scoped and never invalidated — fine for client sessions and build-time use, but renames in WP require a reload.
+- The featured image is deduped out of **galleries as well as standalone images**. 44 of 198 live posts repeat it in the body, and a carousel opens on its first slide, so leaving it in place rendered the same photo twice, stacked directly under the hero.
+- Video posts suppress the featured-image hero entirely (`hasVideo`), because [ArticleLayout](../ui/article/ArticleLayout.tsx.md) gives the hero slot to the YouTube embed.
+- `images[]` is built from `processContent` output and is deliberately independent of `blocks` — cards, category pages, search and OG tags all read `images[]`, so block-layout changes cannot affect them.
 - Comment moderation behavior and error surfacing are documented in the consumer doc [../ui/article/CommentsSection.tsx.md](../ui/article/CommentsSection.tsx.md).
 - See [README.md](README.md) for the custom-vs-wp mode comparison.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit e636e60.*

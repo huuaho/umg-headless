@@ -8,7 +8,7 @@ Re-exports every shared component and its prop types so apps import from `@umg/u
 ## Key exports
 - Layout chrome: [Header](Header.tsx.md) (+ `HeaderProps`, `NavCategory`, `BannerCompany`), [Footer](Footer.tsx.md) (+ `FooterProps`), [NewsletterSignup](NewsletterSignup.tsx.md), [NotFoundPage](NotFoundPage.tsx.md)
 - Homepage sections: [CategorySectionWrapper](sections/CategorySectionWrapper.tsx.md) (+ `SectionType`), [SectionType1](sections/SectionType1.tsx.md)â€“[SectionType4](sections/SectionType4.tsx.md), [SectionSkeleton](sections/SectionSkeleton.tsx.md), [SectionError](sections/SectionError.tsx.md), [FeaturedMedia](sections/components/FeaturedMedia.tsx.md)
-- Article page: [ArticleLayout](article/ArticleLayout.tsx.md), [ArticleLink](ArticleLink.tsx.md)
+- Article page: [ArticleLayout](article/ArticleLayout.tsx.md), [ArticleBody](article/ArticleBody.tsx.md), [ArticleLink](ArticleLink.tsx.md)
 - Listings: [CategoryContent](CategoryContent.tsx.md), [SearchContent](SearchContent.tsx.md), [ResultCard](ResultCard.tsx.md), [ResultsSkeleton](ResultsSkeleton.tsx.md)
 - Dedup: [SeenArticlesProvider](SeenArticlesContext.tsx.md)
 
@@ -24,4 +24,4 @@ All three apps (`apps/umg`, `apps/echo-media`, `apps/international-spectrum`) â€
 - `package.json` points `main`/`types` here; apps transpile via `transpilePackages`.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit e636e60.*

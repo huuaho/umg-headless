@@ -10,7 +10,7 @@
 - Defines comment types (`WpComment`, `CreateCommentPayload`) for `GET`/`POST /wp/v2/comments`.
 
 ## Key exports
-- `ApiArticle` — normalized article: title, slug, date, source info, excerpt, full HTML `content` (Divi stripped), `featured_image`, `images[]`, author, categories, `read_time_minutes`, optional `video_url` (YouTube custom field).
+- `ApiArticle` — normalized article: title, slug, date, source info, excerpt, full HTML `content` (Divi stripped), `blocks[]` (ordered body blocks — see [content.ts](content.ts.md)), `featured_image`, `images[]`, author, categories, `read_time_minutes`, optional `video_url` (YouTube custom field).
 - `ArticlesResponse` — paginated envelope `{ page, per_page, total, total_pages, items }`.
 - `FetchArticlesOptions` / `SearchArticlesOptions` — query options (category slug, perPage, page, search).
 - `WpPost` — raw standard WP REST post with `_embedded` author/media/terms.
@@ -18,7 +18,7 @@
 - `WpComment` / `CreateCommentPayload` — comment read/write payloads.
 
 ## Dependencies
-- Internal: none (pure types)
+- Internal: [content.ts](content.ts.md) (type-only import of `ContentBlock`)
 - External: none
 
 ## Used by
@@ -27,7 +27,9 @@ Nearly every module in `packages/api` ([client.ts](client.ts.md), [wp-client.ts]
 ## Notes
 - Types only — zero runtime code.
 - `FeaturedArticle.gallery` is `string | string[]`: a single URL renders one image, an array renders the [FeaturedMedia](../ui/sections/components/FeaturedMedia.tsx.md) carousel.
+- `ApiArticle` carries the body twice on purpose: `content` (legacy flat HTML) and `blocks` (ordered). Article pages read `blocks`; `content` remains the fallback. `images[]` stays a flat list for cards and OG tags and is *not* derived from `blocks`.
+- Only the "wp" mode populates `blocks` — the ingestor (`um/v1/articles`) stores no article HTML, so UMG's articles have none. UMG has no article detail route.
 - See [README.md](README.md) for the comparison of the two API modes this file models.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit e636e60.*

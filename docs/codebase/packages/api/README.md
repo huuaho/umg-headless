@@ -8,7 +8,7 @@
 | [index.ts](index.ts.md) | file | Barrel — public entry point of `@umg/api`. |
 | [client.ts](client.ts.md) | file | Mode-switching facade: `fetchArticles`, `searchArticles`, `fetchArticleBySlug`, `fetchAllSlugs`, `fetchComments`, `postComment`; URL normalization for UMG custom mode. |
 | [wp-client.ts](wp-client.ts.md) | file | Standard WP REST implementations (`wp/v2/posts`, `categories`, `media`, `comments`) adapting `WpPost` → `ApiArticle`. |
-| [content.ts](content.ts.md) | file | Divi shortcode / Gutenberg image-block stripping, image URL + gallery ID extraction. |
+| [content.ts](content.ts.md) | file | Divi shortcode / Gutenberg image-block stripping, image URL + gallery ID extraction, and the ordered-block parser behind inline article images. |
 | [transformers.ts](transformers.ts.md) | file | `ApiArticle[]` → per-section UI shapes (`SectionData`, `SectionType4Data`); `NEXT_PUBLIC_ARTICLE_META` handling. |
 | [types.ts](types.ts.md) | file | All shared types: `ApiArticle`, `ArticlesResponse`, `WpPost`, `WpComment`, section data shapes. |
 | [hooks/](hooks/README.md) | folder | React hooks (`useArticles`). |
@@ -38,4 +38,4 @@ graph LR
 - External connections: `GET {NEXT_PUBLIC_WP_API_URL}/um/v1/articles` in custom mode — served by the United Media Ingestor plugin ([../../plugin/united-media-ingestor/united-media-ingestor.php.md](../../plugin/united-media-ingestor/united-media-ingestor.php.md)) at `api.unitedmediadc.com`; `wp/v2/posts|categories|media|comments` in wp mode at `api.echo-media.info` / `api.internationalspectrum.org`. Full `um/v1` route reference: [rest-api.php](../../plugin/united-media-ingestor/includes/rest-api.php.md).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit e636e60.*

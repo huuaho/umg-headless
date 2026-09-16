@@ -21,8 +21,9 @@ Next.js App Router — the `/articles/[slug]` route. Article cards in homepage s
 ## Notes
 - Server component; fetches at build time from the WP backend (`NEXT_PUBLIC_WP_API_URL`, default `api.unitedmediadc.com`) — the article is fetched twice per page (metadata + page), relying on fetch caching.
 - Passes `postId` and `currentSlug` to `ArticleLayout`, which enables the comments section and the "More Articles" carousel.
+- Passes `blocks={article.blocks}`, which selects the block renderer ([ArticleBody](../../../../../packages/ui/article/ArticleBody.tsx.md)) over the legacy hoist-everything layout. `images` and `content` are still passed and now serve only as the fallback.
 - All Echo Media categories share the same color (`#0281b3`), so `categoryColorMap` is effectively uniform here.
 - **Difference vs international-spectrum:** IS additionally passes `videoUrl={article.video_url}` to `ArticleLayout` (YouTube embed for its "Video Interviews" category). Echo Media omits that prop; otherwise the files are identical apart from the "| Echo Media" title suffix.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit e636e60.*

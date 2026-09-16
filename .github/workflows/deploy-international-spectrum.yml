@@ -50,7 +50,11 @@ jobs:
           local-dir: ./apps/international-spectrum/out/
           server-dir: ./internationalspectrum.org/public_html/
 
+      # Purge is best-effort: SiteGround moved the caching nginx off the account's
+      # box (~2026-08-29), so loopback PURGE no longer connects. Failing here would
+      # mask a real build/deploy failure — see claude-context ticket 15.
       - name: Purge SiteGround cache
+        continue-on-error: true
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.IS_SSH_HOST }}

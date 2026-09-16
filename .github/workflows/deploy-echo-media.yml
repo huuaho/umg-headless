@@ -49,7 +49,11 @@ jobs:
           local-dir: ./apps/echo-media/out/
           server-dir: ./echo-media.info/public_html/
 
+      # Purge is best-effort: SiteGround moved the caching nginx off the account's
+      # box (~2026-08-29), so loopback PURGE no longer connects. Failing here would
+      # mask a real build/deploy failure — see claude-context ticket 15.
       - name: Purge SiteGround cache
+        continue-on-error: true
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EM_SSH_HOST }}

@@ -15,14 +15,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "diplomaticwatch.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.diplomaticwatch.com",
-      },
-      {
-        protocol: "https",
         hostname: "www.echo-media.info",
       },
       {

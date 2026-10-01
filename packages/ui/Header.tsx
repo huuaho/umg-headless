@@ -361,8 +361,13 @@ export default function Header({
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="h-10 flex items-center">
             <div className="animate-marquee flex shrink-0 items-center">
-              {/* Repeat 4x for seamless loop */}
-              {[...Array(4)].map((_, repeatIndex) =>
+              {/* Repeat 8x for a seamless loop. The animation translates -50%,
+                  so HALF the strip must be at least as wide as the banner's
+                  widest inner width (1440px container - 64px padding = 1376px)
+                  or a blank gap opens on the right at the end of each cycle.
+                  Two logos per set is ~420-530px, so 4 repeats is not enough;
+                  8 gives >=1030px per half. */}
+              {[...Array(8)].map((_, repeatIndex) =>
                 bannerCompanies.map((company, index) => (
                   <a
                     key={`${repeatIndex}-${index}`}

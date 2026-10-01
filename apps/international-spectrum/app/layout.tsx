@@ -43,7 +43,7 @@ export default function RootLayout({
           logoAlt="International Spectrum"
           categories={categories}
           companies={mediaCompanies}
-          email="unitedmediagroup196@gmail.com"
+          email="info@unitedmediadc.com"
           copyright={"\u00A9 2026 International Spectrum Media"}
         />
       </body>

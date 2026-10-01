@@ -43,7 +43,7 @@ export default function RootLayout({
           logoAlt="Echo Media"
           categories={categories}
           companies={mediaCompanies}
-          email="unitedmediagroup196@gmail.com"
+          email="info@unitedmediadc.com"
           copyright={"\u00A9 2026 Echo Media"}
         />
       </body>

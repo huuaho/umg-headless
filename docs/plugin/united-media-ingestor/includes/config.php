@@ -14,8 +14,11 @@ if (!defined('ABSPATH')) exit;
  * This is the ONLY place site URLs should live.
  *
  * Order matters: sites are processed in the order listed.
- * Smaller sites (Echo Media, International Spectrum) are prioritized
- * to complete quickly before the larger Diplomatic Watch archive.
+ *
+ * Diplomatic Watch was removed as a source (client request, 2026-10-01).
+ * Note: backfill state stores a numeric `site_index` into this array, so
+ * changing the list invalidates any in-flight backfill — reset backfill
+ * state after editing it.
  */
 function um_sites_config() {
   return array(
@@ -29,12 +32,6 @@ function um_sites_config() {
       'id' => 'internationalspectrum',
       'base' => 'https://api.internationalspectrum.org',
       'label' => 'International Spectrum',
-      'backfill_mode' => 'page',
-    ),
-    array(
-      'id' => 'diplomaticwatch',
-      'base' => 'https://diplomaticwatch.com',
-      'label' => 'Diplomatic Watch',
       'backfill_mode' => 'page',
     ),
   );

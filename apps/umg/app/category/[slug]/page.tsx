@@ -18,7 +18,7 @@ export async function generateMetadata({
   return {
     // Root layout template appends "| United Media Group"
     title: name,
-    description: `${name} coverage from United Media Group's pillars: Diplomatic Watch, Echo Media, and International Spectrum.`,
+    description: `${name} coverage from United Media Group's pillars: Echo Media and International Spectrum.`,
   };
 }
 

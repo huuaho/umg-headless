@@ -5,7 +5,7 @@ import { HostingCommittees } from "@/components/HostingCommittees";
 export const metadata = {
   title: "About United Media Group",
   description:
-    "United Media Group is Washington DC's multicultural media organization, covering diplomatic affairs, community stories, and international perspectives through Diplomatic Watch, Echo Media, and International Spectrum.",
+    "United Media Group is Washington DC's multicultural media organization, covering diplomatic affairs, community stories, and international perspectives through Echo Media and International Spectrum.",
 };
 
 // Visible FAQ + FAQPage schema share this array so they can't drift (AEO ticket 08)
@@ -13,7 +13,7 @@ const faqs = [
   {
     question: "What does United Media Group cover?",
     answer:
-      "United Media Group is Washington DC's multicultural media organization. It publishes content across three pillars: Diplomatic Watch (diplomatic and ambassador affairs), Echo Media (DC community stories and local profiles), and International Spectrum (multicultural and international perspectives).",
+      "United Media Group is Washington DC's multicultural media organization. It publishes content across two pillars: Echo Media (DC community stories and local profiles) and International Spectrum (multicultural and international perspectives).",
   },
   {
     question: "Where is United Media Group based?",
@@ -38,14 +38,6 @@ const faqSchema = {
 };
 
 const platforms = [
-  {
-    name: "Diplomatic Watch",
-    tagline: "WHERE DC MEETS THE WORLD",
-    description:
-      "Diplomatic Watch covers Washington's diplomatic community: ambassador profiles, cultural exchanges, embassy events, and the stories behind the flags that line Massachusetts Avenue.",
-    nameColor: "var(--color-dw)",
-    taglineColor: "var(--color-dw-tagline)",
-  },
   {
     name: "Echo Media",
     tagline: "THE VOICES THAT MAKE DC HOME",
@@ -119,8 +111,8 @@ export default function AboutUsPage() {
           <p className="text-gray-600 leading-relaxed text-lg">
             United Media Group is Washington DC&apos;s multicultural media
             organization, covering diplomatic affairs, community stories, and
-            international perspectives through Diplomatic Watch, Echo Media,
-            and International Spectrum. We cover what makes this city unlike
+            international perspectives through Echo Media and International
+            Spectrum. We cover what makes this city unlike
             any other: the diplomatic corridor, the multicultural
             neighborhoods, and the people building bridges between them.
           </p>

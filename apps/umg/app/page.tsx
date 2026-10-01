@@ -28,8 +28,8 @@ export default function Home() {
     <main className="min-h-screen bg-white max-w-280 mx-auto px-6 [&>section:last-child]:border-b-0">
       {/* Visually hidden page descriptor for crawlers/screen readers (AEO ticket 03) */}
       <h1 className="sr-only">
-        United Media Group — Washington DC Multicultural Media: Diplomatic
-        Watch, Echo Media, International Spectrum
+        United Media Group — Washington DC Multicultural Media: Echo Media,
+        International Spectrum
       </h1>
       <SeenArticlesProvider>
         {/* Newest posts across all sources/categories (same pattern as the
@@ -52,6 +52,10 @@ export default function Home() {
           hideWhenEmpty
           {...SECTION_STYLE}
         />
+        {/* `hideWhenEmpty`: a category with no articles renders nothing rather
+            than a "No articles found" card. Needed since Diplomatic Watch was
+            dropped as a source (2026-10-01), which left World News & Politics,
+            Economy & Business and Diplomacy with no content. */}
         {categories.map((category, index) => (
           <CategorySectionWrapper
             key={category.slug}
@@ -59,6 +63,7 @@ export default function Home() {
             category={category.name}
             sectionType={SECTION_TYPE_MAP[category.slug] || "type1"}
             priority={index + 1}
+            hideWhenEmpty
             {...SECTION_STYLE}
           />
         ))}

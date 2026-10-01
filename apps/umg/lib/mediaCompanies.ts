@@ -23,12 +23,4 @@ export const mediaCompanies: MediaCompany[] = [
     logo: "/images/banner/is-logo.svg",
     logoBW: "/images/banner/is-logo-black.svg",
   },
-  {
-    name: "Diplomatic Watch Magazine",
-    description:
-      "Delivers insightful analysis and in-depth reporting on international relations, building dialogue and understanding between countries.",
-    url: "https://diplomaticwatch.com/",
-    logo: "/images/banner/dw-logo.png",
-    logoBW: "/images/banner/dw-logo-black.svg",
-  },
 ];

@@ -52,37 +52,14 @@ function um_category_parents() {
  */
 function um_category_children_spec() {
     return array(
-        // World News & Politics
-        'dw-africa'              => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Africa'),
-        'dw-americas'            => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Americas'),
-        'dw-asia'                => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Asia'),
-        'dw-europe'              => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Europe'),
-        'dw-know-your-president' => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Know your President'),
-        'dw-middle-east'         => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Middle East'),
-        'dw-news-update'         => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: News Update'),
-        'dw-oceania'             => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Oceania'),
-        'dw-politics-policy'     => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Politics & Policy'),
-        'dw-regions'             => array('parent'=>'world-news-politics', 'name'=>'Diplomatic Watch: Regions'),
+        // World News & Politics, Economy & Business and Diplomacy have no
+        // children since Diplomatic Watch was dropped as a source
+        // (2026-10-01). Kept as parents so the buckets can be refilled.
 
         // Profiles & Opinions
-        'dw-editorial'           => array('parent'=>'profiles-opinions', 'name'=>'Diplomatic Watch: Editorial'),
-        'dw-interview'           => array('parent'=>'profiles-opinions', 'name'=>'Diplomatic Watch: Interview'),
-        'dw-opinion'             => array('parent'=>'profiles-opinions', 'name'=>'Diplomatic Watch: Opinion'),
         'is-history-legacy'      => array('parent'=>'profiles-opinions', 'name'=>'International Spectrum: Diplomatic and Historic Events'),
 
-        // Economy & Business
-        'dw-economy'             => array('parent'=>'economy-business', 'name'=>'Diplomatic Watch: Economy'),
-        'dw-business-investment' => array('parent'=>'economy-business', 'name'=>'Diplomatic Watch: Business & Investment'),
-
-        // Diplomacy
-        'dw-diplomacy'           => array('parent'=>'diplomacy', 'name'=>'Diplomatic Watch: Diplomacy'),
-        'dw-appointments'        => array('parent'=>'diplomacy', 'name'=>'Diplomatic Watch: Appointments'),
-
         // Art & Culture
-        'dw-cultural-connections'=> array('parent'=>'art-culture', 'name'=>'Diplomatic Watch: Cultural Connections'),
-        'dw-culture-tourism'     => array('parent'=>'art-culture', 'name'=>'Diplomatic Watch: Culture & Tourism'),
-        'dw-fashion-lifestyle'   => array('parent'=>'art-culture', 'name'=>'Diplomatic Watch: Fashion & Lifestyle'),
-        'dw-sports'              => array('parent'=>'art-culture', 'name'=>'Diplomatic Watch: Sports'),
         'em-art-culture'         => array('parent'=>'art-culture', 'name'=>'Echo Media: Art & Culture'),
         'is-arts'                => array('parent'=>'art-culture', 'name'=>'International Spectrum: Arts, Science and Technology'),
         'is-civic-cultural'      => array('parent'=>'art-culture', 'name'=>'International Spectrum: Cultural and International Affairs'),
@@ -91,14 +68,11 @@ function um_category_children_spec() {
         'em-education'           => array('parent'=>'education-youth', 'name'=>'Echo Media: Education'),
 
         // Local Community
-        'dw-events'              => array('parent'=>'local-community', 'name'=>'Diplomatic Watch: Events'),
         'is-social-impact'       => array('parent'=>'local-community', 'name'=>'International Spectrum: Social Impact Events'),
         'is-community-programs'  => array('parent'=>'local-community', 'name'=>'International Spectrum: Community Events'),
 
         // Wellbeing, Environment, Technology
-        'dw-technology'          => array('parent'=>'wellbeing-env-tech', 'name'=>'Diplomatic Watch: Technology'),
         'em-nature'              => array('parent'=>'wellbeing-env-tech', 'name'=>'Echo Media: Nature'),
-        'dw-health'              => array('parent'=>'wellbeing-env-tech', 'name'=>'Diplomatic Watch: Health'),
 
         // Video Interviews (own bucket so the UMG homepage can show a dedicated section)
         'is-video-interviews'    => array('parent'=>'video-interviews', 'name'=>'International Spectrum: Video Interviews'),
@@ -115,38 +89,6 @@ function um_category_children_spec() {
  */
 function um_source_category_map() {
     return array(
-        'diplomaticwatch' => array(
-            'Africa'                => 'dw-africa',
-            'Americas'              => 'dw-americas',
-            'Asia'                  => 'dw-asia',
-            'Europe'                => 'dw-europe',
-            'Know Your President'   => 'dw-know-your-president',
-            'Middle East'           => 'dw-middle-east',
-            'News Update'           => 'dw-news-update',
-            'Oceania'               => 'dw-oceania',
-            'Politics & Policy'     => 'dw-politics-policy',
-            'Regions'               => 'dw-regions',
-
-            'Editorial'             => 'dw-editorial',
-            'Interview'             => 'dw-interview',
-            'Opinion'               => 'dw-opinion',
-
-            'Economy'               => 'dw-economy',
-            'Business & Investment' => 'dw-business-investment',
-
-            'Diplomacy'             => 'dw-diplomacy',
-            'Appointments'          => 'dw-appointments',
-
-            'Cultural Connections'  => 'dw-cultural-connections',
-            'Culture & Tourism'     => 'dw-culture-tourism',
-            'Fashion & Lifestyle'   => 'dw-fashion-lifestyle',
-            'Sports'                => 'dw-sports',
-
-            'Events'                => 'dw-events',
-
-            'Technology'            => 'dw-technology',
-            'Health'                => 'dw-health',
-        ),
         'echo-media' => array(
             'Art & Culture' => 'em-art-culture',
             'Education'     => 'em-education',
@@ -173,10 +115,6 @@ function um_source_category_map() {
  */
 function um_excluded_source_categories() {
     return array(
-        'diplomaticwatch' => array(
-            'Photo Gallery',
-            'Look Your Best With Jane Pennewell',
-        ),
         'echo-media' => array(
             'Media Network',
         ),

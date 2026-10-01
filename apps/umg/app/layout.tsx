@@ -29,7 +29,7 @@ const libreFranklin = Libre_Franklin({
 
 const SITE_URL = "https://unitedmediadc.com";
 const SITE_DESCRIPTION =
-  "Washington DC's multicultural media organization, covering diplomatic affairs, community stories, and international perspectives through Diplomatic Watch, Echo Media, and International Spectrum.";
+  "Washington DC's multicultural media organization, covering diplomatic affairs, community stories, and international perspectives through Echo Media and International Spectrum.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "United Media Group",
     description:
-      "DC multicultural media. Diplomatic Watch. Echo Media. International Spectrum.",
+      "DC multicultural media. Echo Media. International Spectrum.",
     url: SITE_URL,
     siteName: "United Media Group",
     // Interim image until the designed 1200x630 OG asset lands (ticket 09)
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     site: "@unitedmedia_dc",
     title: "United Media Group",
     description:
-      "DC multicultural media. Diplomatic Watch. Echo Media. International Spectrum.",
+      "DC multicultural media. Echo Media. International Spectrum.",
     images: ["/images/venues/library-of-congress.jpg"],
   },
 };

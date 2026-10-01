@@ -382,6 +382,46 @@ function um_render_control_page() {
 
             <p>Current article count: <strong><?php echo number_format($total_count); ?></strong></p>
 
+            <?php
+            // Per-source counts, read from the DB rather than um_sites_config()
+            // so sources that have been removed from the config (e.g. Diplomatic
+            // Watch, dropped 2026-10-01) can still be purged.
+            $source_rows = $wpdb->get_results($wpdb->prepare("
+                SELECT pm.meta_value AS source_id, COUNT(1) AS n
+                FROM {$wpdb->postmeta} pm
+                INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                WHERE pm.meta_key = %s AND p.post_type = 'um_article'
+                GROUP BY pm.meta_value
+                ORDER BY n DESC
+            ", UMI_SOURCE_SITE_META_KEY));
+
+            $configured = wp_list_pluck(um_sites_config(), 'label', 'id');
+            ?>
+
+            <?php if ($source_rows) : ?>
+            <p><strong>Delete the articles of a single source.</strong> Other sources are left untouched.</p>
+            <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="margin-bottom: 15px;">
+                <input type="hidden" name="action" value="um_delete_by_source_redirect">
+                <?php wp_nonce_field('um_delete_by_source'); ?>
+                <select name="um_source" required>
+                    <option value="">— choose a source —</option>
+                    <?php foreach ($source_rows as $row) :
+                        $sid   = (string) $row->source_id;
+                        $n     = (int) $row->n;
+                        $label = isset($configured[$sid]) ? $configured[$sid] : $sid . ' (not in config)';
+                    ?>
+                    <option value="<?php echo esc_attr($sid); ?>" data-count="<?php echo esc_attr($n); ?>">
+                        <?php echo esc_html($label . ' — ' . number_format($n) . ' articles'); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="button button-link-delete" style="color: #dc3232;" onclick="var s=this.form.um_source; if(!s.value){return false;} return confirm('\u26a0 Permanently delete the ' + s.options[s.selectedIndex].dataset.count + ' articles from \'' + s.value + '\'?\n\nOther sources are not affected.\n\nThis CANNOT be undone.');">
+                    🗑 Delete Articles For Source
+                </button>
+            </form>
+            <?php endif; ?>
+
+            <p><strong>Or delete everything.</strong></p>
             <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" style="display: inline-block;">
                 <input type="hidden" name="action" value="um_delete_all_redirect">
                 <?php wp_nonce_field('um_delete_all'); ?>
@@ -1194,6 +1234,55 @@ add_action('admin_post_um_delete_all_redirect', function () {
     exit;
 });
 
+/**
+ * Delete every um_article belonging to one source site, leaving the others
+ * alone. Used to retire a source (Diplomatic Watch, 2026-10-01) without
+ * re-backfilling the sites that remain.
+ */
+add_action('admin_post_um_delete_by_source_redirect', function () {
+    if (!current_user_can('manage_options')) wp_die('Forbidden');
+    check_admin_referer('um_delete_by_source');
+
+    $source = isset($_POST['um_source']) ? sanitize_key($_POST['um_source']) : '';
+    if ($source === '') wp_die('No source specified');
+
+    global $wpdb;
+
+    $ids = $wpdb->get_col($wpdb->prepare("
+        SELECT p.ID
+        FROM {$wpdb->posts} p
+        INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID
+        WHERE p.post_type = 'um_article'
+          AND pm.meta_key = %s
+          AND pm.meta_value = %s
+    ", UMI_SOURCE_SITE_META_KEY, $source));
+
+    $count = 0;
+    foreach ((array) $ids as $id) {
+        wp_delete_post((int) $id, true); // force delete, bypass trash
+        $count++;
+    }
+
+    // Drop this source's incremental cursor. um_reset_all_since() only walks
+    // um_sites_config(), so a retired source's option would be orphaned.
+    delete_option(um_since_key($source));
+
+    // Backfill state stores a numeric site_index into um_sites_config();
+    // retiring a source shifts those indices, so the state must not be reused.
+    um_backfill_reset_state();
+
+    wp_safe_redirect(add_query_arg(
+        array(
+            'page'      => 'um-ingestor-control',
+            'um_action' => 'deleted_source',
+            'um_count'  => $count,
+            'um_source' => $source,
+        ),
+        admin_url('edit.php?post_type=um_article')
+    ));
+    exit;
+});
+
 /* =========================================================
    AJAX handler for continuous backfill
    ========================================================= */
@@ -1406,6 +1495,16 @@ add_action('admin_notices', function () {
         $count = isset($_GET['um_count']) ? intval($_GET['um_count']) : 0;
         echo '<div class="notice notice-warning is-dismissible">';
         echo '<p><strong>Deleted ' . number_format($count) . ' articles.</strong> Backfill and incremental state have been reset.</p>';
+        echo '</div>';
+        return;
+    }
+
+    if ($action === 'deleted_source') {
+        $count  = isset($_GET['um_count']) ? intval($_GET['um_count']) : 0;
+        $source = isset($_GET['um_source']) ? sanitize_key($_GET['um_source']) : '';
+        echo '<div class="notice notice-warning is-dismissible">';
+        echo '<p><strong>Deleted ' . number_format($count) . ' articles from "' . esc_html($source) . '".</strong> ';
+        echo 'Its incremental cursor was cleared and backfill state was reset. Other sources were not affected.</p>';
         echo '</div>';
         return;
     }

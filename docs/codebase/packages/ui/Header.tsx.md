@@ -4,7 +4,7 @@
 
 ## Responsibilities
 - Renders a sticky (`top-0 z-50`) white header with the site logo (centered on mobile, left on desktop) linking home.
-- Splits the `categories` prop responsively: first 2 always visible (md+), categories 3–4 visible at lg+ (moved into the "More" dropdown below lg), 5+ always in "More". `extraLinks` append to the dropdown and mobile menu.
+- Splits the `categories` prop responsively: first 2 always visible (md+), categories 3–4 visible at lg+ (moved into the "More" dropdown below lg), 5+ always in "More" — so the bar holds **at most 4** at any width. `extraLinks` append to the dropdown and mobile menu. The "More" button itself is conditional (see Notes).
 - Category links use hash navigation (`/#slug`): on the homepage it intercepts the click for smooth `scrollIntoView`; on other pages it lets Next.js navigate to `/#slug`. A pathname effect scrolls to top on route change, or to the hash target on the homepage.
 - Desktop search expands inline (auto-focused input, 50% width); mobile search lives in the full-screen menu. Both submit to `/search?search={query}`. Search UI is hidden on `/search`.
 - Mobile hamburger toggles a full-screen menu (positioned below header + marquee, offset further when `announcementBanner` is present) with search, a 2-column category grid, About Us, and `extraLinks`.
@@ -35,7 +35,9 @@
 - The `announcementBanner` strip is a separate element with its own repeat count (still 4x) — it
   repeats a text span, not the company list, so it is unaffected by `bannerCompanies`.
 - The "More" dropdown closes on blur with a 150 ms delay so item clicks register.
+- **"More" only renders when it has contents** (changed 2026-10-01; it used to render unconditionally). Two derived flags decide: `showMoreAtLg` (there is overflow past the 4th category, or `extraLinks` exist) and `showMoreBelowLg` (either of those, or there are 3–4 categories, which collapse into the dropdown below lg). With neither, the button is not rendered at all; with only the latter, the wrapper gets `lg:hidden` so it disappears once all 4 fit inline. Consequences per app: UMG filters to 4 populated categories so "More" is hidden at lg+; **Echo Media has 3 categories and was previously rendering an empty dropdown at lg+, which this fixes**; International Spectrum has 6, so its "More" is unchanged.
+- The dropdown's contents are only in the DOM while it is open (`{moreOpen && …}`), so static HTML contains just the inline bar links — worth knowing when grepping built output to check which categories render.
 - Logos use plain `<img>`, not `next/image`.
 
 ---
-*Documented at commit 64980e0.*
+*Documented at commit 5f27b41.*

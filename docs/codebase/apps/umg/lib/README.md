@@ -5,6 +5,7 @@ Non-UI modules for the UMG app: site-wide data (categories, media companies) and
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
+| [activeCategories.ts](activeCategories.ts.md) | file | Build-time filter returning only the categories that currently hold articles; feeds the nav, footer and homepage. Fails safe to the full list. |
 | [categories.ts](categories.ts.md) | file | The 8 nav categories + Video Interviews (homepage/page-only, not in nav) + nav/footer slices; drives homepage sections, sitemap, and static category routes. |
 | [mediaCompanies.ts](mediaCompanies.ts.md) | file | The 2 sibling media companies (name, URL, color/B&W logos) for the marquee banner and footer. |
 | [competitions/](competitions/README.md) | folder | Competition config-as-code: types, current competition, judges. |
@@ -15,9 +16,11 @@ Non-UI modules for the UMG app: site-wide data (categories, media companies) and
 ## Connections
 ```mermaid
 graph LR
-  layout["app/layout"] --> categories["categories.ts"]
+  layout["app/layout"] --> active["activeCategories.ts"]
+  active --> categories["categories.ts"]
+  active -.REST um/v1/articles.-> api["@umg/api"]
+  home["app/page"] --> active
   layout --> mediaCompanies["mediaCompanies.ts"]
-  home["app/page"] --> categories
   catRoute["app/category/[slug]"] --> categories
   compPages["competition routes/components"] --> competitions["competitions/"]
   submission["photo-submission flow"] --> auth["auth/"]
@@ -36,4 +39,4 @@ graph LR
 No routes — imported via the `@/lib/...` alias throughout `app/` and `components/`.
 
 ---
-*Documented at commit 0c47b38.*
+*Documented at commit 5f27b41.*

@@ -5,8 +5,8 @@ Next.js App Router tree for the UMG site. The root layout supplies fonts, site m
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [layout.tsx](layout.tsx.md) | file | Root layout: fonts, OG/Twitter metadata, Organization JSON-LD, `@umg/ui` Header/Footer (socials, `contactHref`; competition nav link + banner commented out). |
-| [page.tsx](page.tsx.md) | file | Homepage: sr-only H1 + a Latest section, a Video Interviews section (`hideWhenEmpty`, not in nav), and one `CategorySectionWrapper` per category, deduped via SeenArticlesProvider. |
+| [layout.tsx](layout.tsx.md) | file | Root layout (async): fonts, OG/Twitter metadata, Organization JSON-LD, `@umg/ui` Header/Footer fed the build-time-filtered category list (socials, `contactHref`; competition nav link + banner commented out). |
+| [page.tsx](page.tsx.md) | file | Homepage: sr-only H1 + a Latest section, a Video Interviews section (`hideWhenEmpty`, not in nav), and one `CategorySectionWrapper` per **populated** category, deduped via SeenArticlesProvider. |
 | [sitemap.ts](sitemap.ts.md) | file | Build-time `/sitemap.xml` — static routes + categories from `pageCategories` in `lib/categories` (competition routes commented out). |
 | [robots.ts](robots.ts.md) | file | Build-time `/robots.txt` — allows all + named AI crawlers, points at the sitemap. |
 | [globals.css](globals.css.md) | file | Tailwind 4 entry, `@source` scan of packages/ui, marquee animation, brand color variables. |
@@ -25,10 +25,11 @@ Next.js App Router tree for the UMG site. The root layout supplies fonts, site m
 ## Connections
 ```mermaid
 graph LR
-  layout["layout.tsx"] --> cats["lib/categories"]
+  layout["layout.tsx"] --> active["lib/activeCategories"]
+  active --> cats["lib/categories"]
   layout --> mc["lib/mediaCompanies"]
   layout --> ui["@umg/ui Header/Footer"]
-  home["page.tsx"] --> cats
+  home["page.tsx"] --> active
   home --> ui2["@umg/ui sections"]
   sitemap["sitemap.ts"] --> cats
   contact["contact/"] --> layout
@@ -55,4 +56,4 @@ graph LR
 Routes: `/`, `/about-us`, `/contact`, `/category/<slug>` (×9, incl. `video-interviews`), `/search`, `/how-to-enter` (on-hold announcement), `/admin` (+ `/admin/entry?id=`, `/admin/results`), plus `/sitemap.xml`, `/robots.txt`, and the 404 page. Hidden while the competition is postponed (page files still exist, guarded by `notFound()`): `/judges-panel`, `/photo-submission`, `/school-registration` (+ `/school-registration/application`). All are statically exported (`output: "export"`).
 
 ---
-*Documented at commit 2354375.*
+*Documented at commit 5f27b41.*

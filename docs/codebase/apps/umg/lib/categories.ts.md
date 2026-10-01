@@ -16,10 +16,12 @@ Defines the `Category` shape (`name`, `slug`, hex `color`) and the ordered `cate
 - External: none
 
 ## Used by
-[app/layout.tsx](../app/layout.tsx.md) (Header/Footer props), [app/page.tsx](../app/page.tsx.md) (homepage sections, incl. `videoInterviewsCategory`), [app/category/[slug]/page.tsx](../app/category/[slug]/page.tsx.md) (`generateStaticParams` from `pageCategories`), [app/sitemap.ts](../app/sitemap.ts.md) (`pageCategories`).
+[lib/activeCategories.ts](activeCategories.ts.md) (filters `categories` down to the populated ones — this is what actually reaches the nav, footer and homepage sections), [app/layout.tsx](../app/layout.tsx.md) (indirectly, via `activeCategories`), [app/page.tsx](../app/page.tsx.md) (`videoInterviewsCategory` directly, the rest via `activeCategories`), [app/category/[slug]/page.tsx](../app/category/[slug]/page.tsx.md) (`generateStaticParams` from `pageCategories`), [app/sitemap.ts](../app/sitemap.ts.md) (`pageCategories`).
 
 ## Notes
 Category slugs must match WordPress category slugs on the backend — adding/renaming one here changes the homepage, nav, footer, sitemap, and the set of statically generated `/category/*` routes in one place. A category added to `categories` appears everywhere; one added only alongside `pageCategories` (like Video Interviews) gets a page/sitemap entry but stays out of nav and footer.
 
+Since 2026-10-01 this array is the *candidate* list rather than what renders: [activeCategories.ts](activeCategories.ts.md) filters it at build time to the categories that actually hold articles, and the nav, footer and homepage sections consume that filtered result. `pageCategories` is deliberately **not** filtered, so `/category/<slug>` routes still exist for every entry here. The `mainCategories` / `lgOnlyCategories` / `moreCategories` slices are legacy exports — [Header](../../../packages/ui/Header.tsx.md) computes its own equivalent splits from the `categories` prop it is handed.
+
 ---
-*Documented at commit 2354375.*
+*Documented at commit 5f27b41.*

@@ -1,17 +1,17 @@
 # apps/international-spectrum/app — overview
 
-Next.js App Router tree for the International Spectrum site. The pages here are deliberately thin: layout and homepage wire local site config (7 categories, media companies, branding) into shared `@umg/ui` components, and each route delegates rendering to a shared component.
+Next.js App Router tree for the International Spectrum site. The pages here are deliberately thin: layout and homepage wire local site config (6 categories, media companies, branding) into shared `@umg/ui` components, and each route delegates rendering to a shared component.
 
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
 | [layout.tsx](layout.tsx.md) | file | Root layout — Geist fonts, site metadata, shared Header/Footer with International Spectrum branding. |
-| [page.tsx](page.tsx.md) | file | Homepage — a recency-based "Latest" section (`CategorySectionWrapper latest`, no dedup) followed by one `CategorySectionWrapper` per category (all five section types incl. `type4`/`type4-text`) with cross-section dedup. |
+| [page.tsx](page.tsx.md) | file | Homepage — a recency-based "Latest" section (`CategorySectionWrapper latest`, no dedup) followed by one `CategorySectionWrapper` per category (`type1`–`type4`; the map's `type4-text` entry is dead since the Leadership & Youth category was deleted) with cross-section dedup. |
 | [globals.css](globals.css.md) | file | Tailwind v4 CSS-first config, IS theme variables (yellow `#feb70c` accent, light purple footer), marquee animation. |
 | [not-found.tsx](not-found.tsx.md) | file | 404 boundary — re-exports `NotFoundPage` from `@umg/ui`. |
 | [about-us/](about-us/README.md) | folder | Static About Us page (culture/lifestyle positioning + contact). |
-| [articles/[slug]/](articles/[slug]/README.md) | folder | Statically generated article detail pages, with YouTube embed support. |
-| [category/[slug]/](category/[slug]/README.md) | folder | Category archive pages (7 categories). |
+| [articles/[slug]/](articles/[slug]/README.md) | folder | Statically generated article detail pages — block-rendered body (inline images), with YouTube embed support. |
+| [category/[slug]/](category/[slug]/README.md) | folder | Category archive pages (6 categories). |
 | [search/](search/README.md) | folder | Search page wrapper around shared `SearchContent`. |
 | icon.jpg | asset | Favicon (App Router file convention; no doc). |
 
@@ -34,12 +34,12 @@ graph LR
 ```
 
 ## Entry points
-- `/` — homepage (7 category sections)
+- `/` — homepage ("Latest" + 6 category sections)
 - `/about-us/` — static About Us
 - `/articles/<slug>/` — article detail (static, per WP post; video embed when `video_url` set)
-- `/category/<slug>/` — category archives (7 categories)
+- `/category/<slug>/` — category archives (6 categories)
 - `/search/` — full-text search (`?search=` query)
 - 404 — any other URL or `notFound()` call
 
 ---
-*Documented at commit bde729d.*
+*Documented at commit 6e04fee.*

@@ -6,10 +6,10 @@ Echo Media (echo-media.info) — an education/community-focused news site in the
 | Item | Type | Summary |
 |------|------|---------|
 | [app/](app/README.md) | folder | App Router routes: home, about-us, articles/[slug], category/[slug], search, 404. |
-| [lib/](lib/README.md) | folder | Site config: `categories.ts` (3 categories) and `mediaCompanies.ts` (cross-promoted brands). |
-| [public/](public/README.md) | folder | Local banner logo assets (4 brands × color/B&W). |
+| [lib/](lib/README.md) | folder | Site config: `categories.ts` (3 categories) and `mediaCompanies.ts` (2 cross-promoted brands). |
+| [public/](public/README.md) | folder | Local banner logo assets (3 brands — this site + 2 siblings — × color/B&W). |
 | [next.config.ts](next.config.ts.md) | file | Static export in prod, `transpilePackages` for `@umg/*`, echo-media.info image domains. |
-| [package.json](package.json.md) | file | Manifest — Next 16.2.7, React 19.2.7, Tailwind 4, `workspace:*` links to `@umg/*`. |
+| [package.json](package.json.md) | file | Manifest — Next 16.3.4, React 19.2.8, Tailwind 4, `workspace:*` links to `@umg/*`. |
 | [tsconfig.json](tsconfig.json.md) | file | Standard Next.js TS config with `@/*` alias. |
 | [eslint.config.mjs](eslint.config.mjs.md) | file | Next core-web-vitals + TS flat config; `no-img-element` off. |
 | [postcss.config.mjs](postcss.config.mjs.md) | file | Tailwind v4 PostCSS plugin only. |
@@ -30,7 +30,7 @@ graph LR
 - Backend: WordPress REST via `@umg/api`; per-site headless behavior is configured by the [em-headless-config.php](../../plugin/em-headless-config.php.md) WP plugin.
 
 ## Notes
-- **vs international-spectrum:** the apps differ only in `lib/` config (3 vs 7 categories; sibling list swaps IS↔EM), branding (logos, blue vs yellow `--banner-border-color`, footer background, metadata/domains), About Us copy, homepage section-type map (types 1–3 vs 1–4 + text), and the article page (IS additionally passes `videoUrl` for its Video Interviews category). All config files except `next.config.ts` hostnames and the package name are byte-identical.
+- **vs international-spectrum:** the apps differ only in `lib/` config (3 vs 6 categories; sibling list swaps IS↔EM), branding (logos, blue vs yellow `--banner-border-color`, footer background, metadata/domains), About Us copy, homepage section-type map (types 1–3 vs 1–4), and the article page (IS additionally passes `videoUrl` for its Video Interviews category). All config files except `next.config.ts` hostnames and the package name are byte-identical.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 6e04fee.*

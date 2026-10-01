@@ -10,7 +10,7 @@ Next.js App Router tree for the Echo Media site. The pages here are deliberately
 | [globals.css](globals.css.md) | file | Tailwind v4 CSS-first config, Echo Media theme variables (blue `#0281b3`), marquee animation. |
 | [not-found.tsx](not-found.tsx.md) | file | 404 boundary — re-exports `NotFoundPage` from `@umg/ui`. |
 | [about-us/](about-us/README.md) | folder | Static About Us page (mission/vision/values + contact). |
-| [articles/[slug]/](articles/[slug]/README.md) | folder | Statically generated article detail pages. |
+| [articles/[slug]/](articles/[slug]/README.md) | folder | Statically generated article detail pages — block-rendered body with inline images. |
 | [category/[slug]/](category/[slug]/README.md) | folder | Category archive pages (3 categories). |
 | [search/](search/README.md) | folder | Search page wrapper around shared `SearchContent`. |
 | icon.jpg | asset | Favicon (App Router file convention; no doc). |
@@ -42,4 +42,4 @@ graph LR
 - 404 — any other URL or `notFound()` call
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 6e04fee.*

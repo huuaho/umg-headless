@@ -17,7 +17,7 @@
 | [NotFoundPage.tsx](NotFoundPage.tsx.md) | file | Shared 404 page body. |
 | [SeenArticlesContext.tsx](SeenArticlesContext.tsx.md) | file | Priority-based cross-section article dedup context. |
 | [sections/](sections/README.md) | folder | Homepage section system (wrapper + 4 layouts + label/skeleton/error + FeaturedMedia). |
-| [article/](article/README.md) | folder | Article detail page (layout, comments, more-articles carousel). |
+| [article/](article/README.md) | folder | Article detail page (layout, ordered-block body with inline images, comments, more-articles carousel). |
 | [package.json](package.json.md) | file | `@umg/ui` manifest — depends on `@umg/api`; `next`/`react` as peers. |
 | [tsconfig.json](tsconfig.json.md) | file | Standalone strict/noEmit TS config. |
 
@@ -48,8 +48,9 @@ graph LR
 
 ## Entry points
 - Everything goes through the barrel [index.ts](index.ts.md): apps import `Header`, `Footer`, `CategorySectionWrapper` (+ `SeenArticlesProvider`), `CategoryContent`, `SearchContent`, `ArticleLayout`, `NotFoundPage`, and the types `NavCategory`/`BannerCompany`.
+- Exported but effectively internal: [article/ArticleBody](article/ArticleBody.tsx.md) — in the barrel, yet only `ArticleLayout` renders it.
 - Internal-only modules: [sections/CategoryLabel](sections/CategoryLabel.tsx.md), [article/CommentsSection](article/CommentsSection.tsx.md), [article/MoreArticles](article/MoreArticles.tsx.md).
 - External IO: all article/comment data via [@umg/api](../api/README.md); newsletter subscriptions via the umg-newsletter WP plugin ([../../plugin/umg-newsletter/umg-newsletter.php.md](../../plugin/umg-newsletter/umg-newsletter.php.md)).
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 6e04fee.*

@@ -6,10 +6,10 @@ International Spectrum (internationalspectrum.org) — a global culture & lifest
 | Item | Type | Summary |
 |------|------|---------|
 | [app/](app/README.md) | folder | App Router routes: home, about-us, articles/[slug], category/[slug], search, 404. |
-| [lib/](lib/README.md) | folder | Site config: `categories.ts` (6 categories, responsive nav split) and `mediaCompanies.ts` (cross-promoted brands). |
-| [public/](public/README.md) | folder | Local banner logo assets (4 brands × color/B&W). |
+| [lib/](lib/README.md) | folder | Site config: `categories.ts` (6 categories, responsive nav split) and `mediaCompanies.ts` (2 cross-promoted brands). |
+| [public/](public/README.md) | folder | Local banner logo assets (3 brands — this site + 2 siblings — × color/B&W). |
 | [next.config.ts](next.config.ts.md) | file | Static export in prod, `transpilePackages` for `@umg/*`, internationalspectrum.org image domains. |
-| [package.json](package.json.md) | file | Manifest — Next 16.3.1, React 19.2.8, Tailwind 4, `workspace:*` links to `@umg/*`. |
+| [package.json](package.json.md) | file | Manifest — Next 16.3.4, React 19.2.8, Tailwind 4, `workspace:*` links to `@umg/*`. |
 | [tsconfig.json](tsconfig.json.md) | file | Standard Next.js TS config with `@/*` alias. |
 | [eslint.config.mjs](eslint.config.mjs.md) | file | Next core-web-vitals + TS flat config; `no-img-element` off. |
 | [postcss.config.mjs](postcss.config.mjs.md) | file | Tailwind v4 PostCSS plugin only. |
@@ -30,7 +30,7 @@ graph LR
 - Backend: WordPress REST via `@umg/api`; per-site headless behavior is configured by the [is-headless-config.php](../../plugin/is-headless-config.php.md) WP plugin.
 
 ## Notes
-- **vs echo-media:** the apps differ only in `lib/` config (6 vs 3 categories; sibling list swaps EM↔IS), branding (logos, yellow vs blue `--banner-border-color`, footer background, metadata/domains), About Us copy, homepage (IS adds a recency-based "Latest" section at the top and its section-type map uses all five layouts incl. `type4`/`type4-text`), and the article page (IS passes `videoUrl` to `ArticleLayout` for YouTube embeds; EM does not). All config files except `next.config.ts` hostnames and the package name are byte-identical.
+- **vs echo-media:** the apps differ only in `lib/` config (6 vs 3 categories; sibling list swaps EM↔IS), branding (logos, yellow vs blue `--banner-border-color`, footer background, metadata/domains), About Us copy, homepage (IS adds a recency-based "Latest" section at the top and its section-type map uses `type1`–`type4`, plus a now-dead `type4-text` entry for the deleted Leadership & Youth category), and the article page (IS passes `videoUrl` to `ArticleLayout` for YouTube embeds; EM does not). All config files except `next.config.ts` hostnames and the package name are byte-identical.
 
 ---
-*Documented at commit 2354375.*
+*Documented at commit 6e04fee.*

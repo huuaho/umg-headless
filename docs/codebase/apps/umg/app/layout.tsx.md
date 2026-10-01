@@ -26,7 +26,7 @@ Next.js App Router — wraps every route in the app. Per-page `metadata` exports
 
 **Diplomatic Watch removed (client request, 2026-10-01):** `SITE_DESCRIPTION` and both social-card descriptions no longer name it. `SITE_DESCRIPTION` feeds the `metadata.description` *and* the Organization schema’s `description`, so one edit kept those two in sync; the shorter OpenGraph/Twitter strings are separate literals and had to be edited individually. The same canonical sentence is repeated in [about-us/page.tsx](about-us/page.tsx.md) — keep them identical.
 
-**Nav is filtered to populated categories (2026-10-01):** the layout is `async` and awaits [`getActiveCategories()`](../lib/activeCategories.ts.md), passing the result to *both* `Header` and `Footer` so neither links to a category with no articles. This is resolved once per build (static export), and it fails safe — on an API error it returns all 9 categories rather than shipping a site with no navigation.
+**Nav is filtered to populated categories (2026-10-01):** the layout is `async` and awaits [`getActiveCategories()`](../lib/activeCategories.ts.md), passing the result to *both* `Header` and `Footer` so neither links to a category with no articles. This is resolved once per build (static export), and it fails safe — on an API error it returns all 8 categories rather than shipping a site with no navigation.
 
 Reads `process.env.NEXT_PUBLIC_WP_API_URL` at build time (static export inlines it). Only the Medium weight of Arizona Sans is loaded even though 11 font files ship in `fonts/`. The Organization schema's `sameAs`, the Footer `socials`, and the per-page schemas (Event/FAQ/ContactPage) should describe the same entity with consistent URLs/wording — that consistency is the AEO goal.
 

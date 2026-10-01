@@ -1,13 +1,15 @@
 # apps/umg/ — overview
 
-The main United Media Group site: a statically exported Next.js 16 app that (1) aggregates news from the three UMG media companies via shared `@umg/ui` components and the headless WordPress backend, and (2) hosts the "My Hometown, My Lens" international youth photography competition — landing page, judges panel, an authenticated submission flow with email-OTP login, server-side drafts, and Stripe payment, a school/bulk-registration flow (one Stripe Checkout for a batch), and a judge panel at `/admin`. **Status (2026-08-13): the competition is postponed indefinitely** — `/how-to-enter` shows an on-hold announcement (refunds underway; `COMPETITION_ON_HOLD` flag, since 2026-08-23) promoted via the Header banner, while the other public competition routes 404 via `notFound()` guards and the competition-era nav/sitemap links stay commented out (grep "Competition postponed indefinitely" to restore); `/admin` remains live.
+The main United Media Group site: a statically exported Next.js 16 app that (1) aggregates news from the UMG media companies — Echo Media and International Spectrum — via shared `@umg/ui` components and the headless WordPress backend, and (2) hosts the "My Hometown, My Lens" international youth photography competition — landing page, judges panel, an authenticated submission flow with email-OTP login, server-side drafts, and Stripe payment, a school/bulk-registration flow (one Stripe Checkout for a batch), and a judge panel at `/admin`. **Status (2026-08-13): the competition is postponed indefinitely** — `/how-to-enter` shows an on-hold announcement (refunds underway; `COMPETITION_ON_HOLD` flag, since 2026-08-23) promoted via the Header banner, while the other public competition routes 404 via `notFound()` guards and the competition-era nav/sitemap links stay commented out (grep "Competition postponed indefinitely" to restore); `/admin` remains live.
+
+**Diplomatic Watch removed (client request, 2026-10-01).** DW was dropped as a cross-promoted brand *and* as a content source. Its banner logos and its `mediaCompanies` entry are gone (the marquee now carries two siblings), its about-us pillar card and brand color were removed, and the [ingestor](../../plugin/united-media-ingestor/README.md) stopped ingesting it in 0.12.0. It had been 92.4% of the corpus (2,597 of 2,811 articles); after the purge **215 articles remain**, which left four of the eight nav categories empty — hence the build-time category filter in [lib/activeCategories.ts](lib/activeCategories.ts.md) that now drives the nav, footer and homepage.
 
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
 | [app/](app/README.md) | folder | App Router routes: home, category, search, about-us, contact, 404, the judge panel (`/admin/*`) + the competition routes (how-to-enter — currently the on-hold announcement; judges-panel, photo-submission, school-registration — currently 404); plus sitemap.xml/robots.txt and per-page metadata + JSON-LD (AEO). |
 | [components/](components/README.md) | folder | Competition presentational components (divisions, requirements, rules, committees). |
-| [lib/](lib/README.md) | folder | Categories/media-company data, competition config-as-code, auth context + REST client, school-flow REST client, judging REST client. |
+| [lib/](lib/README.md) | folder | Categories (plus the build-time populated-category filter) and media-company data, competition config-as-code, auth context + REST client, school-flow REST client, judging REST client. |
 | [fonts/](fonts/README.md) | folder | Local font binaries (ABC Arizona Sans trial, Author variable). |
 | [public/](public/README.md) | folder | Logos, banner/judge/venue/sponsor images. |
 | [package.json](package.json.md) | file | Manifest; depends on `@umg/api`, `@umg/config`, `@umg/ui`. |
@@ -26,6 +28,7 @@ graph LR
   end
   appdir --> ui["@umg/ui (packages/ui)"]
   ui --> api["@umg/api (packages/api)"]
+  lib -. "build-time category filter" .-> api
   api -.WP REST.-> wp["WordPress @ api.unitedmediadc.com"]
   lib -. "/wp-json/umg/v1 (JWT): entrant, /school/*, /admin/*" .-> plugin["umg-photo-contest plugin"]
   appdir -.payment link / Checkout Session.-> stripe["Stripe"]
@@ -35,11 +38,12 @@ graph LR
 Cross-tree docs: shared UI at [../../packages/ui/](../../packages/ui/README.md) (Header, Footer, CategoryContent, SearchContent, sections), API client at [../../packages/api/client.ts.md](../../packages/api/client.ts.md), WP plugin at [../../plugin/umg-photo-contest/](../../plugin/umg-photo-contest/umg-photo-contest.php.md).
 
 ## Entry points
-- **News + info routes:** `/` (Latest + Video Interviews + per-category sections), `/category/<slug>` (×9, statically generated — 8 nav categories + `video-interviews`, an IS-sourced bucket kept out of the top nav), `/search`, `/about-us`, `/contact` — article data fetched client-side from the WP REST API via `@umg/ui` + `@umg/api`, with `externalOnly` links out to the source publications.
+- **News + info routes:** `/` (Latest + Video Interviews + one section per *populated* category — 6 sections today), `/category/<slug>` (×9, statically generated for all 8 configured categories + `video-interviews`, an IS-sourced bucket kept out of the top nav), `/search`, `/about-us`, `/contact` — article data fetched client-side from the WP REST API via `@umg/ui` + `@umg/api`, with `externalOnly` links out to the source publications.
+- **Build-time category filtering:** `app/layout.tsx` and `app/page.tsx` are `async` and await [`getActiveCategories()`](lib/activeCategories.ts.md), which keeps only the categories that hold at least one article — currently 4 of 8 (Profiles & Opinions, Art & Culture, Education & Youth, Local Community). That list feeds the Header nav, the Footer columns and the homepage sections; it fails safe to the full list on any API error, and `/category/<slug>` routes are still emitted for all 8 so inbound links resolve to a "No articles found" page rather than a 404. It is a point-in-time snapshot — a category that gains its first article reappears only on the next build.
 - **AEO:** Organization JSON-LD in the layout; Event + FAQPage schema on `/how-to-enter`; FAQPage on `/about-us`; ContactPage on `/contact`; per-page OpenGraph/Twitter metadata; `/sitemap.xml` and `/robots.txt` (named AI crawlers).
 - **Competition routes (on hold):** `/how-to-enter` (currently the on-hold announcement; when restored, brochure from [lib/competitions/current.ts](lib/competitions/current.ts.md); deadline now Oct 31, 2026), `/judges-panel` (bios + hash anchors), `/photo-submission` (OTP sign-in → autosaved draft → submit → $50 Stripe payment, status polled via `GET /me`; entries can be reopened for edits until paid), `/school-registration` (+ `/application?id=`; a school manages many student applications and pays once via Stripe Checkout; applications reopenable until paid). Backend is the umg-photo-contest WP plugin at `/wp-json/umg/v1/`.
 - **Judge panel (live):** `/admin` — same OTP login; `AdminGuard` requires `user.is_judge`; blind-by-default entry grid → `/admin/entry?id=` scoring (1–10 per criterion, draft/final) → admin-only `/admin/results` rankings. Client in [lib/judging/](lib/judging/README.md), routes in [app/admin/](app/admin/README.md); plugin side `judging.php`/`roles.php`. Parked for client UX feedback.
 - **Build:** `pnpm dev` / `pnpm build` (static export to `out/`); `NEXT_PUBLIC_WP_API_URL` selects the WP backend at build time.
 
 ---
-*Documented at commit 2354375.*
+*Documented at commit 6e04fee.*

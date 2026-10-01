@@ -18,8 +18,8 @@ Next.js App Router — applied to every route in the app.
 
 ## Notes
 - Header logo: `/images/banner/is-logo.svg` (color); Footer logo: `/images/banner/is-logo-black.svg` (B&W) — both local assets under `public/images/banner/`.
-- Footer gets `email="unitedmediagroup196@gmail.com"` and copyright "© 2026 International Spectrum Media". No `socials` prop is passed (unlike the UMG app).
+- Footer gets `email="info@unitedmediadc.com"` and copyright "© 2026 International Spectrum Media". No `socials` prop is passed (unlike the UMG app). The email was `unitedmediagroup196@gmail.com` until 2026-10-01, when all three sites were aligned on the UMG address; no `contactHref` is passed, so "Contact Us" stays a `mailto:` (there is no `/contact` route in this app, unlike UMG).
 - **Difference vs echo-media:** only branding — EM uses `em-logo.svg` / `em-logo-black.png`, `metadataBase` `https://echo-media.info`, an education-focused description, and copyright "© 2026 Echo Media". Structure is otherwise identical.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 23fe95c.*

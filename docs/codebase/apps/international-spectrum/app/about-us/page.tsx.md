@@ -18,8 +18,8 @@ Next.js App Router — the `/about-us` route. Linked from the shared Footer navi
 ## Notes
 - No data fetching, no client interactivity — statically exported at build time.
 - All body paragraphs use `font-semibold`, unlike Echo Media's regular-weight copy.
-- Contact email here is `info@unitedmediadc.com`, while the Footer (set in `layout.tsx`) uses `unitedmediagroup196@gmail.com`.
+- Contact email here is `info@unitedmediadc.com`, which the Footer now matches — `layout.tsx` used `unitedmediagroup196@gmail.com` until 2026-10-01, so this page and the footer used to disagree.
 - **Difference vs echo-media:** content only. The EM version is longer with Mission/Vision/Core Values sections; IS is a compact four-paragraph statement. Page structure and the Contact Us band are identical.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 23fe95c.*

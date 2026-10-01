@@ -131,7 +131,9 @@ export default function AboutUsPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-center text-[#3b5fe5] mb-10">
             Our Platforms
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          {/* 2 columns for the 2 platforms — was grid-cols-3 when Diplomatic
+              Watch was a third card, which left an empty column behind. */}
+          <div className="grid md:grid-cols-2 gap-8">
             {platforms.map((platform) => (
               <div
                 key={platform.name}

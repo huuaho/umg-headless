@@ -1,4 +1,5 @@
-import { categories, videoInterviewsCategory } from "@/lib/categories";
+import { videoInterviewsCategory } from "@/lib/categories";
+import { getActiveCategories } from "@/lib/activeCategories";
 import {
   CategorySectionWrapper,
   SeenArticlesProvider,
@@ -23,7 +24,11 @@ const SECTION_STYLE = {
   titleClassName: "font-[family-name:var(--font-arizona-sans)]",
 };
 
-export default function Home() {
+export default async function Home() {
+  // Same build-time filter the nav uses, so we don't emit a section (and its
+  // fetch) for a category that has nothing in it.
+  const categories = await getActiveCategories();
+
   return (
     <main className="min-h-screen bg-white max-w-280 mx-auto px-6 [&>section:last-child]:border-b-0">
       {/* Visually hidden page descriptor for crawlers/screen readers (AEO ticket 03) */}
@@ -52,10 +57,10 @@ export default function Home() {
           hideWhenEmpty
           {...SECTION_STYLE}
         />
-        {/* `hideWhenEmpty`: a category with no articles renders nothing rather
-            than a "No articles found" card. Needed since Diplomatic Watch was
-            dropped as a source (2026-10-01), which left World News & Politics,
-            Economy & Business and Diplomacy with no content. */}
+        {/* `hideWhenEmpty` stays as the runtime backstop: getActiveCategories()
+            filters out what was empty at build time, but a category can empty
+            out (or a build can fall back to the full list) afterwards, and then
+            this renders nothing instead of a "No articles found" card. */}
         {categories.map((category, index) => (
           <CategorySectionWrapper
             key={category.slug}

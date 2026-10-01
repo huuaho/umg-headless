@@ -6,7 +6,7 @@ Echo Media's per-site configuration: the category taxonomy and the sibling-brand
 | Item | Type | Summary |
 |------|------|---------|
 | [categories.ts](categories.ts.md) | file | 3 categories (Art & Culture, Education, Environment; all `#0281b3`) + Header/Footer nav groupings. |
-| [mediaCompanies.ts](mediaCompanies.ts.md) | file | 3 cross-promoted brands (UMG, International Spectrum, Diplomatic Watch) with local banner logo paths. |
+| [mediaCompanies.ts](mediaCompanies.ts.md) | file | 2 cross-promoted brands (UMG, International Spectrum) with local banner logo paths. |
 
 ## Connections
 ```mermaid
@@ -23,4 +23,4 @@ graph LR
 - Not routed; imported by the `app/` pages. Category slugs must mirror the WordPress backend taxonomy.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 0c47b38.*

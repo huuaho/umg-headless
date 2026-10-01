@@ -17,7 +17,7 @@ The only file that performs `wp_remote_get`. Builds `wp/v2/posts` URLs against a
 
 ## Dependencies
 - Internal: [config.php](config.php.md) (timeout, SSL verify, user agent constants).
-- External: source sites' public WP REST APIs (`/wp-json/wp/v2/posts`, `/wp-json/wp/v2/media`) on api.echo-media.info, api.internationalspectrum.org, diplomaticwatch.com; WordPress HTTP API.
+- External: source sites' public WP REST APIs (`/wp-json/wp/v2/posts`, `/wp-json/wp/v2/media`) on api.echo-media.info and api.internationalspectrum.org; WordPress HTTP API. (diplomaticwatch.com was a third source site until plugin 0.12.0 dropped it.)
 
 ## Used by
 [backfill.php](backfill.php.md) (page/before/single fetch + totals), [incremental.php](incremental.php.md) (`um_fetch_posts_since`), [storage.php](storage.php.md) (`um_fetch_media_urls` during upsert), [admin-endpoints.php](admin-endpoints.php.md) (totals for status tables; direct `um_http_get` of single posts in the image-refresh AJAX handler).
@@ -28,4 +28,4 @@ The only file that performs `wp_remote_get`. Builds `wp/v2/posts` URLs against a
 - `um_get_site_post_totals` uses a single attempt, so a transient failure shows as "Error" in the admin status table without affecting ingestion.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 64980e0.*

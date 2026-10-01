@@ -6,7 +6,7 @@ International Spectrum's per-site configuration: the category taxonomy and the s
 | Item | Type | Summary |
 |------|------|---------|
 | [categories.ts](categories.ts.md) | file | 6 categories across 4 accent colors, with responsive Header nav split (2 main / 2 lg-only / 2 in "More") and Footer columns. |
-| [mediaCompanies.ts](mediaCompanies.ts.md) | file | 3 cross-promoted brands (UMG, Echo Media, Diplomatic Watch) with local banner logo paths. |
+| [mediaCompanies.ts](mediaCompanies.ts.md) | file | 2 cross-promoted brands (UMG, Echo Media) with local banner logo paths. |
 
 ## Connections
 ```mermaid
@@ -23,4 +23,4 @@ graph LR
 - Not routed; imported by the `app/` pages (via the `@/lib/...` alias in layout/home, relative paths elsewhere). Category slugs must mirror the WordPress backend taxonomy.
 
 ---
-*Documented at commit 2354375.*
+*Documented at commit 0c47b38.*

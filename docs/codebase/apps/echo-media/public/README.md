@@ -5,7 +5,7 @@ Static assets served from the site root. Currently holds only the localized bann
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [images/banner/](images/banner/README.md) | folder | 8 brand logos (4 companies × color/B&W) for the Header marquee and Footer. |
+| [images/banner/](images/banner/README.md) | folder | Brand logos for the Header marquee and Footer: 3 brands (this site + 2 siblings) × color/B&W, 8 files counting the UMG masthead's legacy PNG copies. |
 
 ## Connections
 ```mermaid
@@ -18,4 +18,4 @@ graph LR
 - Served at `/<path>` (e.g. `/images/banner/em-logo.svg`); copied verbatim into `out/` by the static export.
 
 ---
-*Documented at commit 1cbdce5.*
+*Documented at commit 0c47b38.*

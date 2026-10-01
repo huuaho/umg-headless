@@ -3,7 +3,7 @@
 **Purpose:** Search route — thin wrapper around the shared SearchContent component.
 
 ## Responsibilities
-Renders `SearchContent` from `@umg/ui` with `externalOnly`, meaning results link out to the original media-company sites (Diplomatic Watch / Echo Media / International Spectrum) rather than to local article pages — the UMG site is an aggregator with no article detail routes.
+Renders `SearchContent` from `@umg/ui` with `externalOnly`, meaning results link out to the original media-company sites (Echo Media / International Spectrum) rather than to local article pages — the UMG site is an aggregator with no article detail routes.
 
 ## Key exports
 - `default SearchPage() -> JSX` — the `/search` route.
@@ -17,7 +17,7 @@ Renders `SearchContent` from `@umg/ui` with `externalOnly`, meaning results link
 App Router — route `/search` (linked from the Header's search UI).
 
 ## Notes
-All query handling, fetching, and result rendering live in `packages/ui`.
+All query handling, fetching, and result rendering live in `packages/ui`. The `metadata` description was trimmed to the two remaining pillars when Diplomatic Watch was removed from UMG (client request, 2026-10-01); the search index itself is whatever the WP backend still holds.
 
 ---
-*Documented at commit 60deaa3.*
+*Documented at commit 0c47b38.*

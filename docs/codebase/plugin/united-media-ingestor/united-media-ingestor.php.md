@@ -3,7 +3,7 @@
 **Purpose:** Plugin bootstrap for "United Media Ingestor" — loads all includes, provides UMG's headless config (CORS/cache/redirect), and handles activation.
 
 ## Responsibilities
-Entry point of the aggregation plugin on api.unitedmediadc.com (version 0.11.0). Defines `UMI_VERSION`/`UMI_PATH`/`UMI_URL`, requires the 12 includes (config → helpers → http → normalize → mapping → storage → backfill → incremental → cron → admin-endpoints → rest-api → search), and embeds the headless config that the other two sites get from standalone plugins: whitelisted CORS, REST no-cache headers, and a 301 redirect of all non-`/wp-json` front-end traffic to `https://www.unitedmediadc.com`.
+Entry point of the aggregation plugin on api.unitedmediadc.com (version 0.12.0). Defines `UMI_VERSION`/`UMI_PATH`/`UMI_URL`, requires the 12 includes (config → helpers → http → normalize → mapping → storage → backfill → incremental → cron → admin-endpoints → rest-api → search), and embeds the headless config that the other two sites get from standalone plugins: whitelisted CORS, REST no-cache headers, and a 301 redirect of all non-`/wp-json` front-end traffic to `https://www.unitedmediadc.com`.
 
 ## Key exports
 - `UMI_VERSION`, `UMI_PATH`, `UMI_URL` (constants).
@@ -21,8 +21,9 @@ Entry point of the aggregation plugin on api.unitedmediadc.com (version 0.11.0).
 WordPress core as plugin main file. The `um/v1/articles` route it ultimately exposes is consumed by the shared API client ([packages/api/client.ts](../../packages/api/client.ts.md)) for the UMG site.
 
 ## Notes
-- Category terms are seeded on activation and, since 0.10.0, on the version-bump `admin_init` upgrade hook — so bumping `UMI_VERSION` alongside a new mapping is enough; no re-activation needed. Seeding never *renames* terms, though: when a child's display name changes in mapping.php (as in the 0.11.0 International Spectrum renames), existing UMG-side terms must be renamed manually in wp-admin.
+- Category terms are seeded on activation and, since 0.10.0, on the version-bump `admin_init` upgrade hook — so bumping `UMI_VERSION` alongside a new mapping is enough; no re-activation needed. Seeding never *renames or deletes* terms, though: when a child's display name changes in mapping.php (as in the 0.11.0 International Spectrum renames), existing UMG-side terms must be renamed manually in wp-admin, and children removed from the spec (the 25 `dw-*` terms dropped in 0.12.0) stay in the taxonomy until deleted by hand.
+- 0.12.0 removes Diplomatic Watch as a source. Deploying it only stops *future* DW ingestion — the already-ingested DW articles (~2,597, 92.4% of the store) remain until an admin runs the new delete-by-source action in [includes/admin-endpoints.php](includes/admin-endpoints.php.md). As of this commit the plugin has not been deployed and that purge has not been run.
 - The `template_redirect` 301 means the WP install serves nothing publicly except `/wp-json` and wp-admin — including the Divi search template path in [includes/search.php](includes/search.php.md), which is therefore mostly legacy (it can only render for logged-in admin contexts or if the redirect is removed).
 
 ---
-*Documented at commit 2354375.*
+*Documented at commit 0c47b38.*

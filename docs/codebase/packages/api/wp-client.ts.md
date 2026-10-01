@@ -16,6 +16,7 @@
 - Resolves category slugs to WP category IDs via `GET /wp/v2/categories?slug=X`, cached in a module-level `Map`.
 - Reads pagination totals from `X-WP-Total` / `X-WP-TotalPages` response headers.
 - Validates JSON responses (`parseJsonResponse`) — throws with a body snippet if the server returns non-JSON (e.g., an HTML error page).
+- Routes **every GET** through `fetchWpGet()`, a retry wrapper that survives SiteGround's `sgcaptcha` bot protection (see Notes).
 
 ## Key exports
 - `fetchArticlesWP(options) -> Promise<ArticlesResponse>` — paginated posts, optional category filter (empty result if slug unknown).
@@ -33,6 +34,10 @@
 - [client.ts](client.ts.md) exclusively — apps never import this module directly; the facade delegates here when `NEXT_PUBLIC_API_MODE=wp`.
 
 ## Notes
+- **`fetchWpGet()` — bot-challenge retries.** SiteGround's bot protection intermittently answers build-time requests with its `/.well-known/sgcaptcha/` HTML interstitial instead of JSON, which kills a whole static build on the first challenged request (GitHub runner IPs get challenged regularly). ⚠️ The challenge arrives as an **HTTP 200 with an HTML body**, so it is invisible to a status-code check: the helper only treats a response as suspect when it is `ok` *and* its `content-type` isn't `application/json`, then matches the body against `/sgcaptcha|\/\.well-known\//i`. On a match it backs off **1s → 3s → 8s** (4 attempts total) and retries; anything else non-JSON throws with a 200-char body snippet, same as before.
+  - It returns the **raw `Response`**, not parsed JSON, so each call site keeps its own status handling — `fetchArticlesWP`/`searchArticlesWP` read the `X-WP-Total*` pagination headers, and `fetchAllSlugsWP` treats a 400 as "past the last page". Non-`ok` responses are returned untouched rather than retried.
+  - Only the non-JSON branch consumes the body (`response.text()`), leaving the JSON path's body intact for the caller to read.
+  - All 7 GETs go through it (categories, media, posts ×3, all-slugs, comments). ⚠️ `postCommentWP` is the one exception and still uses raw `fetch` on purpose — a POST retry could double-post a comment, which is worse than a failed submit the visitor can retry.
 - `API_BASE_URL` comes from `NEXT_PUBLIC_WP_API_URL` (e.g., `https://api.echo-media.info/wp-json`, `https://api.internationalspectrum.org/wp-json`) with a placeholder fallback.
 - The category-ID cache is module-scoped and never invalidated — fine for client sessions and build-time use, but renames in WP require a reload.
 - The featured image is deduped out of **galleries as well as standalone images**. 44 of 198 live posts repeat it in the body, and a carousel opens on its first slide, so leaving it in place rendered the same photo twice, stacked directly under the hero.
@@ -42,4 +47,4 @@
 - See [README.md](README.md) for the custom-vs-wp mode comparison.
 
 ---
-*Documented at commit e636e60.*
+*Documented at commit 0c47b38.*

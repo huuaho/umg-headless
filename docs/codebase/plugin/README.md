@@ -5,7 +5,7 @@ WordPress plugin **source code** that lives (unusually) under `docs/plugin/` in 
 ## Contents
 | Item | Type | Summary |
 |------|------|---------|
-| [united-media-ingestor/](united-media-ingestor/README.md) | folder | Article aggregator for UMG: ingests three source sites into a local `um_article` store, serves `GET /um/v1/articles`; also embeds UMG's headless config |
+| [united-media-ingestor/](united-media-ingestor/README.md) | folder | Article aggregator for UMG: ingests two source sites (Echo Media, International Spectrum — Diplomatic Watch dropped in v0.12.0) into a local `um_article` store, serves `GET /um/v1/articles`; also embeds UMG's headless config |
 | [umg-photo-contest/](umg-photo-contest/README.md) | folder | Photo competition backend: email-code auth + JWT, Stripe payment webhook (individual + school batch), draft/photo uploads, submit/un-submit, school bulk registration + combined checkout, capability-gated judge panel API (`/umg/v1/*`) |
 | [umg-newsletter/](umg-newsletter/README.md) | folder | Mailchimp subscribe proxy: `POST /umg/v1/subscribe` (double opt-in, rate-limited) |
 | [em-headless-config.php](em-headless-config.php.md) | file | Echo Media backend config: CORS, REST no-cache, 301 front-end redirect, GitHub `deploy-echo-media` dispatch on post changes |
@@ -32,7 +32,7 @@ graph LR
   umgschool[apps/umg/lib/school/api.ts] -->|/umg/v1/school/*| contest
   umgjudge[apps/umg/lib/judging/api.ts] -->|/umg/v1/admin/*| contest
   footer[packages/ui/NewsletterSignup.tsx] -->|POST /umg/v1/subscribe| news
-  umi -->|fetches wp/v2| sources[(echo-media, internationalspectrum,<br/>diplomaticwatch source sites)]
+  umi -->|fetches wp/v2| sources[(echo-media, internationalspectrum<br/>source sites)]
   contest --> stripe[(Stripe)]
   news --> mailchimp[(Mailchimp)]
   em -->|repository_dispatch| gha[.github/workflows/deploy-*.yml]
@@ -52,4 +52,4 @@ graph LR
 - **wp-admin surface (photo contest):** Tools → Retitle Submissions (`manage_options`); "Photo Contest" CPT menu for reviewing entries.
 
 ---
-*Documented at commit bde729d.*
+*Documented at commit 0c47b38.*

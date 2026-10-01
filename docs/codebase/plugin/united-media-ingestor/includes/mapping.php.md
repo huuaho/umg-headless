@@ -3,7 +3,7 @@
 **Purpose:** The category model — UM parent/child taxonomy spec, source-name→UM-slug mapping tables, and exclusion rules.
 
 ## Responsibilities
-Defines, in code, the unified two-level category scheme the UMG site presents: 9 parent "display buckets" and 9 source-prefixed children (`em-*` Echo Media, `is-*` International Spectrum — the 25 `dw-*` Diplomatic Watch children were removed in 0.12.0). Maps each source site's category display names onto those child slugs, lists source categories whose articles should be ingested but flagged excluded, and resolves a remote post's category names into `{mapped_slugs, unmapped, is_excluded}`.
+Defines, in code, the unified two-level category scheme the UMG site presents: 9 parent "display buckets" and 9 source-prefixed children (`em-*` Echo Media, `is-*` International Spectrum — the 24 `dw-*` Diplomatic Watch children were removed in 0.12.0). Maps each source site's category display names onto those child slugs, lists source categories whose articles should be ingested but flagged excluded, and resolves a remote post's category names into `{mapped_slugs, unmapped, is_excluded}`.
 
 ## Key exports
 - `um_normalize_name($s) -> string` — tag-strip + entity-decode + whitespace-collapse for reliable name comparison.

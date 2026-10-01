@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Libre_Franklin } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Header, Footer } from "@umg/ui";
-import { categories } from "@/lib/categories";
+import { getActiveCategories } from "@/lib/activeCategories";
 import { mediaCompanies } from "@/lib/mediaCompanies";
 
 const geistSans = Geist({
@@ -82,11 +82,15 @@ const organizationSchema = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Resolved at build time; empty categories are dropped from the nav and
+  // footer so neither links to a "No articles found" page.
+  const navCategories = await getActiveCategories();
+
   return (
     <html lang="en">
       <body
@@ -99,7 +103,7 @@ export default function RootLayout({
         <Header
           logoUrl="/umg-logo.svg"
           logoAlt="United Media Group"
-          categories={categories}
+          categories={navCategories}
           bannerCompanies={mediaCompanies}
           // Competition postponed indefinitely (client request, 2026-08-13).
           // Restore the nav link + original banner by uncommenting:
@@ -121,7 +125,7 @@ export default function RootLayout({
         <Footer
           logoUrl="/umg-logo-black.svg"
           logoAlt="United Media Group"
-          categories={categories}
+          categories={navCategories}
           companies={mediaCompanies}
           email="info@unitedmediadc.com"
           contactHref="/contact"

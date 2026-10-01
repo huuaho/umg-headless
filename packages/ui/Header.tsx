@@ -107,11 +107,21 @@ export default function Header({
   extraLinks,
   announcementBanner,
 }: HeaderProps) {
-  // Compute category splits for responsive nav
+  // Compute category splits for responsive nav. At most 4 categories ever sit
+  // in the bar (2 from md, 4 from lg); anything past the 4th lives in "More".
   const mainCategories = categories.slice(0, 2);
   const lgOnlyCategories = categories.slice(2, 4);
   const moreCategories = categories.slice(4);
   const allCategories = categories;
+
+  // "More" only earns its place when it has something to show. At lg+ that is
+  // the overflow past 4 plus any extraLinks; below lg the 3rd and 4th
+  // categories collapse into it as well. With <=4 categories and no
+  // extraLinks it therefore disappears entirely at lg+, and with <=2 it never
+  // renders at all.
+  const hasExtraLinks = Boolean(extraLinks && extraLinks.length > 0);
+  const showMoreAtLg = moreCategories.length > 0 || hasExtraLinks;
+  const showMoreBelowLg = showMoreAtLg || lgOnlyCategories.length > 0;
 
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -265,8 +275,9 @@ export default function Header({
                 </Link>
               ))}
 
-              {/* More Dropdown */}
-              <div className="relative">
+              {/* More Dropdown — hidden when it would be empty */}
+              {showMoreBelowLg && (
+              <div className={`relative ${showMoreAtLg ? "" : "lg:hidden"}`}>
                 <button
                   onClick={() => setMoreOpen(!moreOpen)}
                   onBlur={() => setTimeout(() => setMoreOpen(false), 150)}
@@ -324,6 +335,7 @@ export default function Header({
                   </div>
                 )}
               </div>
+              )}
             </nav>
           )}
 

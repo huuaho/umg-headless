@@ -1,0 +1,111 @@
+name: Deploy watchdog
+
+# Re-runs a failed deploy until it succeeds, but ONLY when it failed on
+# SiteGround's sgcaptcha bot challenge.
+#
+# Why re-run rather than retry inside the build: the challenge is keyed to the
+# runner's IP and is sticky for minutes, so retrying a request from the same
+# runner cannot clear it (packages/api/wp-client.ts's 1s/3s/8s backoff has never
+# once succeeded against it). A re-run gets a fresh runner, hence a fresh IP,
+# which is what has actually fixed it every time we have done it by hand.
+#
+# Why this matters: a failed deploy leaves the previous site live and tells
+# nobody. On 2026-10-11 that hid a published article for two days.
+
+on:
+  workflow_run:
+    workflows:
+      - Deploy UMG to SiteGround
+      - Deploy Echo Media to SiteGround
+      - Deploy International Spectrum to SiteGround
+    types: [completed]
+
+permissions:
+  actions: write # re-run the failed deploy
+  issues: write # report when we give up
+
+# One watchdog per deploy workflow; never two chasing the same run.
+concurrency:
+  group: watchdog-${{ github.event.workflow_run.name }}
+  cancel-in-progress: false
+
+jobs:
+  retry-until-green:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Re-run while the failure is the bot challenge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_NAME: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          # Runaway guard, not a retry budget. The worst real case so far was 3.
+          MAX_ATTEMPTS: '25'
+        run: |
+          set -uo pipefail
+
+          is_challenge() {
+            # --log-failed can be large; we only need to know if the marker is there.
+            gh run view "$RUN_ID" --repo "$REPO" --log-failed 2>/dev/null \
+              | grep -qi 'sgcaptcha'
+          }
+
+          conclusion() {
+            gh run view "$RUN_ID" --repo "$REPO" --json conclusion --jq .conclusion 2>/dev/null
+          }
+          status() {
+            gh run view "$RUN_ID" --repo "$REPO" --json status --jq .status 2>/dev/null
+          }
+
+          give_up() {
+            reason="$1"
+            echo "::error::$RUN_NAME — $reason"
+            gh issue create --repo "$REPO" \
+              --title "Deploy failing: $RUN_NAME" \
+              --body "$(printf '%s\n' \
+                "**$RUN_NAME** failed and the watchdog stopped retrying." \
+                "" \
+                "**Reason:** $reason" \
+                "**Run:** $RUN_URL" \
+                "" \
+                "The previous build is still live, so the site looks healthy while" \
+                "new content is missing. Check the run log before assuming it is fine." \
+                "" \
+                "_Opened automatically by .github/workflows/deploy-watchdog.yml_")" \
+              2>&1 || echo "::warning::could not open an issue (check issues: write)"
+            exit 1
+          }
+
+          if ! is_challenge; then
+            give_up "failed for a reason other than the sgcaptcha bot challenge — needs a human"
+          fi
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            echo "--- attempt $attempt/$MAX_ATTEMPTS: re-running $RUN_NAME ($RUN_ID)"
+            if ! gh run rerun "$RUN_ID" --repo "$REPO" --failed 2>&1; then
+              give_up "could not trigger a re-run (attempt $attempt)"
+            fi
+
+            # Let GitHub flip it back to queued before polling.
+            sleep 20
+            until [ "$(status)" = "completed" ]; do sleep 20; done
+
+            c="$(conclusion)"
+            echo "    attempt $attempt conclusion: $c"
+
+            if [ "$c" = "success" ]; then
+              echo "::notice::$RUN_NAME went green after $attempt automatic re-run(s)"
+              exit 0
+            fi
+
+            if ! is_challenge; then
+              give_up "a later attempt failed for a different reason — needs a human"
+            fi
+            echo "    still the bot challenge; going again on a fresh runner"
+          done
+
+          give_up "still failing on the bot challenge after $MAX_ATTEMPTS re-runs"
